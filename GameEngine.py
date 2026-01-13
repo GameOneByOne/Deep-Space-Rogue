@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from GameData import GameData, BUILDING_PREFIX, RESOURCE_PREFIX
-from GameBuilding import BuildingItem
+from GameBuilding import BuildingItem, BuildingType
 from GameResource import ResourceItem
 
 
@@ -45,7 +45,7 @@ class GameEngine :
 
         # 资源更新
         self.CostResources(costResource)
-        if not self.buildings[buildingId].tickable :
+        if self.buildings[buildingId].type != BuildingType.TICKABLE :
             self.ProduceResources(self.buildings[buildingId].resourceOutput)
 
         # 判定解锁列表
@@ -57,7 +57,7 @@ class GameEngine :
 
     def Tick(self) :
         for buildingItem in self.buildings.values() :
-            if not buildingItem.unlock or not buildingItem.tickable :
+            if not buildingItem.unlock or buildingItem.type != BuildingType.TICKABLE :
                 continue
 
             resourceInput, resourceOutput = buildingItem.Tick()
@@ -88,6 +88,7 @@ class GameEngine :
             buildingInfos[buildingId]["id"] = buildingId
             buildingInfos[buildingId]["name"] = buildingInfo.info["name"]
             buildingInfos[buildingId]["describe"] = buildingInfo.info["describe"]
+            buildingInfos[buildingId]["type"] = buildingInfo.type
             buildingInfos[buildingId]["buildCostResources"] = buildingInfo.buildCostResources
             buildingInfos[buildingId]["resourceInput"] = buildingInfo.resourceInput
             buildingInfos[buildingId]["resourceOutput"] = buildingInfo.resourceOutput

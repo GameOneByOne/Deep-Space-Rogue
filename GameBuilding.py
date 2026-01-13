@@ -1,10 +1,18 @@
+from enum import Enum
+
+
+class BuildingType(Enum) :
+    ONCE_CLICKABLE = 0
+    REPEAT_CLICKABLE = 1
+    TICKABLE = 2
+    UNKNOWN = 3
 
 
 class BuildingItem :
     def __init__(self, info : dict) :
         self.info = info
         self.count = 0
-        self.tickable = self.info.get("tickable", True)
+        self.type = BuildingType(self.info.get("type", 3))
         self.unlock = self.info.get("defaultLockState", False)
         self.buildCostResources = dict()
         self.resourceInput = dict()
@@ -26,7 +34,7 @@ class BuildingItem :
         self.actualResourceOutput = {resourceId : rate * self.count for resourceId, rate in self.resourceOutput.items()}
 
     def Build(self) :
-        if self.tickable :
+        if self.type == BuildingType.TICKABLE :
             self.count += 1
             self.actualResourceInput = {resourceId : rate * self.count for resourceId, rate in self.resourceInput.items()}
             self.actualResourceOutput = {resourceId : rate * self.count for resourceId, rate in self.resourceOutput.items()}
