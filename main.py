@@ -10,7 +10,7 @@ from GameEngine import GameEngine, BuildingType
 
 GAME_TITLE = "星际探索 - 文字肉鸽游戏"
 GAME_WINDOW_SIZE = "500x500"
-GAME_DATA_PATH = "data.cfg"
+GAME_DATA_PATH = "data/data.cfg"
 FPS : float = 1 / 60
 
 gGameContinue = True
@@ -49,7 +49,7 @@ def FormatBuildingText(building : dict) :
 
 def FormatBuildingTooltip(building : dict) :
     tooltipText = "-----------描述-----------\n"
-    tooltipText += building["describe"] + "\n"
+    tooltipText += building["description"] + "\n"
     if len(building["buildCostResources"]) > 0 :
         tooltipText += "-----------建筑费用-----------\n"
         for resourceId, resourceCount in building["buildCostResources"].items() :

@@ -11,12 +11,12 @@ class GameEngine :
         for itemName, itemInfo in data.GetRawData().items() :
             # 初始化建筑数据
             if itemName.startswith(BUILDING_PREFIX) :
-                self.buildings[itemName] = BuildingItem(itemInfo)
+                self.buildings[itemName] = BuildingItem(itemName, itemInfo)
                 continue
 
             # 初始化资源数据
             if itemName.startswith(RESOURCE_PREFIX) :
-                self.resources[itemName] = ResourceItem(itemInfo)
+                self.resources[itemName] = ResourceItem(itemName, itemInfo)
                 continue
 
     def IsResourceSufficient(self, needResoures : dict) :
@@ -45,54 +45,33 @@ class GameEngine :
 
         # 资源更新
         self.CostResources(costResource)
-        if self.buildings[buildingId].type != BuildingType.TICKABLE :
-            self.ProduceResources(self.buildings[buildingId].resourceOutput)
+        if self.buildings[buildingId].type == BuildingType.REPEAT_CLICKABLE :
+            self.ProduceResources(self.buildings[buildingId].actualResourceOutput)
 
-        # 判定解锁列表
-        unlockBuildings, unlockResources = self.buildings[buildingId].Build()
-        for buildingId in unlockBuildings :
-            self.buildings[buildingId].unlock = True
-        for resourceId in unlockResources :
-            self.resources[resourceId].unlock = True
+        # 调用建筑的Build回调
+        self.buildings[buildingId].Build(self.buildings, self.resources)
 
     def Tick(self) :
         for buildingItem in self.buildings.values() :
             if not buildingItem.unlock or buildingItem.type != BuildingType.TICKABLE :
                 continue
 
-            resourceInput, resourceOutput = buildingItem.Tick()
-            if not self.IsResourceSufficient(resourceInput) :
-                continue
-
-            self.CostResources(resourceInput)
-            self.ProduceResources(resourceOutput)
+            buildingItem.Tick(self.resources)
 
     def Show(self) :
         resourceInfos = dict()
+        # 获取资源信息
         for resourceId, resourceInfo in self.resources.items() :
             if not resourceInfo.unlock :
                 continue
-            resourceInfos[resourceId] = dict()
-            resourceInfos[resourceId]["id"] = resourceId
-            resourceInfos[resourceId]["name"] = resourceInfo.info["name"]
-            resourceInfos[resourceId]["describe"] = resourceInfo.info["describe"]
-            resourceInfos[resourceId]["count"] = resourceInfo.count
-            resourceInfos[resourceId]["limit"] = resourceInfo.limit
-            resourceInfos[resourceId]["rate"] = 0
+            resourceInfos[resourceId] = resourceInfo.ToFrontDataFormat()
 
+        # 获取建筑信息
         buildingInfos = dict()
         for buildingId, buildingInfo in self.buildings.items() :
             if not buildingInfo.unlock :
                 continue
-            buildingInfos[buildingId] = dict()
-            buildingInfos[buildingId]["id"] = buildingId
-            buildingInfos[buildingId]["name"] = buildingInfo.info["name"]
-            buildingInfos[buildingId]["describe"] = buildingInfo.info["describe"]
-            buildingInfos[buildingId]["type"] = buildingInfo.type
-            buildingInfos[buildingId]["buildCostResources"] = buildingInfo.buildCostResources
-            buildingInfos[buildingId]["resourceInput"] = buildingInfo.resourceInput
-            buildingInfos[buildingId]["resourceOutput"] = buildingInfo.resourceOutput
-            buildingInfos[buildingId]["count"] = buildingInfo.count
+            buildingInfos[buildingId] = buildingInfo.ToFrontDataFormat()
 
             # 统计上资源实际产出和消耗
             for resourceId, resourceRate in buildingInfo.actualResourceOutput.items() :
