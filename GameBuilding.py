@@ -43,6 +43,7 @@ class BuildingItem :
 
         # 自定义的成员变量
         self.count = 0 if self.type == BuildingType.TICKABLE else 1
+        self.canBuild = True if len(self.buildCostResources) == 0 else False
         self.actualResourceInput = {resourceId : rate * self.count for resourceId, rate in self.resourceInput.items()}
         self.actualResourceOutput = {resourceId : rate * self.count for resourceId, rate in self.resourceOutput.items()}
 
@@ -60,7 +61,7 @@ class BuildingItem :
             mainResources[resourceId].unlock = True
 
         # 更新资源输入输出
-        if self.IsResourceSufficientForInput(mainResources) :
+        if not self.IsResourceSufficientForInput(mainResources) :
             return
         for resourceId, count in self.actualResourceInput.items() :
             mainResources[resourceId].count -= count
@@ -69,7 +70,9 @@ class BuildingItem :
         return
 
     def Tick(self, mainResources : dict) :
-        if self.IsResourceSufficientForInput(mainResources) :
+        self.canBuild = self.IsResourceSufficientForBuild(mainResources)
+
+        if not self.IsResourceSufficientForInput(mainResources) :
             return
         for resourceId, count in self.actualResourceInput.items() :
             mainResources[resourceId].count -= count
@@ -88,10 +91,17 @@ class BuildingItem :
         data["buildCostResources"] = self.buildCostResources
         data["resourceInput"] = self.resourceInput
         data["resourceOutput"] = self.resourceOutput
+        data["canBuild"] = self.canBuild
         return data
     
     def IsResourceSufficientForInput(self, resources : dict) :
         for resourceId, count in self.actualResourceInput.items() :
-            if not (resources.get(resourceId, 0) >= count) :
+            if not (resources[resourceId].count >= count) :
+                return False
+        return True
+    
+    def IsResourceSufficientForBuild(self, resources : dict) :
+        for resourceId, count in self.buildCostResources.items() :
+            if not (resources[resourceId].count >= count) :
                 return False
         return True

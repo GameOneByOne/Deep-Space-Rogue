@@ -10,12 +10,11 @@ from GameEngine import GameEngine, BuildingType
 
 GAME_TITLE = "星际探索 - 文字肉鸽游戏"
 GAME_WINDOW_SIZE = "500x500"
-GAME_DATA_PATH = "data/data.cfg"
 FPS : float = 1 / 60
 
 gGameContinue = True
 tickCount = 1.0
-gameData = GameData(GAME_DATA_PATH)
+gameData = GameData()
 gameEngine = GameEngine(gameData)
 resourceLabelList = dict()
 buildingButtonList = dict()
@@ -98,6 +97,7 @@ def ShowInfo() :
                 Tooltip(buildingButtonList[building["id"]], tooltipText)
                 buildingButtonList[building["id"]].pack(side=tk.LEFT, padx=5, anchor="nw")
             buildingButtonList[building["id"]].config(text=buttonText)
+            buildingButtonList[building["id"]].config(state=tk.ACTIVE if building["canBuild"] else tk.DISABLED)
         time.sleep(0.016)
 
 root = tk.Tk()

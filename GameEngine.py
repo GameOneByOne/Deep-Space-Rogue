@@ -8,16 +8,11 @@ class GameEngine :
     def __init__(self, data : GameData) :
         self.buildings = dict()
         self.resources = dict()
-        for itemName, itemInfo in data.GetRawData().items() :
-            # 初始化建筑数据
-            if itemName.startswith(BUILDING_PREFIX) :
-                self.buildings[itemName] = BuildingItem(itemName, itemInfo)
-                continue
 
-            # 初始化资源数据
-            if itemName.startswith(RESOURCE_PREFIX) :
-                self.resources[itemName] = ResourceItem(itemName, itemInfo)
-                continue
+        # 初始化建筑数据
+        self.buildings = {itemName : BuildingItem(itemName, itemInfo) for itemName, itemInfo in data.GetBuildingData().items()}
+        # 初始化资源数据
+        self.resources = {itemName : ResourceItem(itemName, itemInfo) for itemName, itemInfo in data.GetResourceData().items()}
 
     def IsResourceSufficient(self, needResoures : dict) :
         for id, num in needResoures.items() :
