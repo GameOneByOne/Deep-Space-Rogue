@@ -16,7 +16,7 @@ class BuildingItem :
         self.name = self.info.get("name", "未知物品 - {}".format(self.id))
         self.description = self.info.get("description", "无描述")
         self.type = BuildingType(self.info.get("type", 3))
-        self.unlock = self.info.get("defaultLockState", False)
+        self.unlock = self.info.get("defaultUnlockState", False)
 
         self.resourceInput = dict()
         resourceInputList = self.info.get("resourceInput", list())
@@ -38,35 +38,49 @@ class BuildingItem :
         for resource in buildCostResourcesList :
             self.buildCostResources[resource["id"]] = resource["cost"]
         
-        self.unlockBuildings = self.info.get("willLockBuilding", list())
-        self.unlockResources = self.info.get("willLockResource", list())
+        self.increasePeople = self.info.get("increasePeopleNum", list())
+        self.unlockBuildings = self.info.get("willUnlockBuilding", list())
+        self.unlockResources = self.info.get("willUnlockResource", list())
+        self.unlockProfessions = self.info.get("willUnlockProfession", list())
 
         # 自定义的成员变量
-        self.count = 0 if self.type == BuildingType.TICKABLE else 1
+        self.count = 0
         self.canBuild = True if len(self.buildCostResources) == 0 else False
         self.actualResourceInput = {resourceId : rate * self.count for resourceId, rate in self.resourceInput.items()}
         self.actualResourceOutput = {resourceId : rate * self.count for resourceId, rate in self.resourceOutput.items()}
 
-    def Build(self, mainBuildings : dict , mainResources : dict) :
-        # 资源更新
-        if self.type == BuildingType.TICKABLE :
-            self.count += 1
-            self.actualResourceInput = {resourceId : rate * self.count for resourceId, rate in self.resourceInput.items()}
-            self.actualResourceOutput = {resourceId : rate * self.count for resourceId, rate in self.resourceOutput.items()}
+    def Build(self, mainBuildings : dict , mainResources : dict, mainProfessions : dict) :
+        if not self.IsResourceSufficientForBuild(mainResources) :
+            return
     
-        # 解锁建筑和资源
+        # 建筑资源消耗
+        for resourceId, count in self.buildCostResources.items() :
+            mainResources[resourceId].count -= count
+    
+        # 解锁功能
         for buildingId in self.unlockBuildings :
             mainBuildings[buildingId].unlock = True
         for resourceId in self.unlockResources :
             mainResources[resourceId].unlock = True
+        for professionId in self.unlockProfessions :
+            mainProfessions[professionId].unlock = True
 
-        # 更新资源输入输出
-        if not self.IsResourceSufficientForInput(mainResources) :
-            return
-        for resourceId, count in self.actualResourceInput.items() :
-            mainResources[resourceId].count -= count
-        for resourceId, count in self.actualResourceOutput.items() :
-            mainResources[resourceId].count += count
+        # 资源更新
+        if self.type == BuildingType.REPEAT_CLICKABLE :
+            if not self.IsResourceSufficientForInput(mainResources) :
+                return
+            for resourceId, count in self.resourceInput.items() :
+                mainResources[resourceId].count -= count
+            for resourceId, count in self.resourceOutput.items() :
+                mainResources[resourceId].count += count
+        elif self.type == BuildingType.TICKABLE :
+            self.count += 1
+            self.actualResourceInput = {resourceId : rate * self.count for resourceId, rate in self.resourceInput.items()}
+            self.actualResourceOutput = {resourceId : rate * self.count for resourceId, rate in self.resourceOutput.items()}
+        
+        # 人员更新
+        for professionInfo in self.increasePeople :
+            mainProfessions[professionInfo["id"]].count += professionInfo["count"]
         return
 
     def Tick(self, mainResources : dict) :
@@ -86,7 +100,7 @@ class BuildingItem :
         data["id"] = self.id
         data["name"] = self.name
         data["description"] = self.description
-        data["type"] = self.type.value
+        data["type"] = self.type
         data["count"] = self.count
         data["buildCostResources"] = self.buildCostResources
         data["resourceInput"] = self.resourceInput

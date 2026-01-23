@@ -5,7 +5,7 @@ class ResourceItem :
         self.info = info
         self.name = self.info.get("name", "未知物品 - {}".format(self.id))
         self.description = self.info.get("description", "未知描述")
-        self.unlock = self.info.get("defaultLockState", False)
+        self.unlock = self.info.get("defaultUnlockState", False)
         self.count = 0
         self.limit = 100
 

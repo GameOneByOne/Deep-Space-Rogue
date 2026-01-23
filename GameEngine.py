@@ -2,49 +2,33 @@
 from GameData import GameData, BUILDING_PREFIX, RESOURCE_PREFIX
 from GameBuilding import BuildingItem, BuildingType
 from GameResource import ResourceItem
+from GameProfession import ProfessionItem
 
 
 class GameEngine :
     def __init__(self, data : GameData) :
-        self.buildings = dict()
-        self.resources = dict()
-
         # 初始化建筑数据
         self.buildings = {itemName : BuildingItem(itemName, itemInfo) for itemName, itemInfo in data.GetBuildingData().items()}
         # 初始化资源数据
         self.resources = {itemName : ResourceItem(itemName, itemInfo) for itemName, itemInfo in data.GetResourceData().items()}
-
-    def IsResourceSufficient(self, needResoures : dict) :
-        for id, num in needResoures.items() :
-            if self.resources[id].count < num :
-                return False
-        return True
-    
-    def CostResources(self, costResources : dict ) :
-        for id, num in costResources.items() :
-            self.resources[id].count = self.resources[id].count - num
-        return
-    
-    def ProduceResources(self, produceResources : dict) :
-        for id, num in produceResources.items() :
-            self.resources[id].count = min(self.resources[id].limit, self.resources[id].count + num)
-        return
+        # 初始化人力数据
+        self.professions = {itemName : ProfessionItem(itemName, itemInfo) for itemName, itemInfo in data.GetProfessionData().items()}
     
     def Build(self, buildingId : str) :
-        if self.buildings.get(buildingId, None) == None:
-            return
+        self.buildings[buildingId].Build(self.buildings, self.resources, self.professions)
+        return
+    
+    def Dispatch(self, professionId : str) :
+        self.professions[professionId].Dispatch(self.professions)
+        return
 
-        costResource = self.buildings[buildingId].buildCostResources
-        if not self.IsResourceSufficient(costResource) :
-            return
-
-        # 资源更新
-        self.CostResources(costResource)
-        if self.buildings[buildingId].type == BuildingType.REPEAT_CLICKABLE :
-            self.ProduceResources(self.buildings[buildingId].actualResourceOutput)
-
-        # 调用建筑的Build回调
-        self.buildings[buildingId].Build(self.buildings, self.resources)
+    def UnDispatch(self, professionId : str) :
+        self.professions[professionId].UnDispatch(self.professions)
+        return
+    
+    def ToFrontDataFormat(self) :
+        data = dict()
+        return data
 
     def Tick(self) :
         for buildingItem in self.buildings.values() :
@@ -77,5 +61,14 @@ class GameEngine :
                 if resourceId not in resourceInfos :
                     continue
                 resourceInfos[resourceId]["rate"] -= resourceRate
-
-        return buildingInfos, resourceInfos
+        
+        # 获取人力信息
+        professionInfos = dict()
+        for professionId, professionInfo in self.professions.items() :
+            if not professionInfo.unlock :
+                continue
+            professionInfos[professionId] = professionInfo.ToFrontDataFormat()
+        
+        # 获取游戏信息
+        mainInfos = self.ToFrontDataFormat()
+        return mainInfos, buildingInfos, resourceInfos, professionInfos

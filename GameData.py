@@ -8,7 +8,7 @@ RESOURCE_PREFIX = "R"
 RESOURCE_DATA_PATH = "data/resource.cfg"
 
 PEOPLE_PREFIX = "P"
-PEOPLE_DATA_PATH = "data/people.cfg"
+PEOPLE_DATA_PATH = "data/profession.cfg"
 
 RESEARCH_PREFIX = "S"
 RESEARCH_DATA_PATH = "data/research.cfg"
@@ -17,7 +17,7 @@ class GameData :
     def __init__(self) :
         self.buildingData = dict()
         self.resourceData = dict()
-        self.peopleData = dict()
+        self.professionData = dict()
         self.researchData = dict()
 
         with open(BUILDING_DATA_PATH, "r", encoding="utf-8") as f :
@@ -25,7 +25,7 @@ class GameData :
         with open(RESOURCE_DATA_PATH, "r", encoding="utf-8") as f :
             self.resourceData = json.loads(f.read())
         with open(PEOPLE_DATA_PATH, "r", encoding="utf-8") as f :
-            self.peopleData = json.loads(f.read())
+            self.professionData = json.loads(f.read())
         with open(RESEARCH_DATA_PATH, "r", encoding="utf-8") as f :
             self.researchData = json.loads(f.read())
 
@@ -35,7 +35,7 @@ class GameData :
         elif ItemId.startswith(RESOURCE_PREFIX) :
             return self.resourceData.get(ItemId, {"name":"Unknown"})["name"]
         elif ItemId.startswith(PEOPLE_PREFIX) :
-            return self.peopleData.get(ItemId, {"name":"Unknown"})["name"]
+            return self.professionData.get(ItemId, {"name":"Unknown"})["name"]
         elif ItemId.startswith(RESEARCH_PREFIX) :
             return self.researchData.get(ItemId, {"name":"Unknown"})["name"]
 
@@ -47,8 +47,8 @@ class GameData :
     def GetResourceData(self) :
         return self.resourceData
 
-    def GetPeopleData(self) :
-        return self.peopleData
+    def GetProfessionData(self) :
+        return self.professionData
 
     def GetResearchData(self) :
         return self.researchData
