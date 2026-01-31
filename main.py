@@ -2,10 +2,7 @@ import os
 import time
 import threading
 import tkinter as tk
-from functools import partial
 
-from Tooltip import Tooltip
-from GameData import GameData
 from GameEngine import GameEngine
 from GameUI import ResourceItemUI, BuildingItemUI, ProfessionButtonUI
 
@@ -15,8 +12,7 @@ FPS : float = 1 / 60
 
 gGameContinue = True
 tickCount = 1.0
-gameData = GameData()
-gameEngine = GameEngine(gameData)
+gameEngine = GameEngine()
 resourceLabelList = dict()
 buildingButtonList = dict()
 professionFrameList = dict()
@@ -51,7 +47,7 @@ def ShowInfo() :
         for building in buildings.values() :
             widget = buildingButtonList.get(building["id"], None)
             if widget == None :
-                buildingButtonList[building["id"]] = BuildingItemUI(building["id"], buildingFrame, gameEngine, gameData)
+                buildingButtonList[building["id"]] = BuildingItemUI(building["id"], buildingFrame, gameEngine)
                 buildingButtonList[building["id"]].Update(building)
             else :
                 widget.Update(building)

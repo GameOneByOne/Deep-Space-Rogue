@@ -1,121 +1,101 @@
-from enum import Enum
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Dict, List
+from GameUtils import EffectUtils
 
 
-class BuildingType(Enum) :
-    ONCE_CLICKABLE = 0
-    REPEAT_CLICKABLE = 1
-    TICKABLE = 2
-    UNKNOWN = 3
+@dataclass(frozen=True)
+class BuildingDef:
+    """建筑静态数据: 来自cfg, 不可在运行时修改"""
+    id: str = ""
+    name: str = ""
+    desc: str = ""
+    defaultUnlock: bool = False
+
+    tags: List[str] = field(default_factory=list)
+    cost: List[dict] = field(default_factory=list)
+    prereqs: List[dict] = field(default_factory=list)
+    effects: List[dict] = field(default_factory=list)
+
+    @staticmethod
+    def FromDict(data: dict) -> BuildingDef:
+        return BuildingDef(
+            id = data.get("id", ""),
+            name = data.get("name", ""),
+            desc = data.get("desc", ""),
+            defaultUnlock = data.get("defaultUnlock", False),
+            tags = data.get("tags", []),
+            cost = data.get("cost", []),
+            prereqs = data.get("prereqs", []),
+            effects = data.get("effects", []),
+        )
 
 
-class BuildingItem :
-    def __init__(self, id : str, info : dict) :
-        # 预置的成员变量，来自于数据文件
-        self.info = info
-        self.id = id
-        self.name = self.info.get("name", "未知物品 - {}".format(self.id))
-        self.description = self.info.get("description", "无描述")
-        self.type = BuildingType(self.info.get("type", 3))
-        self.unlock = self.info.get("defaultUnlockState", False)
+@dataclass
+class BuildingState:
+    """运行时建筑状态（可存档）"""
+    buildingDef: BuildingDef = field(default_factory=BuildingDef)
+    unlocked: bool = False
+    ownedCount: int = 0
+    effectBy: Dict[str, list] = field(default_factory=dict)
 
-        self.resourceInput = dict()
-        resourceInputList = self.info.get("resourceInput", list())
-        for resource in resourceInputList :
-            self.resourceInput[resource["id"]] = resource["rate"]
+    @staticmethod
+    def FromDict(data: dict) :
+        state = BuildingState()
+        state.buildingDef = BuildingDef.FromDict(data)
+        state.unlocked = True if state.buildingDef.defaultUnlock else False
+        state.ownedCount = 0
+        return state
 
-        self.resourceOutput = dict()
-        resourceOutputList = self.info.get("resourceOutput", list())
-        for resource in resourceOutputList :
-            self.resourceOutput[resource["id"]] = resource["rate"]
-        
-        self.storageBuff = dict()
-        storageBuffList = self.info.get("storageBuff", list())
-        for resource in storageBuffList :
-            self.storageBuff[resource["id"]] = resource["buff"]
-        
-        self.buildCostResources = dict()
-        buildCostResourcesList = self.info.get("buildCostResources", list())
-        for resource in buildCostResourcesList :
-            self.buildCostResources[resource["id"]] = resource["cost"]
-        
-        self.increasePeople = self.info.get("increasePeopleNum", list())
-        self.unlockBuildings = self.info.get("willUnlockBuilding", list())
-        self.unlockResources = self.info.get("willUnlockResource", list())
-        self.unlockProfessions = self.info.get("willUnlockProfession", list())
 
-        # 自定义的成员变量
-        self.count = 0
-        self.canBuild = True if len(self.buildCostResources) == 0 else False
-        self.actualResourceInput = {resourceId : rate * self.count for resourceId, rate in self.resourceInput.items()}
-        self.actualResourceOutput = {resourceId : rate * self.count for resourceId, rate in self.resourceOutput.items()}
+class BuildingManager:
+    """建筑运行时管理器"""
+    def __init__(self, cfgFilePath: str):
+        self.state: Dict[str, BuildingState] = {}
+        cfgList = json.loads(Path(cfgFilePath).read_text("utf-8"))
+        for buildingInfo in cfgList:
+            self.state[buildingInfo["id"]] = BuildingState.FromDict(buildingInfo)
 
-    def Build(self, mainBuildings : dict , mainResources : dict, mainProfessions : dict) :
-        if not self.IsResourceSufficientForBuild(mainResources) :
-            return
-    
-        # 建筑资源消耗
-        for resourceId, count in self.buildCostResources.items() :
-            mainResources[resourceId].count -= count
-    
-        # 解锁功能
-        for buildingId in self.unlockBuildings :
-            mainBuildings[buildingId].unlock = True
-        for resourceId in self.unlockResources :
-            mainResources[resourceId].unlock = True
-        for professionId in self.unlockProfessions :
-            mainProfessions[professionId].unlock = True
-
-        # 资源更新
-        if self.type == BuildingType.REPEAT_CLICKABLE :
-            if not self.IsResourceSufficientForInput(mainResources) :
-                return
-            for resourceId, count in self.resourceInput.items() :
-                mainResources[resourceId].count -= count
-            for resourceId, count in self.resourceOutput.items() :
-                mainResources[resourceId].count += count
-        elif self.type == BuildingType.TICKABLE :
-            self.count += 1
-            self.actualResourceInput = {resourceId : rate * self.count for resourceId, rate in self.resourceInput.items()}
-            self.actualResourceOutput = {resourceId : rate * self.count for resourceId, rate in self.resourceOutput.items()}
-        
-        # 人员更新
-        for professionInfo in self.increasePeople :
-            mainProfessions[professionInfo["id"]].count += professionInfo["count"]
+    def Unlock(self, buildingId: str):
+        self.state[buildingId].unlocked = True
         return
 
-    def Tick(self, mainResources : dict) :
-        self.canBuild = self.IsResourceSufficientForBuild(mainResources)
+    def IsUnlocked(self, buildingId: str):
+        return self.state[buildingId].unlocked
 
-        if not self.IsResourceSufficientForInput(mainResources) :
-            return
-        for resourceId, count in self.actualResourceInput.items() :
-            mainResources[resourceId].count -= count
-        for resourceId, count in self.actualResourceOutput.items() :
-            mainResources[resourceId].count += count
-
-        return
+    def GetOwnedCount(self, buildingId: str):
+        return self.state[buildingId].ownedCount
     
-    def ToFrontDataFormat(self) :
-        data = dict()
-        data["id"] = self.id
-        data["name"] = self.name
-        data["description"] = self.description
-        data["type"] = self.type
-        data["count"] = self.count
-        data["buildCostResources"] = self.buildCostResources
-        data["resourceInput"] = self.resourceInput
-        data["resourceOutput"] = self.resourceOutput
-        data["canBuild"] = self.canBuild
+    def GetBuildingPrereqs(self, buildingId: str) :
+        return self.state[buildingId].buildingDef.prereqs
+
+    def GetBuildingCost(self, buildingId: str) :
+        return self.state[buildingId].buildingDef.cost
+
+    def Build(self, buildingId: str) :
+        bState = self.state[buildingId]
+        bState.ownedCount += 1
+        return bState.buildingDef.effects
+
+    def GetDef(self, buildingId: str) -> BuildingDef:
+        return self.state[buildingId].buildingDef
+
+    def GetFrontData(self) :
+        data = list()
+        for buildingState in self.state.values() :
+            if not buildingState.unlocked :
+                continue
+
+            info = dict()
+            info["id"] = buildingState.buildingDef.id
+            info["name"] = buildingState.buildingDef.name
+            info["desc"] = buildingState.buildingDef.desc
+            info["cost"] = buildingState.buildingDef.cost
+            info["count"] = buildingState.ownedCount
+            info["unlocked"] = buildingState.unlocked
+            info["effects"] = [EffectUtils.GetEffectDesc(effect) for effect in buildingState.buildingDef.effects]
+            data.append(info)
         return data
-    
-    def IsResourceSufficientForInput(self, resources : dict) :
-        for resourceId, count in self.actualResourceInput.items() :
-            if not (resources[resourceId].count >= count) :
-                return False
-        return True
-    
-    def IsResourceSufficientForBuild(self, resources : dict) :
-        for resourceId, count in self.buildCostResources.items() :
-            if not (resources[resourceId].count >= count) :
-                return False
-        return True

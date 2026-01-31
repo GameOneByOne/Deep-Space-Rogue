@@ -1,38 +1,94 @@
+from __future__ import annotations
 
-IDLE_PROFESSION_ID = "P00000"
+import json
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Dict, List
 
 
-class ProfessionItem :
-    def __init__(self, id : str, info : dict) :
-        self.id = id
-        self.info = info
-        self.name = self.info.get("name", "未知职业 - {}".format(self.id))
-        self.description = self.info.get("description", "未知描述")
-        self.canEdit = self.info.get("canEdit", True)
-        self.unlock = self.info.get("defaultUnlockState", False)
-        self.count = 0
+@dataclass(frozen=True)
+class ProfessionDef:
+    """职业数据类，用来表示一种职业，都是静态数据不可更改"""
+    id: str = ""
+    name: str = ""
+    desc: str = ""
+    defaultUnlock: bool = False
+    editable: bool = True
+    tags: List[str] = field(default_factory=list)
+    effects: List[dict] = field(default_factory=list)
 
-    def Dispatch(self, mainProfessions : str) :
-        if mainProfessions[IDLE_PROFESSION_ID].count == 0 :
-            return
+    @staticmethod
+    def FromDict(data: dict) :
+        return ProfessionDef(
+            id = data.get("id", ""),
+            name = data.get("name", ""),
+            desc = data.get("desc", ""),
+            defaultUnlock = data.get("defaultUnlock", False),
+            editable = data.get("editable", True),
+            tags = data.get("tags", []),
+            effects = data.get("effects", [])
+        )
 
-        mainProfessions[IDLE_PROFESSION_ID].count -= 1
-        self.count += 1
+
+@dataclass
+class ProfessionState:
+    """运行时职业状态（可存档）"""
+    profDef: ProfessionDef = field(default_factory=ProfessionDef)
+    unlocked: bool = False
+    amount: int = 0
+    effectBy: Dict[str, list] = field(default_factory=dict)
+
+    @staticmethod
+    def FromDict(data: dict):
+        state = ProfessionState()
+        state.profDef = ProfessionDef.FromDict(data)
+        state.unlocked = True if state.profDef.defaultUnlock else False
+        return state
+
+
+class ProfessionManager:
+    """职业运行时管理器"""
+    def __init__(self, cfgFilePath: str):
+        self.state: Dict[str, ProfessionState] = {}
+        self.population = 0
+        cfgList = json.loads(Path(cfgFilePath).read_text("utf-8"))
+        for professionInfo in cfgList:
+            self.state[professionInfo["id"]] = ProfessionState.FromDict(professionInfo)
+
+    def Unlock(self, professionId: str) :
+        self.state[professionId].unlocked = True
         return
 
-    def UnDispatch(self, mainProfessions : str) :
-        if self.count == 0 :
-            return
-    
-        self.count -= 1
-        mainProfessions[IDLE_PROFESSION_ID].count += 1
+    def IsUnlocked(self, professionId: str) :
+        return self.state[professionId].unlocked
+
+    def GetDef(self, professionId: str) :
+        return self.state[professionId].profDef
+
+    def GetEffects(self, professionId: str) :
+        return self.state[professionId].profDef.effects
+
+    def ApplyEffect(self, fromEntityId: str, toEntityId: str, effect) :
         return
 
-    def ToFrontDataFormat(self) :
-        data = dict()
-        data["id"] = self.id
-        data["name"] = self.name
-        data["description"] = self.description
-        data["count"] = self.count
-        data["canEdit"] = self.canEdit
+    def RevertEffect(self, fromEntityId: str, toEntityId: str, effect):
+        return
+
+    def AddPeople(self, count: int, professionId: str) :
+        self.population += count
+        self.state[professionId].amount += count
+        return count
+
+    def GetFrontData(self) :
+        data = list()
+        for professionState in self.state.values() :
+            if not professionState.unlocked :
+                continue
+            info = dict()
+            info["id"] = professionState.profDef.id
+            info["name"] = professionState.profDef.name
+            info["desc"] = professionState.profDef.desc
+            info["count"] = professionState.amount
+            info["canEdit"] = professionState.profDef.editable
+            data.append(info)
         return data

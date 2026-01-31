@@ -1,7 +1,6 @@
 import tkinter as tk
 from functools import partial
 from Tooltip import Tooltip
-from GameBuilding import BuildingType
 
 
 class ResourceItemUI :
@@ -12,7 +11,9 @@ class ResourceItemUI :
 
     def Update(self, content) :
         resourceTitle = content["name"].ljust(6 - len(content["name"]))
-        resourceCountAndLimit = (": {}/{}".format(content["count"], content["limit"])).ljust(10)
+        countText = FormatNumber(content["count"])
+        limitText = FormatNumber(content["limit"])
+        resourceCountAndLimit = (": {}/{}".format(countText, limitText)).ljust(10)
         resourceRate = ""
         if (content["rate"] >= 0) :
             resourceRate = "+{:.2f}".format(content["rate"]).rjust(7)
@@ -23,10 +24,18 @@ class ResourceItemUI :
         return
 
 
+def FormatNumber(value) -> str:
+    try :
+        text = "{:.3f}".format(float(value))
+    except (TypeError, ValueError) :
+        return str(value)
+    text = text.rstrip("0").rstrip(".")
+    return text if text else "0"
+
+
 class BuildingItemUI :
-    def __init__(self, id, root, gameEngine, gameData) :
+    def __init__(self, id, root, gameEngine) :
         self.gameEngine = gameEngine
-        self.gameData = gameData
         self.buttonTextVar = tk.StringVar()
         self.buttonTooltipTextVar = tk.StringVar()
         self.buttonWidget = tk.Button(root, textvariable=self.buttonTextVar, height=1, width=10, bg="#f0f0f0", command=partial(self.Build, id))
@@ -35,8 +44,7 @@ class BuildingItemUI :
 
     def Update(self, content : dict) :
         # 更新按钮文本
-
-        if content["type"] == BuildingType.TICKABLE :
+        if content["count"] != 0 :
             self.buttonTextVar.set(content["name"] + "({})".format(content["count"]))
         else :
             self.buttonTextVar.set(content["name"])
@@ -46,20 +54,7 @@ class BuildingItemUI :
 
         # 更新按钮提示文本
         tooltipText = "-----------描述-----------\n"
-        tooltipText += content["description"] + "\n"
-        if len(content["buildCostResources"]) > 0 :
-            tooltipText += "-----------建筑费用-----------\n"
-            for resourceId, resourceCount in content["buildCostResources"].items() :
-                tooltipText += (self.gameData.GetItemName(resourceId) + ": {}\n".format(resourceCount))
-        resourceSuffix = "/s" if content["type"] == BuildingType.TICKABLE else ""
-        if len(content["resourceInput"]) > 0 :
-            tooltipText += "-----------资源消耗-----------\n"
-            for resourceId, resourceCount in content["resourceInput"].items() :
-                tooltipText += (self.gameData.GetItemName(resourceId) + ": {}{}\n".format(resourceCount, resourceSuffix))
-        if len(content["resourceOutput"]) > 0 :
-            tooltipText += "-----------资源产出-----------\n"
-            for resourceId, resourceCount in content["resourceOutput"].items() :
-                tooltipText += (self.gameData.GetItemName(resourceId) + ": {}{}\n".format(resourceCount, resourceSuffix))
+        tooltipText += content["desc"] + "\n"
         self.buttonTooltipTextVar.set(tooltipText)
 
         return
