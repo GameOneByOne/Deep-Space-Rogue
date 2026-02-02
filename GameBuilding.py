@@ -14,6 +14,7 @@ class BuildingDef:
     name: str = ""
     desc: str = ""
     defaultUnlock: bool = False
+    onlyClick: bool = False
 
     tags: List[str] = field(default_factory=list)
     cost: List[dict] = field(default_factory=list)
@@ -27,6 +28,7 @@ class BuildingDef:
             name = data.get("name", ""),
             desc = data.get("desc", ""),
             defaultUnlock = data.get("defaultUnlock", False),
+            onlyClick = data.get("onlyClick", False),
             tags = data.get("tags", []),
             cost = data.get("cost", []),
             prereqs = data.get("prereqs", []),
@@ -77,7 +79,8 @@ class BuildingManager:
 
     def Build(self, buildingId: str) :
         bState = self.state[buildingId]
-        bState.ownedCount += 1
+        if not bState.buildingDef.onlyClick:
+            bState.ownedCount += 1
         return bState.buildingDef.effects
 
     def GetDef(self, buildingId: str) -> BuildingDef:

@@ -36,6 +36,7 @@ class ProfessionState:
     profDef: ProfessionDef = field(default_factory=ProfessionDef)
     unlocked: bool = False
     amount: int = 0
+    limit: int = 0
     effectBy: Dict[str, list] = field(default_factory=dict)
 
     @staticmethod
@@ -74,7 +75,7 @@ class ProfessionManager:
     def RevertEffect(self, fromEntityId: str, toEntityId: str, effect):
         return
 
-    def AddPeople(self, count: int, professionId: str) :
+    def AddPeople(self, professionId: str, count: int) :
         self.population += count
         self.state[professionId].amount += count
         return count

@@ -9,7 +9,7 @@ def FormatResList(resList: list) -> str:
     parts = []
     for item in resList :
         resource = item.get("resource", "")
-        amount = item.get("amount", 0)
+        amount = item.get("need", 0)
         parts.append(f"{amount}单位{resource}")
     return " + ".join(parts)
 
@@ -23,9 +23,9 @@ def FormatScope(scope: dict) -> str:
         parts.append(f"{scope.get('effect')}")
     if "resource" in scope :
         parts.append(f"{scope.get('resource')}")
-    if "in" in scope :
+    if "inTargets" in scope :
         parts.append(f"in={scope.get('in')}")
-    if "out" in scope :
+    if "outTarget" in scope :
         parts.append(f"out={scope.get('out')}")
     return " ".join(parts)
 
@@ -92,14 +92,14 @@ class EffectUtils :
             return JoinDesc(f"{perText}消耗{rate}单位{resource}", cond)
 
         if effectType == "convert" :
-            inList = effect.get("in", [])
-            outList = effect.get("out", [])
+            inList = effect.get("inTargets", [])
+            outList = effect.get("outTarget", {})
             perText = PER_NAME_CONVERT[effect.get("per", "")]
             inText = FormatResList(inList)
             outText = FormatResList(outList)
             return JoinDesc(f"{perText}将 {inText} 转化为 {outText}", cond)
 
-        if effectType == "jobSlot" :
+        if effectType == "addJobSlot" :
             profession = effect.get("profession", "")
             slots = effect.get("slots", 0)
             return JoinDesc(f"提供{profession}岗位{slots}个", cond)
