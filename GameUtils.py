@@ -68,6 +68,16 @@ PER_NAME_CONVERT= {
 }
 
 class EffectUtils :
+    entityIdToName = dict()
+
+    @staticmethod
+    def AddEntityToNameMap(entityId : str, name : str) :
+        EffectUtils.entityIdToName[entityId] = name
+        return
+
+    @staticmethod
+    def GetEntityName(entityId: str) :
+        return EffectUtils.entityIdToName.get(entityId, entityId)
 
     @staticmethod
     def GetEffectDesc(effect : dict) :
@@ -77,19 +87,19 @@ class EffectUtils :
         if effectType == "unlock" :
             target = TARGET_NAME_CONVERT[effect.get("target", "")]
             targetId = effect.get("id", "")
-            return JoinDesc(f"解锁{target}: {targetId}", cond)
+            return JoinDesc(f"解锁{target}: {EffectUtils.GetEntityName(targetId)}", cond)
 
         if effectType == "produce" :
             resource = effect.get("resource", "")
             rate = effect.get("rate", 0)
             perText = PER_NAME_CONVERT[effect.get("per", "")]
-            return JoinDesc(f"{perText}产出{rate}单位{resource}", cond)
+            return JoinDesc(f"{perText}产出{rate}单位{EffectUtils.GetEntityName(resource)}", cond)
 
         if effectType == "consume" :
             resource = effect.get("resource", "")
             rate = effect.get("rate", 0)
             perText = PER_NAME_CONVERT[effect.get("per", "")]
-            return JoinDesc(f"{perText}消耗{rate}单位{resource}", cond)
+            return JoinDesc(f"{perText}消耗{rate}单位{EffectUtils.GetEntityName(resource)}", cond)
 
         if effectType == "convert" :
             inList = effect.get("inTargets", [])
@@ -102,7 +112,7 @@ class EffectUtils :
         if effectType == "addJobSlot" :
             profession = effect.get("profession", "")
             slots = effect.get("slots", 0)
-            return JoinDesc(f"提供{profession}岗位{slots}个", cond)
+            return JoinDesc(f"提供{EffectUtils.GetEntityName(profession)}岗位{slots}个", cond)
 
         if effectType == "modifier" :
             scope = effect.get("scope", {})
@@ -115,7 +125,8 @@ class EffectUtils :
         if effectType == "addPeople" :
             count = effect.get("count", 0)
             profession = effect.get("profession", "")
-            return JoinDesc(f"增加人口 {count}（{profession}）", cond)
+            return JoinDesc(f"增加人口 {count}（{EffectUtils.GetEntityName(profession)}）", cond)
 
         if not effectType :
             return "未知效果"
+        return f"效果: {effectType}"

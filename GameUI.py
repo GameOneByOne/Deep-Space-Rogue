@@ -55,6 +55,10 @@ class BuildingItemUI :
         # 更新按钮提示文本
         tooltipText = "-----------描述-----------\n"
         tooltipText += content["desc"] + "\n"
+        tooltipText += "-----------效果-----------\n"
+        for effect in content["effects"] :
+            tooltipText += effect
+            tooltipText += "\n"
         self.buttonTooltipTextVar.set(tooltipText)
 
         return

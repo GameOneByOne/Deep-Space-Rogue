@@ -1,6 +1,7 @@
 from GameBuilding import BuildingManager
 from GameResource import ResourceManager
 from GameProfession import ProfessionManager
+from GameUtils import EffectUtils
 
 
 BUILDING_DATA_PATH = "data/building.cfg"
@@ -13,10 +14,18 @@ class GameEngine :
     def __init__(self) :
         # 初始化建筑数据
         self.buildings =  BuildingManager(BUILDING_DATA_PATH)
+        for bState in self.buildings.state.values() :
+            EffectUtils.AddEntityToNameMap(bState.buildingDef.id, bState.buildingDef.name)
+
         # 初始化资源数据
         self.resourceManager = ResourceManager(RESOURCE_DATA_PATH)
+        for rState in self.resourceManager.state.values() :
+            EffectUtils.AddEntityToNameMap(rState.resDef.id, rState.resDef.name)
+
         # 初始化人力职业数据
         self.professions = ProfessionManager(PROFESSION_DATA_PATH)
+        for pState in self.professions.state.values() :
+            EffectUtils.AddEntityToNameMap(pState.profDef.id, pState.profDef.name)
 
     def Build(self, buildingId : str) :
         # 建筑未解锁直接返回
