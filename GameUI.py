@@ -1,6 +1,7 @@
 import tkinter as tk
 from functools import partial
 from Tooltip import Tooltip
+from GameUtils import GetEntityDisplayName
 
 
 class ResourceItemUI :
@@ -55,6 +56,11 @@ class BuildingItemUI :
         # 更新按钮提示文本
         tooltipText = "-----------描述-----------\n"
         tooltipText += content["desc"] + "\n"
+        cost = content.get("cost", [])
+        if len(cost) > 0 :
+            tooltipText += "-----------建造消耗-----------\n"
+            for item in cost :
+                tooltipText += "{}: {}\n".format(GetEntityDisplayName(item.get("id", "")), item.get("need", 0))
         tooltipText += "-----------效果-----------\n"
         for effect in content["effects"] :
             tooltipText += effect
@@ -132,7 +138,7 @@ class ResearchItemUI :
         if len(cost) > 0 :
             tooltipText += "-----------研究消耗-----------\n"
             for item in cost :
-                tooltipText += "{}: {}\n".format(item.get("id", ""), item.get("need", 0))
+                tooltipText += "{}: {}\n".format(GetEntityDisplayName(item.get("id", "")), item.get("need", 0))
 
         effects = content.get("effects", [])
         if len(effects) > 0 :

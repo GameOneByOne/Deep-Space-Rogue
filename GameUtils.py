@@ -5,6 +5,10 @@ def JoinDesc(mainText: str, condText: str) -> str:
         return mainText
     return f"当{condText}时，{mainText}"
 
+
+def GetEntityDisplayName(entityId: str) -> str:
+    return EffectUtils.GetEntityName(entityId)
+
 def FormatResList(resList: list) -> str:
     if isinstance(resList, dict) :
         resList = [resList]
@@ -20,11 +24,11 @@ def FormatScope(scope: dict) -> str:
         return "对目标"
     parts = []
     if "building" in scope :
-        parts.append(f"{scope.get('building')}")
+        parts.append(f"{GetEntityDisplayName(scope.get('building'))}")
     if "effect" in scope :
         parts.append(f"{scope.get('effect')}")
     if "resource" in scope :
-        parts.append(f"{scope.get('resource')}")
+        parts.append(f"{GetEntityDisplayName(scope.get('resource'))}")
     if "inTargets" in scope :
         parts.append(f"in={scope.get('inTargets')}")
     if "outTarget" in scope :
