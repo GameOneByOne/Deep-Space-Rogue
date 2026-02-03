@@ -1,6 +1,7 @@
 from GameBuilding import BuildingManager
 from GameResource import ResourceManager
 from GameProfession import ProfessionManager
+from GameResearch import ResearchManager
 from GameUtils import EffectUtils
 
 
@@ -27,6 +28,11 @@ class GameEngine :
         for pState in self.professions.state.values() :
             EffectUtils.AddEntityToNameMap(pState.profDef.id, pState.profDef.name)
 
+        # 初始化研究数据
+        self.researcheManager = ResearchManager(RESEARCH_DATA_PATH)
+        for rState in self.researcheManager.state.values() :
+            EffectUtils.AddEntityToNameMap(rState.researchDef.id, rState.researchDef.name)
+
     def Build(self, buildingId : str) :
         # 建筑未解锁直接返回
         if not self.buildings.IsUnlocked(buildingId) :
@@ -44,6 +50,31 @@ class GameEngine :
         # 应用建筑效果
         effects = self.buildings.Build(buildingId)
         self.ApplyEffects(buildingId, effects)
+        return True
+
+    def Research(self, researchId: str) :
+        # 研究未解锁或已完成，直接返回
+        if not self.researcheManager.IsUnlocked(researchId) :
+            return
+        if self.researcheManager.IsFinished(researchId) :
+            return
+
+        # 不满足研究前置直接返回
+        prereqs = self.researcheManager.GetResearchPrereqs(researchId)
+        if not self.CheckPrereqs(prereqs) :
+            return
+
+        # 不够研究资源直接返回
+        cost = self.researcheManager.GetResearchCost(researchId)
+        if not self.resourceManager.IsEnough(cost) :
+            return
+
+        # 消耗研究资源并完成研究
+        for item in cost :
+            self.resourceManager.ClampAmount(item["id"], item["need"])
+
+        effects = self.researcheManager.Finish(researchId)
+        self.ApplyEffects(researchId, effects)
         return True
     
     def Dispatch(self, professionId : str) :
@@ -79,7 +110,8 @@ class GameEngine :
         return True
     
     def GetFrontData(self) :
-        return
+        data = dict()
+        return data
 
     def Tick(self) :
         # 资源更新
@@ -97,9 +129,10 @@ class GameEngine :
             buildingInfos[buildingId] = info
 
         professionInfos = {info["id"]: info for info in self.professions.GetFrontData()}
+        researchInfos = {info["id"]: info for info in self.researcheManager.GetFrontData()}
 
         mainInfos = self.GetFrontData()
-        return mainInfos, buildingInfos, resourceInfos, professionInfos
+        return mainInfos, buildingInfos, resourceInfos, professionInfos, researchInfos
 
     def ApplyEffects(self, buildingId : str, effects: list) :
         for effect in effects :
@@ -114,6 +147,8 @@ class GameEngine :
                     self.buildings.Unlock(targetId)
                 elif target == "profession" :
                     self.professions.Unlock(targetId)
+                elif target == "research" :
+                    self.researcheManager.Unlock(targetId)
                 continue
 
             if effectType == "produce" :
@@ -152,3 +187,16 @@ class GameEngine :
                 continue
 
         return
+
+    def CheckPrereqs(self, prereqs: list) :
+        for prereq in prereqs :
+            pType = prereq.get("type", "")
+            if pType == "hasBuilding" :
+                if self.buildings.GetOwnedCount(prereq.get("id", "")) <= 0 :
+                    return False
+                continue
+            if pType == "hasResearch" :
+                if not self.researcheManager.IsFinished(prereq.get("id", "")) :
+                    return False
+                continue
+        return True

@@ -4,7 +4,7 @@ import threading
 import tkinter as tk
 
 from GameEngine import GameEngine
-from GameUI import ResourceItemUI, BuildingItemUI, ProfessionButtonUI
+from GameUI import ResourceItemUI, BuildingItemUI, ProfessionButtonUI, ResearchItemUI
 
 GAME_TITLE = "星际探索 - 文字肉鸽游戏"
 GAME_WINDOW_SIZE = "500x800"
@@ -16,6 +16,7 @@ gameEngine = GameEngine()
 resourceLabelList = dict()
 buildingButtonList = dict()
 professionFrameList = dict()
+researchButtonList = dict()
 
 def GameClose() :
     global gGameContinue
@@ -32,7 +33,7 @@ def ShowInfo() :
             gameEngine.Tick()
             tickCount = 0.0
 
-        mainInfos, buildings, resources, professions = gameEngine.Show()
+        mainInfos, buildings, resources, professions, researchInfos = gameEngine.Show()
 
         # 更新资源显示模块
         for resource in resources.values() :
@@ -60,6 +61,15 @@ def ShowInfo() :
                 professionFrameList[profession["id"]].Update(profession)
             else :
                 widget.Update(profession)
+
+        # 组装研究显示模块
+        for research in researchInfos.values() :
+            widget = researchButtonList.get(research["id"], None)
+            if widget == None :
+                researchButtonList[research["id"]] = ResearchItemUI(research["id"], researchFrame, gameEngine)
+                researchButtonList[research["id"]].Update(research)
+            else :
+                widget.Update(research)
         
         # 组装人力显示模块
         time.sleep(0.016)
@@ -89,6 +99,13 @@ professionTitleLabel.pack(side=tk.TOP, fill=tk.X, padx=20, expand=True)
 professionFrame = tk.Frame(root, relief="solid", borderwidth=3, width=400, height=200, bg="white")
 professionFrame.pack(side=tk.TOP, fill=tk.X, padx=20, expand=True)
 professionFrame.pack_propagate(False)
+
+# 绘制研究面板
+researchTitleLabel = tk.Label(root, height=1, width=8, text="研究面板", bg="#7f9f17")
+researchTitleLabel.pack(side=tk.TOP, fill=tk.X, padx=20, expand=True)
+researchFrame = tk.Frame(root, relief="solid", borderwidth=3, width=400, height=200, bg="white")
+researchFrame.pack(side=tk.TOP, fill=tk.X, padx=20, expand=True)
+researchFrame.pack_propagate(False)
 
 
 # 开启后台逻辑线程

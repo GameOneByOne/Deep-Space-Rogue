@@ -106,3 +106,43 @@ class ProfessionButtonUI :
     def UnDispatch(self, professionId : str) :
         self.gameEngine.UnDispatch(professionId)
         return
+
+
+class ResearchItemUI :
+    def __init__(self, id, root, gameEngine) :
+        self.gameEngine = gameEngine
+        self.buttonTextVar = tk.StringVar()
+        self.buttonTooltipTextVar = tk.StringVar()
+        self.buttonWidget = tk.Button(root, textvariable=self.buttonTextVar, height=1, width=12, bg="#f0f0f0", command=partial(self.Research, id))
+        self.buttonWidget.pack(side=tk.LEFT, padx=5, anchor="nw")
+        Tooltip(self.buttonWidget, self.buttonTooltipTextVar)
+
+    def Update(self, content: dict) :
+        if content.get("finished", False) :
+            self.buttonTextVar.set(content["name"] + "(已完成)")
+            self.buttonWidget.config(state=tk.DISABLED)
+        else :
+            self.buttonTextVar.set(content["name"])
+            self.buttonWidget.config(state=tk.ACTIVE)
+
+        tooltipText = "-----------描述-----------\n"
+        tooltipText += content.get("desc", "") + "\n"
+
+        cost = content.get("cost", [])
+        if len(cost) > 0 :
+            tooltipText += "-----------研究消耗-----------\n"
+            for item in cost :
+                tooltipText += "{}: {}\n".format(item.get("id", ""), item.get("need", 0))
+
+        effects = content.get("effects", [])
+        if len(effects) > 0 :
+            tooltipText += "-----------效果-----------\n"
+            for effect in effects :
+                tooltipText += effect + "\n"
+        self.buttonTooltipTextVar.set(tooltipText)
+        return
+
+    def Research(self, researchId: str) :
+        if hasattr(self.gameEngine, "Research") :
+            self.gameEngine.Research(researchId)
+        return
