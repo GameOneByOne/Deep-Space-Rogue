@@ -50,6 +50,8 @@ class ResourceState:
         return state
 
     def UpdateState(self) :
+        self.producedRate = 0.0
+
         # 重新计算普通作用
         for effects in self.commonEffectBy.values() :
             for effect in effects :
@@ -60,7 +62,7 @@ class ResourceState:
                 if effect["type"] == "consume" :
                     self.producedRate -= effect.get("rate", 0)
                     continue
-                
+
         # 重新计算转化作用
         return
 

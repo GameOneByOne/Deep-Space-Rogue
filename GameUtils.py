@@ -6,11 +6,13 @@ def JoinDesc(mainText: str, condText: str) -> str:
     return f"当{condText}时，{mainText}"
 
 def FormatResList(resList: list) -> str:
+    if isinstance(resList, dict) :
+        resList = [resList]
     parts = []
     for item in resList :
-        resource = item.get("resource", "")
-        amount = item.get("need", 0)
-        parts.append(f"{amount}单位{resource}")
+        resource = item.get("resource", item.get("resourceId", ""))
+        amount = item.get("need", item.get("amount", 0))
+        parts.append(f"{amount}单位{EffectUtils.GetEntityName(resource)}")
     return " + ".join(parts)
 
 def FormatScope(scope: dict) -> str:
@@ -24,9 +26,9 @@ def FormatScope(scope: dict) -> str:
     if "resource" in scope :
         parts.append(f"{scope.get('resource')}")
     if "inTargets" in scope :
-        parts.append(f"in={scope.get('in')}")
+        parts.append(f"in={scope.get('inTargets')}")
     if "outTarget" in scope :
-        parts.append(f"out={scope.get('out')}")
+        parts.append(f"out={EffectUtils.GetEntityName(scope.get('outTarget'))}")
     return " ".join(parts)
 
 def GetOpText(op: str, value) -> str:
@@ -45,13 +47,13 @@ def GetConditionDesc(cond: dict) -> str:
     if condType == "populationAtLeast" :
         return f"人口不少于 {cond.get('value', 0)}"
     if condType == "jobFilled" :
-        return f"岗位已配置 {cond.get('profession', '')}"
+        return f"岗位已配置 {EffectUtils.GetEntityName(cond.get('profession', ''))}"
     if condType == "resourceAtLeast" :
-        return f"{cond.get('resource', '')} 不少于 {cond.get('value', 0)}"
+        return f"{EffectUtils.GetEntityName(cond.get('resource', ''))} 不少于 {cond.get('value', 0)}"
     if condType == "hasBuilding" :
-        return f"拥有建筑 {cond.get('id', '')}"
+        return f"拥有建筑 {EffectUtils.GetEntityName(cond.get('id', ''))}"
     if condType == "hasResearch" :
-        return f"拥有研究 {cond.get('id', '')}"
+        return f"拥有研究 {EffectUtils.GetEntityName(cond.get('id', ''))}"
     return f"{condType} {cond}"
 
 
@@ -112,7 +114,10 @@ class EffectUtils :
         if effectType == "addJobSlot" :
             profession = effect.get("profession", "")
             slots = effect.get("slots", 0)
-            return JoinDesc(f"提供{EffectUtils.GetEntityName(profession)}岗位{slots}个", cond)
+            if profession == "P_IDLE" :
+                return JoinDesc(f"增加人口 {slots}（{EffectUtils.GetEntityName(profession)}）", cond)
+            else :
+                return JoinDesc(f"提供{EffectUtils.GetEntityName(profession)}岗位{slots}个", cond)
 
         if effectType == "modifier" :
             scope = effect.get("scope", {})
@@ -121,11 +126,6 @@ class EffectUtils :
             scopeText = FormatScope(scope)
             opText = GetOpText(op, value)
             return JoinDesc(f"{scopeText} {opText}", cond)
-
-        if effectType == "addPeople" :
-            count = effect.get("count", 0)
-            profession = effect.get("profession", "")
-            return JoinDesc(f"增加人口 {count}（{EffectUtils.GetEntityName(profession)}）", cond)
 
         if not effectType :
             return "未知效果"

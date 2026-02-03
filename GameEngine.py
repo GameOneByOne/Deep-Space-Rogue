@@ -54,7 +54,7 @@ class GameEngine :
         # 无空闲人员或者职业达到上限后，不在分配
         pState = self.professions.state[professionId]
         pIdleState = self.professions.state["P_IDLE"]
-        if pState.amount == pState.limit or pIdleState.amount == 0:
+        if pState.amount >= pState.limit or pIdleState.amount == 0:
             return
 
         # 进行职业分配
@@ -147,8 +147,8 @@ class GameEngine :
                 continue
 
             if effectType == "addJobSlot" :
-                count = effect.get("count", 0)
                 profession = effect.get("profession", "P_IDLE")
-                self.professions.AddPeople(profession, count)
+                self.professions.ApplyEffect(buildingId, profession, effect)
                 continue
+
         return

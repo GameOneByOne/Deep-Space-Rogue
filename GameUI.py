@@ -72,6 +72,7 @@ class ProfessionButtonUI :
     def __init__(self, id, root, gameEngine, canEdit) :
         self.gameEngine = gameEngine
         self.buttonTextVar = tk.StringVar()
+        self.buttonTooltipTextVar = tk.StringVar()
         self.buttonFrameWidget= tk.Frame(root, relief="solid", borderwidth=1, width=50, height=30, bg="white")
         self.professionLabelWidget = tk.Label(self.buttonFrameWidget, height=1, width=10, bg="#f0f0f0")
         self.professionLabelWidget.pack(side=tk.LEFT, padx=5)
@@ -82,9 +83,21 @@ class ProfessionButtonUI :
             self.professionAddButtonWidget.pack(side=tk.RIGHT)
             self.professionSubButtonWidget.pack(side=tk.RIGHT)
         self.buttonFrameWidget.pack(side=tk.TOP, padx=5, anchor="nw")
+        Tooltip(self.buttonFrameWidget, self.buttonTooltipTextVar)
 
     def Update(self, content : dict) :
-        self.professionLabelWidget.config(text="{}: {}".format(content["name"], content["count"]))
+        if content["limit"] < 0 :
+            self.professionLabelWidget.config(text="{}: {}".format(content["name"], content["count"]))
+        else :
+            self.professionLabelWidget.config(text="{}: {}/{}".format(content["name"], content["count"], content["limit"]))
+
+        tooltipText = "-----------描述-----------\n"
+        tooltipText += content["desc"] + "\n"
+        if len(content["effects"]) > 0 :
+            tooltipText += "-----------效果-----------\n"
+            for effect in content["effects"] :
+                tooltipText += effect + "\n"
+        self.buttonTooltipTextVar.set(tooltipText)
 
     def Dispatch(self, professionId : str) :
         self.gameEngine.Dispatch(professionId)

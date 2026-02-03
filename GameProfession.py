@@ -4,6 +4,7 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List
+from GameUtils import EffectUtils
 
 
 @dataclass(frozen=True)
@@ -46,6 +47,23 @@ class ProfessionState:
         state.unlocked = True if state.profDef.defaultUnlock else False
         return state
 
+    def UpdateState(self) :
+        oldLimit = self.limit
+        self.limit = 0
+        for effects in self.effectBy.values() :
+            for effect in effects :
+                if effect.get("type", "") == "addJobSlot" :
+                    self.limit += effect.get("slots", 0)
+                    continue
+
+        if self.profDef.id != "P_IDLE" :
+            return
+        
+        # 闲置人口需要单独算一下
+        if self.limit > oldLimit :
+            self.amount += (self.limit - oldLimit)
+        return
+
 
 class ProfessionManager:
     """职业运行时管理器"""
@@ -70,15 +88,20 @@ class ProfessionManager:
         return self.state[professionId].profDef.effects
 
     def ApplyEffect(self, fromEntityId: str, toEntityId: str, effect) :
+        oldAmount = self.state[toEntityId].amount
+        if fromEntityId not in self.state[toEntityId].effectBy :
+            self.state[toEntityId].effectBy[fromEntityId] = list()
+        self.state[toEntityId].effectBy[fromEntityId].append(effect)
+        self.state[toEntityId].UpdateState()
+        self.population = max(0, self.population + (self.state[toEntityId].amount - oldAmount))
         return
 
     def RevertEffect(self, fromEntityId: str, toEntityId: str, effect):
+        oldAmount = self.state[toEntityId].amount
+        self.state[toEntityId].effectBy[fromEntityId].remove(effect)
+        self.state[toEntityId].UpdateState()
+        self.population = max(0, self.population + (self.state[toEntityId].amount - oldAmount))
         return
-
-    def AddPeople(self, professionId: str, count: int) :
-        self.population += count
-        self.state[professionId].amount += count
-        return count
 
     def GetFrontData(self) :
         data = list()
@@ -90,6 +113,8 @@ class ProfessionManager:
             info["name"] = professionState.profDef.name
             info["desc"] = professionState.profDef.desc
             info["count"] = professionState.amount
+            info["limit"] = professionState.limit
             info["canEdit"] = professionState.profDef.editable
+            info["effects"] = [EffectUtils.GetEffectDesc(effect) for effect in professionState.profDef.effects]
             data.append(info)
         return data
