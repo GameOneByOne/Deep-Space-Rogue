@@ -69,7 +69,6 @@ class ProfessionManager:
     """职业运行时管理器"""
     def __init__(self, cfgFilePath: str):
         self.state: Dict[str, ProfessionState] = {}
-        self.population = 0
         cfgList = json.loads(Path(cfgFilePath).read_text("utf-8"))
         for professionInfo in cfgList:
             self.state[professionInfo["id"]] = ProfessionState.FromDict(professionInfo)
@@ -80,6 +79,18 @@ class ProfessionManager:
 
     def IsUnlocked(self, professionId: str) :
         return self.state[professionId].unlocked
+    
+    def canDispatch(self, fromProfessionId: str, toProfessionId: str) :
+        if self.state[fromProfessionId].amount <= 0 :
+            return False
+        if self.state[toProfessionId].amount >= self.state[toProfessionId].limit :
+            return False
+        return True
+    
+    def Dispatch(self, fromProfessionId: str, toProfessionId: str) :
+        self.state[fromProfessionId].amount -= 1
+        self.state[toProfessionId].amount += 1
+        return self.state[fromProfessionId].profDef.effects, self.state[toProfessionId].profDef.effects
 
     def GetDef(self, professionId: str) :
         return self.state[professionId].profDef
@@ -87,20 +98,30 @@ class ProfessionManager:
     def GetEffects(self, professionId: str) :
         return self.state[professionId].profDef.effects
 
+    def GetRuntimeEffects(self, professionId: str) :
+        effects = list()
+        pState = self.state[professionId]
+        for effectList in pState.effectBy.values() :
+            for effect in effectList :
+                effects.append(effect)
+        return effects
+
+    def GetAllEffects(self, professionId: str) :
+        effects = list()
+        effects.extend(self.GetEffects(professionId))
+        effects.extend(self.GetRuntimeEffects(professionId))
+        return effects
+
     def ApplyEffect(self, fromEntityId: str, toEntityId: str, effect) :
-        oldAmount = self.state[toEntityId].amount
         if fromEntityId not in self.state[toEntityId].effectBy :
             self.state[toEntityId].effectBy[fromEntityId] = list()
         self.state[toEntityId].effectBy[fromEntityId].append(effect)
         self.state[toEntityId].UpdateState()
-        self.population = max(0, self.population + (self.state[toEntityId].amount - oldAmount))
         return
 
     def RevertEffect(self, fromEntityId: str, toEntityId: str, effect):
-        oldAmount = self.state[toEntityId].amount
         self.state[toEntityId].effectBy[fromEntityId].remove(effect)
         self.state[toEntityId].UpdateState()
-        self.population = max(0, self.population + (self.state[toEntityId].amount - oldAmount))
         return
 
     def GetFrontData(self) :

@@ -116,7 +116,7 @@ class EffectUtils :
             return JoinDesc(f"{perText}将 {inText} 转化为 {outText}", cond)
 
         if effectType == "addJobSlot" :
-            profession = effect.get("profession", "")
+            profession = effect.get("profession", effect.get("professionId", ""))
             slots = effect.get("slots", 0)
             if profession == "P_IDLE" :
                 return JoinDesc(f"增加人口 {slots}（{EffectUtils.GetEntityName(profession)}）", cond)

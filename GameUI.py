@@ -83,13 +83,15 @@ class ProfessionButtonUI :
         self.professionLabelWidget = tk.Label(self.buttonFrameWidget, height=1, width=10, bg="#f0f0f0")
         self.professionLabelWidget.pack(side=tk.LEFT, padx=5)
         
-        self.professionAddButtonWidget = tk.Button(self.buttonFrameWidget, text="+", height=1, width=1, bg="#f0f0f0", command=partial(self.Dispatch, id))
-        self.professionSubButtonWidget = tk.Button(self.buttonFrameWidget, text="-", height=1, width=1, bg="#f0f0f0", command=partial(self.UnDispatch, id))
+        self.professionAddButtonWidget = tk.Button(self.buttonFrameWidget, text="+", height=1, width=1, bg="#f0f0f0", command=partial(self.Dispatch, "P_IDLE", id))
+        self.professionSubButtonWidget = tk.Button(self.buttonFrameWidget, text="-", height=1, width=1, bg="#f0f0f0", command=partial(self.Dispatch, id, "P_IDLE"))
         if canEdit :           
             self.professionAddButtonWidget.pack(side=tk.RIGHT)
             self.professionSubButtonWidget.pack(side=tk.RIGHT)
         self.buttonFrameWidget.pack(side=tk.TOP, padx=5, anchor="nw")
-        Tooltip(self.buttonFrameWidget, self.buttonTooltipTextVar)
+        Tooltip(self.professionLabelWidget, self.buttonTooltipTextVar)
+        if canEdit :
+            Tooltip(self.professionSubButtonWidget, self.buttonTooltipTextVar)
 
     def Update(self, content : dict) :
         if content["limit"] < 0 :
@@ -99,18 +101,16 @@ class ProfessionButtonUI :
 
         tooltipText = "-----------描述-----------\n"
         tooltipText += content["desc"] + "\n"
+        tooltipText += "-----------效果-----------\n"
         if len(content["effects"]) > 0 :
-            tooltipText += "-----------效果-----------\n"
             for effect in content["effects"] :
                 tooltipText += effect + "\n"
+        else :
+            tooltipText += "无\n"
         self.buttonTooltipTextVar.set(tooltipText)
 
-    def Dispatch(self, professionId : str) :
-        self.gameEngine.Dispatch(professionId)
-        return
-
-    def UnDispatch(self, professionId : str) :
-        self.gameEngine.UnDispatch(professionId)
+    def Dispatch(self, fromnProfessionId : str, toProfessionId : str) :
+        self.gameEngine.Dispatch(fromnProfessionId, toProfessionId)
         return
 
 

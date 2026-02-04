@@ -24,8 +24,8 @@ class GameEngine :
             EffectUtils.AddEntityToNameMap(rState.resDef.id, rState.resDef.name)
 
         # 初始化人力职业数据
-        self.professions = ProfessionManager(PROFESSION_DATA_PATH)
-        for pState in self.professions.state.values() :
+        self.professionManager = ProfessionManager(PROFESSION_DATA_PATH)
+        for pState in self.professionManager.state.values() :
             EffectUtils.AddEntityToNameMap(pState.profDef.id, pState.profDef.name)
 
         # 初始化研究数据
@@ -77,36 +77,19 @@ class GameEngine :
         self.ApplyEffects(researchId, effects)
         return True
     
-    def Dispatch(self, professionId : str) :
+    def Dispatch(self, fromProfessionId : str, toProfessionId : str) :
         # 未解锁的职业直接返回
-        if not self.professions.IsUnlocked(professionId) :
+        if not self.professionManager.IsUnlocked(toProfessionId) :
             return
 
-        # 无空闲人员或者职业达到上限后，不在分配
-        pState = self.professions.state[professionId]
-        pIdleState = self.professions.state["P_IDLE"]
-        if pState.amount >= pState.limit or pIdleState.amount == 0:
+        # 判断是否能进行分配
+        if not self.professionManager.canDispatch(fromProfessionId, toProfessionId) :
             return
 
         # 进行职业分配
-        pIdleState.amount -= 1
-        pState.amount += 1
-        return True
-
-    def UnDispatch(self, professionId : str) :
-        # 未解锁的职业直接返回
-        if not self.professions.IsUnlocked(professionId) :
-            return
-
-        # 判断数据是不是有效
-        pState = self.professions.state[professionId]
-        pIdleState = self.professions.state["P_IDLE"]
-        if pState.amount == 0 :
-            return
-
-        # 进行职业分配
-        pState.amount -= 1
-        pIdleState.amount += 1
+        revertEffects, newEffects = self.professionManager.Dispatch(fromProfessionId, toProfessionId)
+        self.RevertEffects(fromProfessionId, revertEffects)
+        self.ApplyEffects(toProfessionId, newEffects)
         return True
     
     def GetFrontData(self) :
@@ -128,13 +111,13 @@ class GameEngine :
             info["canBuild"] = self.resourceManager.IsEnough(bDef.cost)
             buildingInfos[buildingId] = info
 
-        professionInfos = {info["id"]: info for info in self.professions.GetFrontData()}
+        professionInfos = {info["id"]: info for info in self.professionManager.GetFrontData()}
         researchInfos = {info["id"]: info for info in self.researcheManager.GetFrontData()}
 
         mainInfos = self.GetFrontData()
         return mainInfos, buildingInfos, resourceInfos, professionInfos, researchInfos
 
-    def ApplyEffects(self, buildingId : str, effects: list) :
+    def ApplyEffects(self, fromEntifyId : str, effects: list) :
         for effect in effects :
             effectType = effect.get("type", "")
 
@@ -146,7 +129,7 @@ class GameEngine :
                 elif target == "building" :
                     self.buildings.Unlock(targetId)
                 elif target == "profession" :
-                    self.professions.Unlock(targetId)
+                    self.professionManager.Unlock(targetId)
                 elif target == "research" :
                     self.researcheManager.Unlock(targetId)
                 continue
@@ -158,7 +141,7 @@ class GameEngine :
                 if per == "click" :
                     self.resourceManager.AddAmount(resourceId, rate)
                 elif per == "turn" :
-                    self.resourceManager.ApplyCommonEffect(buildingId, resourceId, effect)
+                    self.resourceManager.ApplyCommonEffect(fromEntifyId, resourceId, effect)
                 continue
             
             if effectType == "consume" :
@@ -168,7 +151,7 @@ class GameEngine :
                 if per == "click" :
                     self.resourceManager.ClampAmount(resourceId, rate)
                 elif per == "turn" :
-                    self.resourceManager.ApplyCommonEffect(buildingId, resourceId, effect)
+                    self.resourceManager.ApplyCommonEffect(fromEntifyId, resourceId, effect)
                 continue
             
             if effectType == "convert" :
@@ -178,14 +161,31 @@ class GameEngine :
                     outList = effect.get("outTarget", {})
                     self.resourceManager.ConvertAmount(inList, outList)
                 elif per == "turn" :
-                    self.resourceManager.ApplyConvertEffect(buildingId, resourceId, effect)
+                    self.resourceManager.ApplyConvertEffect(fromEntifyId, resourceId, effect)
                 continue
 
             if effectType == "addJobSlot" :
                 profession = effect.get("profession", "P_IDLE")
-                self.professions.ApplyEffect(buildingId, profession, effect)
+                self.professionManager.ApplyEffect(fromEntifyId, profession, effect)
                 continue
 
+        return
+    
+    def RevertEffects(self, fromEntifyId : str, effects: list) :
+        for effect in self.professionManager.GetAllEffects(fromEntifyId) :
+            effectType = effect.get("type", "")
+            if effectType in ["produce", "consume"] :
+                resourceId = effect.get("resource", "")
+                if resourceId :
+                    self.resourceManager.RevertCommonEffect(fromEntifyId, resourceId, effect)
+                continue
+
+            if effectType == "convert" :
+                outTarget = effect.get("outTarget", {})
+                outResourceId = outTarget.get("resourceId", "")
+                if outResourceId :
+                    self.resourceManager.RevertConvertEffect(fromEntifyId, outResourceId, effect)
+                continue
         return
 
     def CheckPrereqs(self, prereqs: list) :

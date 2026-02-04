@@ -119,17 +119,27 @@ class ResourceManager:
         return
 
     def RevertCommonEffect(self, fromEntityId: str, toEntityId: str, commonEffect) :
+        if fromEntityId not in self.state[toEntityId].commonEffectBy :
+            return
+        if commonEffect not in self.state[toEntityId].commonEffectBy[fromEntityId] :
+            return
         self.state[toEntityId].commonEffectBy[fromEntityId].remove(commonEffect)
         self.state[toEntityId].UpdateState()
         return
 
     def ApplyConvertEffect(self, fromEntityId: str, toEntityId: str, convertEffect) :
+        if fromEntityId not in self.state[toEntityId].convertEffectBy :
+            self.state[toEntityId].convertEffectBy[fromEntityId] = list()
         self.state[toEntityId].convertEffectBy[fromEntityId].append(convertEffect)
         self.state[toEntityId].UpdateState()
         return
 
     def RevertConvertEffect(self, fromEntityId: str, toEntityId: str, convertEffect) :
-        self.state[toEntityId].convertEffectBy[fromEntityId].append(convertEffect)
+        if fromEntityId not in self.state[toEntityId].convertEffectBy :
+            return
+        if convertEffect not in self.state[toEntityId].convertEffectBy[fromEntityId] :
+            return
+        self.state[toEntityId].convertEffectBy[fromEntityId].remove(convertEffect)
         self.state[toEntityId].UpdateState()
         return
     
@@ -138,7 +148,7 @@ class ResourceManager:
             if res.producedRate >= 0 :
                 self.AddAmount(res.resDef.id, res.producedRate)
             else :
-                self.ClampAmount(res.resDef.id, res.producedRate)
+                self.ClampAmount(res.resDef.id, -res.producedRate)
         return
 
     def GetFrontData(self) :
