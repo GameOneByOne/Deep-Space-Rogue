@@ -4,7 +4,17 @@ import threading
 import tkinter as tk
 
 from GameEngine import GameEngine
-from GameUI import ResourceItemUI, BuildingItemUI, ProfessionButtonUI, ResearchItemUI
+from GameUI import (
+    ResourceItemUI,
+    BuildingItemUI,
+    ProfessionButtonUI,
+    ResearchItemUI,
+    COLOR_BG,
+    COLOR_PANEL,
+    COLOR_TEXT,
+    COLOR_BORDER,
+    FONT_BODY,
+)
 
 GAME_TITLE = "星际探索 - 文字肉鸽游戏"
 GAME_WINDOW_SIZE = "500x800"
@@ -78,34 +88,44 @@ root = tk.Tk()
 root.title(GAME_TITLE)
 root.geometry(GAME_WINDOW_SIZE)
 root.protocol("WM_DELETE_WINDOW", GameClose)
+root.configure(bg=COLOR_BG)
+
+def CreatePanel(title: str, titleColor: str) :
+    titleLabel = tk.Label(
+        root,
+        height=1,
+        text=title,
+        bg=titleColor,
+        fg=COLOR_TEXT,
+        font=FONT_BODY,
+        pady=4
+    )
+    titleLabel.pack(side=tk.TOP, fill=tk.X, padx=16, pady=(8, 2))
+    panelFrame = tk.Frame(
+        root,
+        relief="flat",
+        borderwidth=0,
+        width=460,
+        height=165,
+        bg=COLOR_PANEL,
+        highlightthickness=1,
+        highlightbackground=COLOR_BORDER
+    )
+    panelFrame.pack(side=tk.TOP, fill=tk.X, padx=16, pady=(0, 6), expand=False)
+    panelFrame.pack_propagate(False)
+    return panelFrame
 
 # 绘制资源面板
-resourceTitleLabel = tk.Label(root, height=1, width=8, text="资源面板", bg="#d32323")
-resourceTitleLabel.pack(side=tk.TOP, fill=tk.X, padx=20, expand=True)
-resourceFrame = tk.Frame(root, relief="solid", borderwidth=3, width=400, height=200, bg="white")
-resourceFrame.pack(side=tk.TOP, fill=tk.X, padx=20, expand=True)
-resourceFrame.pack_propagate(False)
+resourceFrame = CreatePanel("资源面板", "#1D5D7B")
 
 # 绘制建筑操作面板
-buildingTitleLabel = tk.Label(root, height=1, width=8, text="操作面板", bg="#0cebba")
-buildingTitleLabel.pack(side=tk.TOP, fill=tk.X, padx=20, expand=True)
-buildingFrame = tk.Frame(root, relief="solid", borderwidth=3, width=400, height=200, bg="white")
-buildingFrame.pack(side=tk.TOP, fill=tk.X, padx=20, expand=True)
-buildingFrame.pack_propagate(False)
+buildingFrame = CreatePanel("操作面板", "#2A6F97")
 
 # 绘制人力面板
-professionTitleLabel = tk.Label(root, height=1, width=8, text="人力面板", bg="#ff9a00")
-professionTitleLabel.pack(side=tk.TOP, fill=tk.X, padx=20, expand=True)
-professionFrame = tk.Frame(root, relief="solid", borderwidth=3, width=400, height=200, bg="white")
-professionFrame.pack(side=tk.TOP, fill=tk.X, padx=20, expand=True)
-professionFrame.pack_propagate(False)
+professionFrame = CreatePanel("人力面板", "#3B7FA6")
 
 # 绘制研究面板
-researchTitleLabel = tk.Label(root, height=1, width=8, text="研究面板", bg="#7f9f17")
-researchTitleLabel.pack(side=tk.TOP, fill=tk.X, padx=20, expand=True)
-researchFrame = tk.Frame(root, relief="solid", borderwidth=3, width=400, height=200, bg="white")
-researchFrame.pack(side=tk.TOP, fill=tk.X, padx=20, expand=True)
-researchFrame.pack_propagate(False)
+researchFrame = CreatePanel("研究面板", "#4A8BB3")
 
 
 # 开启后台逻辑线程
