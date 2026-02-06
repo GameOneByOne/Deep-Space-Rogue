@@ -78,6 +78,8 @@ class ProfessionManager:
         return
 
     def IsUnlocked(self, professionId: str) :
+        if professionId not in self.state :
+            return False
         return self.state[professionId].unlocked
     
     def canDispatch(self, fromProfessionId: str, toProfessionId: str) :

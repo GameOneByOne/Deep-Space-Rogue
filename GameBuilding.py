@@ -66,6 +66,8 @@ class BuildingManager:
         return
 
     def IsUnlocked(self, buildingId: str):
+        if buildingId not in self.state:
+            return False
         return self.state[buildingId].unlocked
 
     def GetOwnedCount(self, buildingId: str):

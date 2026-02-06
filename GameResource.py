@@ -85,12 +85,12 @@ class ResourceManager:
     def GetCapacity(self, resourceId: str) :
         return self.state[resourceId].capacity
 
-    def AddAmount(self, resourceId: str, delta: float) :
-        self.state[resourceId].amount = min(self.state[resourceId].capacity, self.state[resourceId].amount + delta)
+    def AddAmount(self, resourceId: str, delta: float, timeDelta: int = 1) :
+        self.state[resourceId].amount = min(self.state[resourceId].capacity, self.state[resourceId].amount + delta * timeDelta)
         return
 
-    def ClampAmount(self, resourceId: str, delta: float) -> bool:
-        self.state[resourceId].amount = max(0, self.state[resourceId].amount - delta)
+    def ClampAmount(self, resourceId: str, delta: float, timeDelta: int = 1) -> bool:
+        self.state[resourceId].amount = max(0, self.state[resourceId].amount - delta * timeDelta)
         return
 
     def ConvertAmount(self, inResources, outResource) :
@@ -143,12 +143,12 @@ class ResourceManager:
         self.state[toEntityId].UpdateState()
         return
     
-    def Tick(self) :
+    def Tick(self, timeDelta) :
         for res in self.state.values() :
             if res.producedRate >= 0 :
-                self.AddAmount(res.resDef.id, res.producedRate)
+                self.AddAmount(res.resDef.id, res.producedRate, timeDelta)
             else :
-                self.ClampAmount(res.resDef.id, -res.producedRate)
+                self.ClampAmount(res.resDef.id, -res.producedRate, timeDelta)
         return
 
     def GetFrontData(self) :
