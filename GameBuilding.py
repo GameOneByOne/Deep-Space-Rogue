@@ -4,7 +4,7 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List
-from GameUtils import EffectUtils
+from GameUtils import Utils
 
 
 @dataclass(frozen=True)
@@ -101,6 +101,7 @@ class BuildingManager:
             info["cost"] = buildingState.buildingDef.cost
             info["count"] = buildingState.ownedCount
             info["unlocked"] = buildingState.unlocked
-            info["effects"] = [EffectUtils.GetEffectDesc(effect) for effect in buildingState.buildingDef.effects]
+            info["costDesc"] = [Utils.GetCostDesc(cost) for cost in buildingState.buildingDef.cost]
+            info["effectsDesc"] = [Utils.GetEffectDesc(effect) for effect in buildingState.buildingDef.effects]
             data.append(info)
         return data

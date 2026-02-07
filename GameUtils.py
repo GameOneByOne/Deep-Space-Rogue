@@ -7,7 +7,7 @@ def JoinDesc(mainText: str, condText: str) -> str:
 
 
 def GetEntityDisplayName(entityId: str) -> str:
-    return EffectUtils.GetEntityName(entityId)
+    return Utils.GetEntityName(entityId)
 
 def FormatResList(resList: list) -> str:
     if isinstance(resList, dict) :
@@ -16,7 +16,7 @@ def FormatResList(resList: list) -> str:
     for item in resList :
         resource = item.get("resource", item.get("resourceId", ""))
         amount = item.get("need", item.get("amount", 0))
-        parts.append(f"{amount}单位{EffectUtils.GetEntityName(resource)}")
+        parts.append(f"{amount}单位{Utils.GetEntityName(resource)}")
     return " + ".join(parts)
 
 def FormatScope(scope: dict) -> str:
@@ -32,7 +32,7 @@ def FormatScope(scope: dict) -> str:
     if "inTargets" in scope :
         parts.append(f"in={scope.get('inTargets')}")
     if "outTarget" in scope :
-        parts.append(f"out={EffectUtils.GetEntityName(scope.get('outTarget'))}")
+        parts.append(f"out={Utils.GetEntityName(scope.get('outTarget'))}")
     return " ".join(parts)
 
 def GetOpText(op: str, value) -> str:
@@ -51,13 +51,13 @@ def GetConditionDesc(cond: dict) -> str:
     if condType == "populationAtLeast" :
         return f"人口不少于 {cond.get('value', 0)}"
     if condType == "jobFilled" :
-        return f"岗位已配置 {EffectUtils.GetEntityName(cond.get('profession', ''))}"
+        return f"岗位已配置 {Utils.GetEntityName(cond.get('profession', ''))}"
     if condType == "resourceAtLeast" :
-        return f"{EffectUtils.GetEntityName(cond.get('resource', ''))} 不少于 {cond.get('value', 0)}"
+        return f"{Utils.GetEntityName(cond.get('resource', ''))} 不少于 {cond.get('value', 0)}"
     if condType == "hasBuilding" :
-        return f"拥有建筑 {EffectUtils.GetEntityName(cond.get('id', ''))}"
+        return f"拥有建筑 {Utils.GetEntityName(cond.get('id', ''))}"
     if condType == "hasResearch" :
-        return f"拥有研究 {EffectUtils.GetEntityName(cond.get('id', ''))}"
+        return f"拥有研究 {Utils.GetEntityName(cond.get('id', ''))}"
     return f"{condType} {cond}"
 
 
@@ -73,17 +73,21 @@ PER_NAME_CONVERT= {
     "click": "每次点击"
 }
 
-class EffectUtils :
+class Utils :
     entityIdToName = dict()
 
     @staticmethod
     def AddEntityToNameMap(entityId : str, name : str) :
-        EffectUtils.entityIdToName[entityId] = name
+        Utils.entityIdToName[entityId] = name
         return
 
     @staticmethod
     def GetEntityName(entityId: str) :
-        return EffectUtils.entityIdToName.get(entityId, entityId)
+        return Utils.entityIdToName.get(entityId, entityId)
+
+    @staticmethod
+    def GetCostDesc(cost: dict) :
+        return "{}: {}".format(Utils.GetEntityName(cost["id"]), cost["need"])
 
     @staticmethod
     def GetEffectDesc(effect : dict) :
@@ -93,19 +97,19 @@ class EffectUtils :
         if effectType == "unlock" :
             target = TARGET_NAME_CONVERT[effect.get("target", "")]
             targetId = effect.get("id", "")
-            return JoinDesc(f"解锁{target}: {EffectUtils.GetEntityName(targetId)}", cond)
+            return JoinDesc(f"解锁{target}: {Utils.GetEntityName(targetId)}", cond)
 
         if effectType == "produce" :
             resource = effect.get("resource", "")
             rate = effect.get("rate", 0)
             perText = PER_NAME_CONVERT[effect.get("per", "")]
-            return JoinDesc(f"{perText}产出{rate}单位{EffectUtils.GetEntityName(resource)}", cond)
+            return JoinDesc(f"{perText}产出{rate}单位{Utils.GetEntityName(resource)}", cond)
 
         if effectType == "consume" :
             resource = effect.get("resource", "")
             rate = effect.get("rate", 0)
             perText = PER_NAME_CONVERT[effect.get("per", "")]
-            return JoinDesc(f"{perText}消耗{rate}单位{EffectUtils.GetEntityName(resource)}", cond)
+            return JoinDesc(f"{perText}消耗{rate}单位{Utils.GetEntityName(resource)}", cond)
 
         if effectType == "convert" :
             inList = effect.get("inTargets", [])
@@ -119,9 +123,9 @@ class EffectUtils :
             profession = effect.get("profession", effect.get("professionId", ""))
             slots = effect.get("slots", 0)
             if profession == "P_IDLE" :
-                return JoinDesc(f"增加人口 {slots}（{EffectUtils.GetEntityName(profession)}）", cond)
+                return JoinDesc(f"增加人口 {slots}（{Utils.GetEntityName(profession)}）", cond)
             else :
-                return JoinDesc(f"提供{EffectUtils.GetEntityName(profession)}岗位{slots}个", cond)
+                return JoinDesc(f"提供{Utils.GetEntityName(profession)}岗位{slots}个", cond)
 
         if effectType == "modifier" :
             scope = effect.get("scope", {})

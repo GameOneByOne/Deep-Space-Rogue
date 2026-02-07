@@ -3,7 +3,7 @@ from GameBuilding import BuildingManager
 from GameResource import ResourceManager
 from GameProfession import ProfessionManager
 from GameResearch import ResearchManager
-from GameUtils import EffectUtils
+from GameUtils import Utils
 
 
 BUILDING_DATA_PATH = "data/building.dat"
@@ -17,22 +17,22 @@ class GameEngine :
         # 初始化建筑数据
         self.buildingManager =  BuildingManager(BUILDING_DATA_PATH)
         for bState in self.buildingManager.state.values() :
-            EffectUtils.AddEntityToNameMap(bState.buildingDef.id, bState.buildingDef.name)
+            Utils.AddEntityToNameMap(bState.buildingDef.id, bState.buildingDef.name)
 
         # 初始化资源数据
         self.resourceManager = ResourceManager(RESOURCE_DATA_PATH)
         for rState in self.resourceManager.state.values() :
-            EffectUtils.AddEntityToNameMap(rState.resDef.id, rState.resDef.name)
+            Utils.AddEntityToNameMap(rState.resDef.id, rState.resDef.name)
 
         # 初始化人力职业数据
         self.professionManager = ProfessionManager(PROFESSION_DATA_PATH)
         for pState in self.professionManager.state.values() :
-            EffectUtils.AddEntityToNameMap(pState.profDef.id, pState.profDef.name)
+            Utils.AddEntityToNameMap(pState.profDef.id, pState.profDef.name)
 
         # 初始化研究数据
         self.researcheManager = ResearchManager(RESEARCH_DATA_PATH)
         for rState in self.researcheManager.state.values() :
-            EffectUtils.AddEntityToNameMap(rState.researchDef.id, rState.researchDef.name)
+            Utils.AddEntityToNameMap(rState.researchDef.id, rState.researchDef.name)
         
         # 记录上次更新时间
         self.updateTime = time.time()
@@ -99,7 +99,7 @@ class GameEngine :
         return data
 
     def Tick(self) :
-        currentTime = time.time()
+        currentTime = int(time.time())
         timeDelta = currentTime - self.updateTime
         self.updateTime = currentTime
         self.resourceManager.Tick(timeDelta)

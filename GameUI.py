@@ -88,13 +88,13 @@ class BuildingItemUI :
 
         tooltipText = "-----------描述-----------\n"
         tooltipText += content["desc"] + "\n"
-        cost = content.get("cost", [])
+        cost = content.get("costDesc", [])
         if len(cost) > 0 :
             tooltipText += "-----------建造消耗-----------\n"
             for item in cost :
-                tooltipText += "{}: {}\n".format(GetEntityDisplayName(item.get("id", "")), item.get("need", 0))
+                tooltipText += "{}\n".format(item)
         tooltipText += "-----------效果-----------\n"
-        for effect in content["effects"] :
+        for effect in content["effectsDesc"] :
             tooltipText += effect + "\n"
         self.buttonTooltipTextVar.set(tooltipText)
         return
@@ -170,8 +170,8 @@ class ProfessionButtonUI :
         tooltipText = "-----------描述-----------\n"
         tooltipText += content["desc"] + "\n"
         tooltipText += "-----------效果-----------\n"
-        if len(content["effects"]) > 0 :
-            for effect in content["effects"] :
+        if len(content["effectsDesc"]) > 0 :
+            for effect in content["effectsDesc"] :
                 tooltipText += effect + "\n"
         else :
             tooltipText += "无\n"
@@ -215,12 +215,12 @@ class ResearchItemUI :
 
         tooltipText = "-----------描述-----------\n"
         tooltipText += content.get("desc", "") + "\n"
-        cost = content.get("cost", [])
+        cost = content.get("costDesc", [])
         if len(cost) > 0 :
             tooltipText += "-----------研究消耗-----------\n"
             for item in cost :
-                tooltipText += "{}: {}\n".format(GetEntityDisplayName(item.get("id", "")), item.get("need", 0))
-        effects = content.get("effects", [])
+                tooltipText += "{\n".format(item)
+        effects = content.get("effectsDesc", [])
         if len(effects) > 0 :
             tooltipText += "-----------效果-----------\n"
             for effect in effects :
