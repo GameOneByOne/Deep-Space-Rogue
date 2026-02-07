@@ -5,7 +5,6 @@
     "desc": "采集食物（早期稳定来源）",
     "defaultUnlock": true,
     "onlyClick": true,
-    "tags": ["gather", "starter"],
     "cost": [],
     "prereqs": [],
     "effects": [
@@ -19,7 +18,6 @@
     "desc": "采集木材，并引导解锁篝火",
     "defaultUnlock": true,
     "onlyClick": true,
-    "tags": ["gather", "starter"],
     "cost": [],
     "prereqs": [],
     "effects": [
@@ -33,7 +31,6 @@
     "name": "篝火",
     "desc": "提供热量与光明；推动人口增长与知识萌芽",
     "defaultUnlock": false,
-    "tags": ["core", "utility"],
     "cost": [{ "id": "R_WOOD", "need": 2 }],
     "prereqs": [{ "type": "hasBuilding", "id": "B_CHOP_WOOD" }],
     "effects": [
@@ -48,7 +45,6 @@
     "name": "开垦地",
     "desc": "需要农夫工作才产出食物（分工起点）",
     "defaultUnlock": false,
-    "tags": ["farm"],
     "cost": [{ "id": "R_WOOD", "need": 5 }],
     "prereqs": [{ "type": "hasBuilding", "id": "B_CAMPFIRE" }],
     "effects": [
@@ -61,7 +57,6 @@
     "name": "采石场",
     "desc": "产出石头（工程线门票）",
     "defaultUnlock": false,
-    "tags": ["industry", "gather"],
     "cost": [{ "id": "R_WOOD", "need": 6 }],
     "prereqs": [{ "type": "hasResearch", "id": "T_BASIC_ENGINEERING" }],
     "effects": [
@@ -75,7 +70,6 @@
     "name": "水井",
     "desc": "产出水（解锁灌溉）",
     "defaultUnlock": false,
-    "tags": ["utility", "water"],
     "cost": [{ "id": "R_WOOD", "need": 4 }, { "id": "R_STONE", "need": 4 }],
     "prereqs": [{ "type": "hasResearch", "id": "T_WATERWORKS" }],
     "effects": [
@@ -89,7 +83,6 @@
     "name": "水渠",
     "desc": "消耗水提升农田产出（策略取舍）",
     "defaultUnlock": false,
-    "tags": ["utility", "farm"],
     "cost": [{ "id": "R_WOOD", "need": 3 }, { "id": "R_STONE", "need": 3 }],
     "prereqs": [{ "type": "hasResearch", "id": "T_IRRIGATION" }, { "type": "hasBuilding", "id": "B_WELL" }],
     "effects": [
@@ -114,7 +107,6 @@
     "name": "炭窑",
     "desc": "木材→木炭（开启冶炼链）",
     "defaultUnlock": false,
-    "tags": ["industry", "processing"],
     "cost": [{ "id": "R_WOOD", "need": 6 }, { "id": "R_STONE", "need": 2 }],
     "prereqs": [{ "type": "hasResearch", "id": "T_CHARCOALING" }],
     "effects": [

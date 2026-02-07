@@ -16,7 +16,6 @@ class BuildingDef:
     defaultUnlock: bool = False
     onlyClick: bool = False
 
-    tags: List[str] = field(default_factory=list)
     cost: List[dict] = field(default_factory=list)
     prereqs: List[dict] = field(default_factory=list)
     effects: List[dict] = field(default_factory=list)
@@ -29,7 +28,6 @@ class BuildingDef:
             desc = data.get("desc", ""),
             defaultUnlock = data.get("defaultUnlock", False),
             onlyClick = data.get("onlyClick", False),
-            tags = data.get("tags", []),
             cost = data.get("cost", []),
             prereqs = data.get("prereqs", []),
             effects = data.get("effects", []),

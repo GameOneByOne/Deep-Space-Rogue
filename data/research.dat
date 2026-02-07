@@ -4,7 +4,6 @@
     "name": "基础工程",
     "desc": "建立最初的工程认知，解锁采石场与后续工业研究。",
     "defaultUnlock": true,
-    "tags": ["engineering", "starter"],
     "cost": [{ "id": "R_KNOWLEDGE", "need": 8 }],
     "prereqs": [{ "type": "hasBuilding", "id": "B_CAMPFIRE" }],
     "effects": [
@@ -18,7 +17,6 @@
     "name": "水利基础",
     "desc": "学习基础引水与储水技术，解锁水井。",
     "defaultUnlock": false,
-    "tags": ["water", "utility"],
     "cost": [{ "id": "R_KNOWLEDGE", "need": 10 }, { "id": "R_STONE", "need": 6 }],
     "prereqs": [{ "type": "hasResearch", "id": "T_BASIC_ENGINEERING" }],
     "effects": [
@@ -31,7 +29,6 @@
     "name": "灌溉沟渠",
     "desc": "将水资源稳定引入农业系统，解锁水渠。",
     "defaultUnlock": false,
-    "tags": ["farm", "water"],
     "cost": [{ "id": "R_KNOWLEDGE", "need": 12 }, { "id": "R_WATER", "need": 8 }],
     "prereqs": [
       { "type": "hasResearch", "id": "T_WATERWORKS" },
@@ -46,7 +43,6 @@
     "name": "木炭烧制",
     "desc": "掌握木炭制备流程，解锁炭窑与燃料链。",
     "defaultUnlock": false,
-    "tags": ["industry", "processing"],
     "cost": [{ "id": "R_KNOWLEDGE", "need": 10 }, { "id": "R_WOOD", "need": 12 }],
     "prereqs": [{ "type": "hasResearch", "id": "T_BASIC_ENGINEERING" }],
     "effects": [
@@ -58,7 +54,6 @@
     "name": "早期教育",
     "desc": "组织知识传承，形成专门研究岗位。",
     "defaultUnlock": false,
-    "tags": ["research", "knowledge"],
     "cost": [{ "id": "R_KNOWLEDGE", "need": 16 }, { "id": "R_FOOD", "need": 10 }],
     "prereqs": [{ "type": "hasBuilding", "id": "B_CAMPFIRE" }],
     "effects": [

@@ -14,7 +14,6 @@ class ResearchDef:
     name: str = ""
     desc: str = ""
     defaultUnlock: bool = False
-    tags: List[str] = field(default_factory=list)
     cost: List[dict] = field(default_factory=list)
     prereqs: List[dict] = field(default_factory=list)
     effects: List[dict] = field(default_factory=list)
@@ -26,7 +25,6 @@ class ResearchDef:
             name = data.get("name", ""),
             desc = data.get("desc", ""),
             defaultUnlock = data.get("defaultUnlock", False),
-            tags = data.get("tags", []),
             cost = data.get("cost", []),
             prereqs = data.get("prereqs", []),
             effects = data.get("effects", []),

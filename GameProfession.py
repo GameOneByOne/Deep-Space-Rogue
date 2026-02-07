@@ -15,7 +15,6 @@ class ProfessionDef:
     desc: str = ""
     defaultUnlock: bool = False
     editable: bool = True
-    tags: List[str] = field(default_factory=list)
     effects: List[dict] = field(default_factory=list)
 
     @staticmethod
@@ -26,7 +25,6 @@ class ProfessionDef:
             desc = data.get("desc", ""),
             defaultUnlock = data.get("defaultUnlock", False),
             editable = data.get("editable", True),
-            tags = data.get("tags", []),
             effects = data.get("effects", [])
         )
 
