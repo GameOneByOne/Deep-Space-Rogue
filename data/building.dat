@@ -39,7 +39,8 @@
     "effects": [
       { "type": "addJobSlot", "profession": "P_IDLE", "slots": 3 },
       { "type": "unlock", "target": "building", "id": "B_FARMLAND" },
-      { "type": "unlock", "target": "resource", "id": "R_KNOWLEDGE" }
+      { "type": "unlock", "target": "resource", "id": "R_KNOWLEDGE" },
+      { "type": "produce", "resource": "R_KNOWLEDGE", "rate": 0.2, "per": "turn" }
     ]
   },
   {

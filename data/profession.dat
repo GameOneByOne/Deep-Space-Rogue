@@ -7,7 +7,7 @@
     "editable": false,
     "tags": ["base"],
     "effects": [
-      { "type": "consume", "resource": "R_FOOD", "rate": 0.5, "per": "turn" }
+      { "type": "consume", "resource": "R_FOOD", "rate": 0.1, "per": "turn" }
     ]
   },
   {
@@ -19,7 +19,7 @@
     "tags": ["food", "production"],
     "effects": [
       { "type": "produce", "resource": "R_FOOD", "rate": 1, "per": "turn" },
-      { "type": "consume", "resource": "R_FOOD", "rate": 0.8, "per": "turn" }
+      { "type": "consume", "resource": "R_FOOD", "rate": 0.6, "per": "turn" }
     ]
   },
   {
