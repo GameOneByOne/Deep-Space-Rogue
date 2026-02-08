@@ -138,24 +138,32 @@ class GameEngine :
                     self.researcheManager.Unlock(targetId)
                 continue
 
-            if effectType == "produce" :
-                resourceId = effect.get("resource", "")
-                rate = effect.get("rate", 0)
+            if effectType == "add" :
+                target = effect.get("target", "")
+                targetId = effect.get("id", "")
+                count = effect.get("count", 0)
                 per = effect.get("per", "")
-                if per == "click" :
-                    self.resourceManager.AddAmount(resourceId, rate)
-                elif per == "turn" :
-                    self.resourceManager.ApplyCommonEffect(fromEntifyId, resourceId, effect)
+                if target == "resource" :
+                    if per == "click" :
+                        self.resourceManager.AddAmount(targetId, count)
+                    elif per == "turn" :
+                        self.resourceManager.ApplyCommonEffect(fromEntifyId, targetId, effect)
+                elif target == "profession" :
+                    self.professionManager.ApplyEffect(fromEntifyId, targetId, effect)
                 continue
             
-            if effectType == "consume" :
-                resourceId = effect.get("resource", "")
-                rate = effect.get("rate", 0)
+            if effectType == "clamp" :
+                target = effect.get("target", "")
+                targetId = effect.get("id", "")
+                count = effect.get("count", 0)
                 per = effect.get("per", "")
-                if per == "click" :
-                    self.resourceManager.ClampAmount(resourceId, rate)
-                elif per == "turn" :
-                    self.resourceManager.ApplyCommonEffect(fromEntifyId, resourceId, effect)
+                if target == "resource" :
+                    if per == "click" :
+                        self.resourceManager.ClampAmount(targetId, count)
+                    elif per == "turn" :
+                        self.resourceManager.ApplyCommonEffect(fromEntifyId, targetId, effect)
+                elif target == "profession" :
+                    self.professionManager.ApplyEffect(fromEntifyId, targetId, effect)
                 continue
             
             if effectType == "convert" :
@@ -168,20 +176,16 @@ class GameEngine :
                     self.resourceManager.ApplyConvertEffect(fromEntifyId, resourceId, effect)
                 continue
 
-            if effectType == "addJobSlot" :
-                profession = effect.get("profession", "P_IDLE")
-                self.professionManager.ApplyEffect(fromEntifyId, profession, effect)
-                continue
-
         return
     
     def RevertEffects(self, fromEntifyId : str, effects: list) :
         for effect in self.professionManager.GetAllEffects(fromEntifyId) :
             effectType = effect.get("type", "")
-            if effectType in ["produce", "consume"] :
-                resourceId = effect.get("resource", "")
-                if resourceId :
-                    self.resourceManager.RevertCommonEffect(fromEntifyId, resourceId, effect)
+            if effectType in ["add", "clamp"] :
+                target = effect.get("target", "")
+                targetId = effect.get("id", "")
+                if target == "resource" and targetId:
+                    self.resourceManager.RevertCommonEffect(fromEntifyId, targetId, effect)
                 continue
 
             if effectType == "convert" :

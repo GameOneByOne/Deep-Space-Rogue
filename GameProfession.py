@@ -50,16 +50,27 @@ class ProfessionState:
         self.limit = 0
         for effects in self.effectBy.values() :
             for effect in effects :
-                if effect.get("type", "") == "addJobSlot" :
-                    self.limit += effect.get("slots", 0)
+                e_type = effect.get("type", "")
+                if e_type == "add" and effect.get("target", "") == "profession" :
+                    self.limit += effect.get("count", 0)
+                    continue
+                if e_type == "clamp" and effect.get("target", "") == "profession" :
+                    self.limit -= effect.get("count", 0)
                     continue
 
         if self.profDef.id != "P_IDLE" :
+            if self.limit < 0:
+                self.limit = 0
             return
+        
+        if self.limit < 0:
+            self.limit = 0
         
         # 闲置人口需要单独算一下
         if self.limit > oldLimit :
             self.amount += (self.limit - oldLimit)
+        elif self.amount > self.limit :
+            self.amount = self.limit
         return
 
 

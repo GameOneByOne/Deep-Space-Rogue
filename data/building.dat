@@ -2,14 +2,14 @@
   {
     "id": "B_GATHER_BERRIES",
     "name": "采摘浆果",
-    "desc": "采集食物（早期稳定来源）",
+    "desc": "采集食物，早期稳定来源",
     "defaultUnlock": true,
     "onlyClick": true,
     "cost": [],
     "prereqs": [],
     "effects": [
       { "type": "unlock", "target": "resource", "id": "R_FOOD" },
-      { "type": "produce", "resource": "R_FOOD", "rate": 1, "per": "click" }
+      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 1, "per": "click" }
     ]
   },
   {
@@ -23,7 +23,7 @@
     "effects": [
       { "type": "unlock", "target": "resource", "id": "R_WOOD" },
       { "type": "unlock", "target": "building", "id": "B_CAMPFIRE" },
-      { "type": "produce", "resource": "R_WOOD", "rate": 1, "per": "click" }
+      { "type": "add", "target": "resource", "id": "R_WOOD", "count": 1, "per": "click" }
     ]
   },
   {
@@ -34,10 +34,10 @@
     "cost": [{ "id": "R_WOOD", "need": 2 }],
     "prereqs": [{ "type": "hasBuilding", "id": "B_CHOP_WOOD" }],
     "effects": [
-      { "type": "addJobSlot", "profession": "P_IDLE", "slots": 3 },
+      { "type": "add", "target": "profession", "id": "P_IDLE", "count": 3 },
       { "type": "unlock", "target": "building", "id": "B_FARMLAND" },
       { "type": "unlock", "target": "resource", "id": "R_KNOWLEDGE" },
-      { "type": "produce", "resource": "R_KNOWLEDGE", "rate": 0.2, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 0.2, "per": "turn" }
     ]
   },
   {
@@ -49,7 +49,7 @@
     "prereqs": [{ "type": "hasBuilding", "id": "B_CAMPFIRE" }],
     "effects": [
       { "type": "unlock", "target": "profession", "id": "P_FARMER" },
-      { "type": "addJobSlot", "profession": "P_FARMER", "slots": 2 }
+      { "type": "add", "target": "profession", "id": "P_FARMER", "count": 2 }
     ]
   },
   {
@@ -62,7 +62,7 @@
     "effects": [
       { "type": "unlock", "target": "resource", "id": "R_STONE" },
       { "type": "unlock", "target": "profession", "id": "P_QUARRYMAN" },
-      { "type": "addJobSlot", "profession": "P_QUARRYMAN", "slots": 1 }
+      { "type": "add", "target": "profession", "id": "P_QUARRYMAN", "count": 1 }
     ]
   },
   {
@@ -75,7 +75,7 @@
     "effects": [
       { "type": "unlock", "target": "resource", "id": "R_WATER" },
       { "type": "unlock", "target": "profession", "id": "P_WATERKEEPER" },
-      { "type": "addJobSlot", "profession": "P_WATERKEEPER", "slots": 1 }
+      { "type": "add", "target": "profession", "id": "P_WATERKEEPER", "count": 1 }
     ]
   },
   {
@@ -88,15 +88,16 @@
     "effects": [
       {
         "type": "modifier",
-        "scope": { "building": "B_FARMLAND", "effect": "produce", "resource": "R_FOOD" },
+        "scope": { "building": "B_FARMLAND", "effect": "add", "resource": "R_FOOD" },
         "op": "mul",
         "value": 1.5,
         "condition": { "type": "resourceAtLeast", "resource": "R_WATER", "value": 1 }
       },
       {
-        "type": "consume",
-        "resource": "R_WATER",
-        "rate": 1,
+        "type": "clamp",
+        "target": "resource",
+        "id": "R_WATER",
+        "count": 1,
         "per": "turn",
         "condition": { "type": "hasBuilding", "id": "B_FARMLAND" }
       }
@@ -112,7 +113,7 @@
     "effects": [
       { "type": "unlock", "target": "resource", "id": "R_CHARCOAL" },
       { "type": "unlock", "target": "profession", "id": "P_CHARCOAL_BURNER" },
-      { "type": "addJobSlot", "profession": "P_CHARCOAL_BURNER", "slots": 1 },
+      { "type": "add", "target": "profession", "id": "P_CHARCOAL_BURNER", "count": 1 },
       {
         "type": "convert",
         "inTargets": [{ "resourceId": "R_WOOD", "need": 2 }],

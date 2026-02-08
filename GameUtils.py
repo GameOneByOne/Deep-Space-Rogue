@@ -99,17 +99,29 @@ class Utils :
             targetId = effect.get("id", "")
             return JoinDesc(f"解锁{target}: {Utils.GetEntityName(targetId)}", cond)
 
-        if effectType == "produce" :
-            resource = effect.get("resource", "")
-            rate = effect.get("rate", 0)
-            perText = PER_NAME_CONVERT[effect.get("per", "")]
-            return JoinDesc(f"{perText}产出{rate}单位{Utils.GetEntityName(resource)}", cond)
+        if effectType == "add" :
+            target = effect.get("target", "")
+            targetId = effect.get("id", "")
+            count = effect.get("count", 0)
+            perText = PER_NAME_CONVERT.get(effect.get("per", ""), "")
+            if target == "resource" :
+                return JoinDesc(f"{perText}增加{count}单位{Utils.GetEntityName(targetId)}", cond)
+            if target == "profession" :
+                if targetId == "P_IDLE" :
+                    return JoinDesc(f"增加人口 {count}", cond)
+                return JoinDesc(f"提供{Utils.GetEntityName(targetId)}岗位{count}个", cond)
 
-        if effectType == "consume" :
-            resource = effect.get("resource", "")
-            rate = effect.get("rate", 0)
-            perText = PER_NAME_CONVERT[effect.get("per", "")]
-            return JoinDesc(f"{perText}消耗{rate}单位{Utils.GetEntityName(resource)}", cond)
+        if effectType == "clamp" :
+            target = effect.get("target", "")
+            targetId = effect.get("id", "")
+            count = effect.get("count", 0)
+            perText = PER_NAME_CONVERT.get(effect.get("per", ""), "")
+            if target == "resource" :
+                return JoinDesc(f"{perText}消耗{count}单位{Utils.GetEntityName(targetId)}", cond)
+            if target == "profession" :
+                if targetId == "P_IDLE" :
+                    return JoinDesc(f"减少人口 {count}", cond)
+                return JoinDesc(f"减少{Utils.GetEntityName(targetId)}岗位{count}个", cond)
 
         if effectType == "convert" :
             inList = effect.get("inTargets", [])
@@ -118,14 +130,6 @@ class Utils :
             inText = FormatResList(inList)
             outText = FormatResList(outList)
             return JoinDesc(f"{perText}将 {inText} 转化为 {outText}", cond)
-
-        if effectType == "addJobSlot" :
-            profession = effect.get("profession", effect.get("professionId", ""))
-            slots = effect.get("slots", 0)
-            if profession == "P_IDLE" :
-                return JoinDesc(f"增加人口 {slots}（{Utils.GetEntityName(profession)}）", cond)
-            else :
-                return JoinDesc(f"提供{Utils.GetEntityName(profession)}岗位{slots}个", cond)
 
         if effectType == "modifier" :
             scope = effect.get("scope", {})

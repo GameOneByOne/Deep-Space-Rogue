@@ -6,7 +6,7 @@
     "defaultUnlock": true,
     "editable": false,
     "effects": [
-      { "type": "consume", "resource": "R_FOOD", "rate": 0.1, "per": "turn" }
+      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.1, "per": "turn" }
     ]
   },
   {
@@ -16,8 +16,8 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "produce", "resource": "R_FOOD", "rate": 1, "per": "turn" },
-      { "type": "consume", "resource": "R_FOOD", "rate": 0.6, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 1, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.6, "per": "turn" }
     ]
   },
   {
@@ -27,8 +27,8 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "produce", "resource": "R_STONE", "rate": 1, "per": "turn" },
-      { "type": "consume", "resource": "R_FOOD", "rate": 0.8, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_STONE", "count": 1, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.8, "per": "turn" }
     ]
   },
   {
@@ -38,8 +38,8 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "produce", "resource": "R_WATER", "rate": 1, "per": "turn" },
-      { "type": "consume", "resource": "R_FOOD", "rate": 0.5, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_WATER", "count": 1, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.5, "per": "turn" }
     ]
   },
   {
@@ -49,7 +49,7 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "consume", "resource": "R_FOOD", "rate": 0.7, "per": "turn" }
+      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.7, "per": "turn" }
     ]
   },
   {
@@ -59,8 +59,8 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "produce", "resource": "R_KNOWLEDGE", "rate": 1, "per": "turn" },
-      { "type": "consume", "resource": "R_FOOD", "rate": 0.3, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 1, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.3, "per": "turn" }
     ]
   }
 ]

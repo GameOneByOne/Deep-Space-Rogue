@@ -55,12 +55,12 @@ class ResourceState:
         # 重新计算普通作用
         for effects in self.commonEffectBy.values() :
             for effect in effects :
-                if effect["type"] == "produce" :
-                    self.producedRate += effect.get("rate", 0)
+                if effect["type"] == "add" :
+                    self.producedRate += effect.get("count", 0)
                     continue
 
-                if effect["type"] == "consume" :
-                    self.producedRate -= effect.get("rate", 0)
+                if effect["type"] == "clamp" :
+                    self.producedRate -= effect.get("count", 0)
                     continue
 
         # 重新计算转化作用
