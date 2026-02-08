@@ -60,8 +60,10 @@ class BuildingManager:
             self.state[buildingInfo["id"]] = BuildingState.FromDict(buildingInfo)
 
     def Unlock(self, buildingId: str):
+        if buildingId not in self.state :
+            return False
         self.state[buildingId].unlocked = True
-        return
+        return True
 
     def IsUnlocked(self, buildingId: str):
         if buildingId not in self.state:
@@ -83,9 +85,6 @@ class BuildingManager:
             bState.ownedCount += 1
         return bState.buildingDef.effects
 
-    def GetDef(self, buildingId: str) -> BuildingDef:
-        return self.state[buildingId].buildingDef
-
     def GetFrontData(self) :
         data = list()
         for buildingState in self.state.values() :
@@ -98,7 +97,6 @@ class BuildingManager:
             info["desc"] = buildingState.buildingDef.desc
             info["cost"] = buildingState.buildingDef.cost
             info["count"] = buildingState.ownedCount
-            info["unlocked"] = buildingState.unlocked
             info["costDesc"] = [Utils.GetCostDesc(cost) for cost in buildingState.buildingDef.cost]
             info["effectsDesc"] = [Utils.GetEffectDesc(effect) for effect in buildingState.buildingDef.effects]
             data.append(info)

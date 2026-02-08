@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List
 from GameUtils import Utils
+from GameEffect import Effect, AddEffect, ClampEffect
 
 
 @dataclass(frozen=True)
@@ -36,7 +37,6 @@ class ProfessionState:
     unlocked: bool = False
     amount: int = 0
     limit: int = 0
-    effectBy: Dict[str, list] = field(default_factory=dict)
 
     @staticmethod
     def FromDict(data: dict):
@@ -46,31 +46,6 @@ class ProfessionState:
         return state
 
     def UpdateState(self) :
-        oldLimit = self.limit
-        self.limit = 0
-        for effects in self.effectBy.values() :
-            for effect in effects :
-                e_type = effect.get("type", "")
-                if e_type == "add" and effect.get("target", "") == "profession" :
-                    self.limit += effect.get("count", 0)
-                    continue
-                if e_type == "clamp" and effect.get("target", "") == "profession" :
-                    self.limit -= effect.get("count", 0)
-                    continue
-
-        if self.profDef.id != "P_IDLE" :
-            if self.limit < 0:
-                self.limit = 0
-            return
-        
-        if self.limit < 0:
-            self.limit = 0
-        
-        # 闲置人口需要单独算一下
-        if self.limit > oldLimit :
-            self.amount += (self.limit - oldLimit)
-        elif self.amount > self.limit :
-            self.amount = self.limit
         return
 
 
@@ -83,8 +58,10 @@ class ProfessionManager:
             self.state[professionInfo["id"]] = ProfessionState.FromDict(professionInfo)
 
     def Unlock(self, professionId: str) :
+        if professionId not in self.state :
+            return False
         self.state[professionId].unlocked = True
-        return
+        return True
 
     def IsUnlocked(self, professionId: str) :
         if professionId not in self.state :
@@ -103,43 +80,37 @@ class ProfessionManager:
         self.state[toProfessionId].amount += 1
         return self.state[fromProfessionId].profDef.effects, self.state[toProfessionId].profDef.effects
 
-    def GetDef(self, professionId: str) :
-        return self.state[professionId].profDef
+    def ApplyEffect(self, fromEntityId: str, toEntityId: str, effect: Effect) :
+        if isinstance(effect, AddEffect) :
+            if toEntityId == "P_IDLE" :
+                self.state[effect.toId].amount += effect.count
+            self.state[effect.toId].limit += effect.count
+        elif isinstance(effect, ClampEffect) :
+            if toEntityId == "P_IDLE" :
+                self.state[effect.toId].amount -= effect.count
+            self.state[effect.toId].limit -= effect.count
 
-    def GetEffects(self, professionId: str) :
-        return self.state[professionId].profDef.effects
-
-    def GetRuntimeEffects(self, professionId: str) :
-        effects = list()
-        pState = self.state[professionId]
-        for effectList in pState.effectBy.values() :
-            for effect in effectList :
-                effects.append(effect)
-        return effects
-
-    def GetAllEffects(self, professionId: str) :
-        effects = list()
-        effects.extend(self.GetEffects(professionId))
-        effects.extend(self.GetRuntimeEffects(professionId))
-        return effects
-
-    def ApplyEffect(self, fromEntityId: str, toEntityId: str, effect) :
-        if fromEntityId not in self.state[toEntityId].effectBy :
-            self.state[toEntityId].effectBy[fromEntityId] = list()
-        self.state[toEntityId].effectBy[fromEntityId].append(effect)
-        self.state[toEntityId].UpdateState()
         return
 
-    def RevertEffect(self, fromEntityId: str, toEntityId: str, effect):
-        self.state[toEntityId].effectBy[fromEntityId].remove(effect)
-        self.state[toEntityId].UpdateState()
+    def RevertEffect(self, fromEntityId: str, toEntityId: str, effect: Effect) :
+        if isinstance(effect, AddEffect) :
+            if toEntityId == "P_IDLE" :
+                self.state[effect.toId].amount -= effect.count
+            self.state[effect.toId].limit -= effect.count
+        elif isinstance(effect, ClampEffect) :
+            if toEntityId == "P_IDLE" :
+                self.state[effect.toId].amount += effect.count
+            self.state[effect.toId].limit += effect.count
+
         return
+
 
     def GetFrontData(self) :
         data = list()
         for professionState in self.state.values() :
             if not professionState.unlocked :
                 continue
+
             info = dict()
             info["id"] = professionState.profDef.id
             info["name"] = professionState.profDef.name

@@ -5,9 +5,7 @@
     "desc": "未分配工作的居民，通常不产生收益",
     "defaultUnlock": true,
     "editable": false,
-    "effects": [
-      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.1, "per": "turn" }
-    ]
+    "effects": []
   },
   {
     "id": "P_FARMER",
@@ -16,8 +14,7 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 1, "per": "turn" },
-      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.6, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 1, "per": "turn" }
     ]
   },
   {
@@ -27,8 +24,7 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_STONE", "count": 1, "per": "turn" },
-      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.8, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_STONE", "count": 1, "per": "turn" }
     ]
   },
   {
@@ -38,8 +34,7 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_WATER", "count": 1, "per": "turn" },
-      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.5, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_WATER", "count": 1, "per": "turn" }
     ]
   },
   {
@@ -48,9 +43,7 @@
     "desc": "提高炭窑转化效率",
     "defaultUnlock": false,
     "editable": true,
-    "effects": [
-      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.7, "per": "turn" }
-    ]
+    "effects": []
   },
   {
     "id": "P_SCHOLAR",
@@ -59,8 +52,7 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 1, "per": "turn" },
-      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.3, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 1, "per": "turn" }
     ]
   }
 ]

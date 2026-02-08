@@ -3,7 +3,8 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, Iterable, List, Tuple
+from typing import Dict
+from GameEffect import Effect, AddEffect, ClampEffect, ConvertEffect
 
 
 @dataclass(frozen=True)
@@ -33,13 +34,8 @@ class ResourceState:
     unlocked: bool = False
     amount: float = 0.0
     capacity: float = 0.0
-
-    commonEffectBy: Dict[str, list] = field(default_factory=dict)
-    producedRate: float = 0.0
-
-    convertEffectBy: Dict[str, list] = field(default_factory=dict)
-    convertInResources: Dict[str, int] = field(default_factory=dict)
-    convertProducedRate: float = 0.0
+    rate: float = 0.0
+    mulit: float = 1.0
 
     @staticmethod
     def FromDict(data: dict) :
@@ -50,20 +46,6 @@ class ResourceState:
         return state
 
     def UpdateState(self) :
-        self.producedRate = 0.0
-
-        # 重新计算普通作用
-        for effects in self.commonEffectBy.values() :
-            for effect in effects :
-                if effect["type"] == "add" :
-                    self.producedRate += effect.get("count", 0)
-                    continue
-
-                if effect["type"] == "clamp" :
-                    self.producedRate -= effect.get("count", 0)
-                    continue
-
-        # 重新计算转化作用
         return
 
 
@@ -82,28 +64,22 @@ class ResourceManager:
     def IsUnlocked(self, resourceId: str) :
         return self.state[resourceId].unlocked
 
-    def GetCapacity(self, resourceId: str) :
-        return self.state[resourceId].capacity
-
-    def AddAmount(self, resourceId: str, delta: float, timeDelta: int = 1) :
+    def Add(self, resourceId: str, delta: float, timeDelta: int = 1) :
         self.state[resourceId].amount = min(self.state[resourceId].capacity, self.state[resourceId].amount + delta * timeDelta)
         return
 
-    def ClampAmount(self, resourceId: str, delta: float, timeDelta: int = 1) -> bool:
+    def Clamp(self, resourceId: str, delta: float, timeDelta: int = 1) -> bool:
         self.state[resourceId].amount = max(0, self.state[resourceId].amount - delta * timeDelta)
         return
 
-    def ConvertAmount(self, inResources, outResource) :
+    def Convert(self, inResources, outResource) :
         if not self.IsEnough(inResources) :
-            return
-        
-        for res in inResources :
-            self.ClampAmount(res["resourceId"], res["need"])
-        self.AddAmount(outResource["resourceId"], outResource["amount"])
-        return
+            return False
 
-    def GetAmount(self, resourceId: str) :
-        return self.state[resourceId].amount
+        for res in inResources :
+            self.Clamp(res["resourceId"], res["need"])
+        self.Add(outResource["resourceId"], outResource["amount"])
+        return True
 
     def IsEnough(self, resourceNeed: list) -> bool:
         for resource in resourceNeed :
@@ -111,44 +87,45 @@ class ResourceManager:
                 return False
         return True
 
-    def ApplyCommonEffect(self, fromEntityId: str, toEntityId: str, commonEffect) :
-        if fromEntityId not in self.state[toEntityId].commonEffectBy:
-            self.state[toEntityId].commonEffectBy[fromEntityId] = list()
-        self.state[toEntityId].commonEffectBy[fromEntityId].append(commonEffect)
-        self.state[toEntityId].UpdateState()
+    def ApplyEffect(self, fromEntityId: str, toEntityId: str, effect : Effect) :
+        if isinstance(effect, AddEffect) :
+            if effect.IsOnlyOnce():
+                self.Add(effect.toId, effect.count)
+            else :
+                self.state[effect.toId].rate += effect.count
+            pass
+
+        elif isinstance(effect, ClampEffect) :
+            if effect.IsOnlyOnce():
+                self.Clamp(effect.toId, effect.count)
+            else :
+                self.state[effect.toId].rate -= effect.count
+            pass
         return
 
-    def RevertCommonEffect(self, fromEntityId: str, toEntityId: str, commonEffect) :
-        if fromEntityId not in self.state[toEntityId].commonEffectBy :
-            return
-        if commonEffect not in self.state[toEntityId].commonEffectBy[fromEntityId] :
-            return
-        self.state[toEntityId].commonEffectBy[fromEntityId].remove(commonEffect)
-        self.state[toEntityId].UpdateState()
-        return
+    def RevertEffect(self, fromEntityId: str, toEntityId: str, effect: Effect) :
+        print("???????")
+        if isinstance(effect, AddEffect) :
+            if effect.IsOnlyOnce():
+                self.Clamp(effect.toId, effect.count)
+            else :
+                self.state[effect.toId].rate -= effect.count
+            pass
 
-    def ApplyConvertEffect(self, fromEntityId: str, toEntityId: str, convertEffect) :
-        if fromEntityId not in self.state[toEntityId].convertEffectBy :
-            self.state[toEntityId].convertEffectBy[fromEntityId] = list()
-        self.state[toEntityId].convertEffectBy[fromEntityId].append(convertEffect)
-        self.state[toEntityId].UpdateState()
-        return
-
-    def RevertConvertEffect(self, fromEntityId: str, toEntityId: str, convertEffect) :
-        if fromEntityId not in self.state[toEntityId].convertEffectBy :
-            return
-        if convertEffect not in self.state[toEntityId].convertEffectBy[fromEntityId] :
-            return
-        self.state[toEntityId].convertEffectBy[fromEntityId].remove(convertEffect)
-        self.state[toEntityId].UpdateState()
+        elif isinstance(effect, ClampEffect) :
+            if effect.IsOnlyOnce():
+                self.Add(effect.toId, effect.count)
+            else :
+                self.state[effect.toId].rate += effect.count
+            pass
         return
     
     def Tick(self, timeDelta) :
         for res in self.state.values() :
-            if res.producedRate >= 0 :
-                self.AddAmount(res.resDef.id, res.producedRate, timeDelta)
+            if res.rate >= 0 :
+                self.Add(res.resDef.id, res.rate, timeDelta)
             else :
-                self.ClampAmount(res.resDef.id, -res.producedRate, timeDelta)
+                self.Clamp(res.resDef.id, res.rate, timeDelta)
         return
 
     def GetFrontData(self) :
@@ -162,6 +139,6 @@ class ResourceManager:
             info["desc"] = resourceState.resDef.desc
             info["count"] = resourceState.amount
             info["limit"] = resourceState.capacity
-            info["rate"] = resourceState.producedRate
+            info["rate"] = resourceState.rate
             data.append(info)
         return data

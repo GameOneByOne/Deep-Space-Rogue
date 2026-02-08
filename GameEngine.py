@@ -3,6 +3,7 @@ from GameBuilding import BuildingManager
 from GameResource import ResourceManager
 from GameProfession import ProfessionManager
 from GameResearch import ResearchManager
+from GameEffect import EffectExecutor
 from GameUtils import Utils
 
 
@@ -33,6 +34,13 @@ class GameEngine :
         self.researcheManager = ResearchManager(RESEARCH_DATA_PATH)
         for rState in self.researcheManager.state.values() :
             Utils.AddEntityToNameMap(rState.researchDef.id, rState.researchDef.name)
+
+        self.effectExecutor = EffectExecutor(
+            self.buildingManager,
+            self.resourceManager,
+            self.professionManager,
+            self.researcheManager,
+        )
         
         # 记录上次更新时间
         self.updateTime = time.time()
@@ -49,7 +57,7 @@ class GameEngine :
 
         # 建筑消耗建造资源
         for item in cost :
-            self.resourceManager.ClampAmount(item["id"], item["need"])
+            self.resourceManager.Clamp(item["id"], item["need"])
 
         # 应用建筑效果
         effects = self.buildingManager.Build(buildingId)
@@ -73,7 +81,7 @@ class GameEngine :
 
         # 消耗研究资源并完成研究
         for item in cost :
-            self.resourceManager.ClampAmount(item["id"], item["need"])
+            self.resourceManager.Clamp(item["id"], item["need"])
 
         effects = self.researcheManager.Finish(researchId)
         self.ApplyEffects(researchId, effects)
@@ -107,93 +115,22 @@ class GameEngine :
 
     def Show(self) :
         resourceInfos = {info["id"]: info for info in self.resourceManager.GetFrontData()}
-
-        buildingInfos = {}
-        for info in self.buildingManager.GetFrontData() :
-            buildingId = info["id"]
-            bDef = self.buildingManager.GetDef(buildingId)
-            info["canBuild"] = self.resourceManager.IsEnough(bDef.cost)
-            buildingInfos[buildingId] = info
-
+        buildingInfos = {info["id"]: info for info in self.buildingManager.GetFrontData() }
         professionInfos = {info["id"]: info for info in self.professionManager.GetFrontData()}
         researchInfos = {info["id"]: info for info in self.researcheManager.GetFrontData()}
-
         mainInfos = self.GetFrontData()
         return mainInfos, buildingInfos, resourceInfos, professionInfos, researchInfos
 
     def ApplyEffects(self, fromEntifyId : str, effects: list) :
         for effect in effects :
-            effectType = effect.get("type", "")
-
-            if effectType == "unlock" :
-                target = effect.get("target", "")
-                targetId = effect.get("id", "")
-                if target == "resource" :
-                    self.resourceManager.Unlock(targetId)
-                elif target == "building" :
-                    self.buildingManager.Unlock(targetId)
-                elif target == "profession" :
-                    self.professionManager.Unlock(targetId)
-                elif target == "research" :
-                    self.researcheManager.Unlock(targetId)
-                continue
-
-            if effectType == "add" :
-                target = effect.get("target", "")
-                targetId = effect.get("id", "")
-                count = effect.get("count", 0)
-                per = effect.get("per", "")
-                if target == "resource" :
-                    if per == "click" :
-                        self.resourceManager.AddAmount(targetId, count)
-                    elif per == "turn" :
-                        self.resourceManager.ApplyCommonEffect(fromEntifyId, targetId, effect)
-                elif target == "profession" :
-                    self.professionManager.ApplyEffect(fromEntifyId, targetId, effect)
-                continue
-            
-            if effectType == "clamp" :
-                target = effect.get("target", "")
-                targetId = effect.get("id", "")
-                count = effect.get("count", 0)
-                per = effect.get("per", "")
-                if target == "resource" :
-                    if per == "click" :
-                        self.resourceManager.ClampAmount(targetId, count)
-                    elif per == "turn" :
-                        self.resourceManager.ApplyCommonEffect(fromEntifyId, targetId, effect)
-                elif target == "profession" :
-                    self.professionManager.ApplyEffect(fromEntifyId, targetId, effect)
-                continue
-            
-            if effectType == "convert" :
-                per = effect.get("per", "")
-                if per == "click" :
-                    inList = effect.get("inTargets", [])
-                    outList = effect.get("outTarget", {})
-                    self.resourceManager.ConvertAmount(inList, outList)
-                elif per == "turn" :
-                    self.resourceManager.ApplyConvertEffect(fromEntifyId, resourceId, effect)
-                continue
-
+            effectExec = self.effectExecutor.FromDict(fromEntifyId, effect)
+            effectExec.Apply()
         return
     
     def RevertEffects(self, fromEntifyId : str, effects: list) :
-        for effect in self.professionManager.GetAllEffects(fromEntifyId) :
-            effectType = effect.get("type", "")
-            if effectType in ["add", "clamp"] :
-                target = effect.get("target", "")
-                targetId = effect.get("id", "")
-                if target == "resource" and targetId:
-                    self.resourceManager.RevertCommonEffect(fromEntifyId, targetId, effect)
-                continue
-
-            if effectType == "convert" :
-                outTarget = effect.get("outTarget", {})
-                outResourceId = outTarget.get("resourceId", "")
-                if outResourceId :
-                    self.resourceManager.RevertConvertEffect(fromEntifyId, outResourceId, effect)
-                continue
+        for effect in effects :
+            effectExec = self.effectExecutor.FromDict(fromEntifyId, effect)
+            effectExec.Revert()
         return
 
     def CheckPrereqs(self, prereqs: list) :
