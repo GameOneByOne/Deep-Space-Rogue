@@ -133,8 +133,9 @@ function renderResources(resources) {
     const row = document.createElement("div");
     row.className = "resource-item";
     const rate = Number(r.rate || 0);
+    const rateClass = rate > 0 ? "pos" : rate < 0 ? "neg" : "zero";
     row.innerHTML = `<span>${r.name} ${fnum(r.count)}/${fnum(r.limit)}</span>
-      <span class="resource-rate ${rate >= 0 ? "pos" : "neg"}">${rate >= 0 ? "+" : ""}${rate.toFixed(2)}</span>`;
+      <span class="resource-rate ${rateClass}">${rate >= 0 ? "+" : ""}${rate.toFixed(2)}</span>`;
     setTip(row, `【资源】${r.name}\n${r.desc || ""}`);
     els.resources.appendChild(row);
   });

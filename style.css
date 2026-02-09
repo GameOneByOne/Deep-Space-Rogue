@@ -90,6 +90,7 @@ body {
 
 .resource-rate.pos { color: #8dffb3; }
 .resource-rate.neg { color: #ffa8b3; }
+.resource-rate.zero { color: var(--text); }
 
 .button-grid {
   display: grid;
@@ -110,6 +111,12 @@ body {
   transition: filter 120ms ease, box-shadow 120ms ease;
   width: 100%;
   max-width: 200px;
+}
+
+.btn:not(:disabled):active,
+.op-btn:not(:disabled):active {
+  filter: brightness(0.9);
+  transform: translateY(1px);
 }
 
 .btn:hover {

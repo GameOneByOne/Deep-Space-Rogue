@@ -104,7 +104,6 @@ class ResourceManager:
         return
 
     def RevertEffect(self, fromEntityId: str, toEntityId: str, effect: Effect) :
-        print("???????")
         if isinstance(effect, AddEffect) :
             if effect.IsOnlyOnce():
                 self.Clamp(effect.toId, effect.count)
@@ -125,7 +124,7 @@ class ResourceManager:
             if res.rate >= 0 :
                 self.Add(res.resDef.id, res.rate, timeDelta)
             else :
-                self.Clamp(res.resDef.id, res.rate, timeDelta)
+                self.Clamp(res.resDef.id, -res.rate, timeDelta)
         return
 
     def GetFrontData(self) :

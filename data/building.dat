@@ -37,6 +37,7 @@
       { "type": "add", "target": "profession", "id": "P_IDLE", "count": 3 },
       { "type": "unlock", "target": "building", "id": "B_FARMLAND" },
       { "type": "unlock", "target": "resource", "id": "R_KNOWLEDGE" },
+      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 1.5, "per": "turn" },
       { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 0.2, "per": "turn" }
     ]
   },

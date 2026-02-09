@@ -51,6 +51,7 @@ class AddEffect(Effect) :
 class ClampEffect(Effect) :
     def __init__(self, fromEntityId:str, raw: dict, belongTo) :
         super().__init__(fromEntityId, raw, belongTo)
+        self.toId = raw.get("id", "")
         self.count = raw.get("count", 0)
         self.per = raw.get("per", "")
         self.condition = raw.get("condition", {})
