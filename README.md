@@ -15,5 +15,7 @@ python main.py
 * 暂时还没有开发事件模块，当前只是简单的可以运行了，游戏内容会不定期更新
 
 ## DEMO版本上线啦，可以下载本仓库，按运行方式执行即可
-## 当然gitbook在线版本，同步开发中
+
+
+## gitpage主页上线啦，https://gameonebyone.github.io/Deep-Space-Rogue/
 
