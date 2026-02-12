@@ -2,15 +2,29 @@
   {
     "id": "P_IDLE",
     "name": "闲置",
-    "desc": "未分配工作的居民，通常不产生收益",
+    "desc": "未分配工作的居民",
     "defaultUnlock": true,
     "editable": false,
-    "effects": []
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_WOOD", "count": 0.5, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_STONE", "count": 0.5, "per": "turn" }
+    ]
+  },
+  {
+    "id": "P_HUNTER",
+    "name": "猎人",
+    "desc": "稳定获取食物",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 1, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_ANIMAL_HIDE", "count": 0.2, "per": "turn" }
+    ]
   },
   {
     "id": "P_FARMER",
-    "name": "农夫",
-    "desc": "提升农田产出效率",
+    "name": "种植",
+    "desc": "能生产食物",
     "defaultUnlock": false,
     "editable": true,
     "effects": [
@@ -18,41 +32,23 @@
     ]
   },
   {
+    "id": "P_LUMBERJACK",
+    "name": "伐木",
+    "desc": "稳定产出木材",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_WOOD", "count": 1.5, "per": "turn" }
+    ]
+  },
+  {
     "id": "P_QUARRYMAN",
-    "name": "采石工",
+    "name": "采石",
     "desc": "提升采石场产出效率",
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_STONE", "count": 1, "per": "turn" }
-    ]
-  },
-  {
-    "id": "P_WATERKEEPER",
-    "name": "汲水人",
-    "desc": "负责水井维护与取水",
-    "defaultUnlock": false,
-    "editable": true,
-    "effects": [
-      { "type": "add", "target": "resource", "id": "R_WATER", "count": 1, "per": "turn" }
-    ]
-  },
-  {
-    "id": "P_CHARCOAL_BURNER",
-    "name": "烧炭工",
-    "desc": "提高炭窑转化效率",
-    "defaultUnlock": false,
-    "editable": true,
-    "effects": []
-  },
-  {
-    "id": "P_SCHOLAR",
-    "name": "学者",
-    "desc": "提升知识产出（研究体系核心岗位）",
-    "defaultUnlock": false,
-    "editable": true,
-    "effects": [
-      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 1, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_STONE", "count": 1.5, "per": "turn" }
     ]
   }
 ]

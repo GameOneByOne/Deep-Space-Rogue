@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List
 from GameUtils import Utils
+from GameEffect import EffectExecutor, Effect, UnlockEffect
 
 
 @dataclass(frozen=True)
@@ -70,12 +71,6 @@ class BuildingManager:
             return False
         return self.state[buildingId].unlocked
 
-    def GetOwnedCount(self, buildingId: str):
-        return self.state[buildingId].ownedCount
-    
-    def GetBuildingPrereqs(self, buildingId: str) :
-        return self.state[buildingId].buildingDef.prereqs
-
     def GetBuildingCost(self, buildingId: str) :
         return self.state[buildingId].buildingDef.cost
 
@@ -83,7 +78,12 @@ class BuildingManager:
         bState = self.state[buildingId]
         if not bState.buildingDef.onlyClick:
             bState.ownedCount += 1
-        return bState.buildingDef.effects
+        return [EffectExecutor.FromDict(x) for x in bState.buildingDef.effects]
+    
+    def ApplyEffect(self, effect: Effect) :
+        if isinstance(effect, UnlockEffect) :
+            self.Unlock(effect.toId)        
+        return
 
     def GetFrontData(self) :
         data = list()

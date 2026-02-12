@@ -1,44 +1,18 @@
 [
   {
-    "id": "B_GATHER_BERRIES",
-    "name": "采摘浆果",
-    "desc": "采集食物，早期稳定来源",
-    "defaultUnlock": true,
-    "onlyClick": true,
-    "cost": [],
-    "prereqs": [],
-    "effects": [
-      { "type": "unlock", "target": "resource", "id": "R_FOOD" },
-      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 1, "per": "click" }
-    ]
-  },
-  {
-    "id": "B_CHOP_WOOD",
-    "name": "砍木头",
-    "desc": "采集木材，并引导解锁篝火",
-    "defaultUnlock": true,
-    "onlyClick": true,
-    "cost": [],
-    "prereqs": [],
-    "effects": [
-      { "type": "unlock", "target": "resource", "id": "R_WOOD" },
-      { "type": "unlock", "target": "building", "id": "B_CAMPFIRE" },
-      { "type": "add", "target": "resource", "id": "R_WOOD", "count": 1, "per": "click" }
-    ]
-  },
-  {
     "id": "B_CAMPFIRE",
     "name": "篝火",
     "desc": "提供热量与光明；推动人口增长与知识萌芽",
-    "defaultUnlock": false,
-    "cost": [{ "id": "R_WOOD", "need": 2 }],
-    "prereqs": [{ "type": "hasBuilding", "id": "B_CHOP_WOOD" }],
+    "defaultUnlock": true,
+    "cost": [
+      { "id": "R_WOOD", "need": 5 }
+    ],
+    "prereqs": [],
     "effects": [
-      { "type": "add", "target": "profession", "id": "P_IDLE", "count": 3 },
-      { "type": "unlock", "target": "building", "id": "B_FARMLAND" },
-      { "type": "unlock", "target": "resource", "id": "R_KNOWLEDGE" },
-      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 1.5, "per": "turn" },
-      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 0.2, "per": "turn" }
+      { "type": "addLimit", "target": "profession", "id": "P_IDLE", "count": 3},
+      { "type": "add", "target": "profession", "id": "P_IDLE", "count": 3},
+      { "type": "unlock", "target": "profession", "id": "P_HUNTER"},
+      { "type": "unlock", "target": "building", "id": "B_FARMLAND"}
     ]
   },
   {
@@ -46,82 +20,58 @@
     "name": "开垦地",
     "desc": "需要农夫工作才产出食物（分工起点）",
     "defaultUnlock": false,
-    "cost": [{ "id": "R_WOOD", "need": 5 }],
-    "prereqs": [{ "type": "hasBuilding", "id": "B_CAMPFIRE" }],
+    "cost": [
+      { "id": "R_WOOD","need": 5 }
+    ],
+    "prereqs": [],
     "effects": [
-      { "type": "unlock", "target": "profession", "id": "P_FARMER" },
-      { "type": "add", "target": "profession", "id": "P_FARMER", "count": 2 }
+      { "type": "unlock", "target": "profession", "id": "P_FARMER"},
+      { "type": "addLimit", "target": "profession", "id": "P_FARMER", "count": 2},
+      { "type": "unlock", "target": "building", "id": "B_LUMBER_CAMP"},
+      { "type": "unlock", "target": "building", "id": "B_QUARRY"}
+    ]
+  },
+  {
+    "id": "B_LUMBER_CAMP",
+    "name": "伐木营地",
+    "desc": "稳定产出木材",
+    "defaultUnlock": false,
+    "cost": [
+      { "id": "R_WOOD","need": 6 }
+    ],
+    "effects": [
+      { "type": "unlock", "target": "profession", "id": "P_LUMBERJACK"},
+      {"type": "addLimit", "target": "profession", "id": "P_LUMBERJACK", "count": 2}
     ]
   },
   {
     "id": "B_QUARRY",
-    "name": "采石场",
+    "name": "磨石营地",
     "desc": "产出石头（工程线门票）",
     "defaultUnlock": false,
-    "cost": [{ "id": "R_WOOD", "need": 6 }],
-    "prereqs": [{ "type": "hasResearch", "id": "T_BASIC_ENGINEERING" }],
+    "cost": [
+      { "id": "R_WOOD", "need": 6 }
+    ],
     "effects": [
-      { "type": "unlock", "target": "resource", "id": "R_STONE" },
-      { "type": "unlock", "target": "profession", "id": "P_QUARRYMAN" },
-      { "type": "add", "target": "profession", "id": "P_QUARRYMAN", "count": 1 }
+      { "type": "unlock", "target": "profession", "id": "P_QUARRYMAN"},
+      { "type": "addLimit", "target": "profession", "id": "P_QUARRYMAN", "count": 2},
+      { "type": "unlock", "target": "building", "id": "B_CELLAR"}
     ]
   },
   {
-    "id": "B_WELL",
-    "name": "水井",
-    "desc": "产出水（解锁灌溉）",
+    "id": "B_CELLAR",
+    "name": "储藏坑",
+    "desc": "能增加物资储备",
     "defaultUnlock": false,
-    "cost": [{ "id": "R_WOOD", "need": 4 }, { "id": "R_STONE", "need": 4 }],
-    "prereqs": [{ "type": "hasResearch", "id": "T_WATERWORKS" }],
+    "cost": [
+      { "id": "R_WOOD", "need": 4 },
+      { "id": "R_STONE", "need": 4 }
+    ],
+    "prereqs": [],
     "effects": [
-      { "type": "unlock", "target": "resource", "id": "R_WATER" },
-      { "type": "unlock", "target": "profession", "id": "P_WATERKEEPER" },
-      { "type": "add", "target": "profession", "id": "P_WATERKEEPER", "count": 1 }
-    ]
-  },
-  {
-    "id": "B_IRRIGATION_DITCH",
-    "name": "水渠",
-    "desc": "消耗水提升农田产出（策略取舍）",
-    "defaultUnlock": false,
-    "cost": [{ "id": "R_WOOD", "need": 3 }, { "id": "R_STONE", "need": 3 }],
-    "prereqs": [{ "type": "hasResearch", "id": "T_IRRIGATION" }, { "type": "hasBuilding", "id": "B_WELL" }],
-    "effects": [
-      {
-        "type": "modifier",
-        "scope": { "building": "B_FARMLAND", "effect": "add", "resource": "R_FOOD" },
-        "op": "mul",
-        "value": 1.5,
-        "condition": { "type": "resourceAtLeast", "resource": "R_WATER", "value": 1 }
-      },
-      {
-        "type": "clamp",
-        "target": "resource",
-        "id": "R_WATER",
-        "count": 1,
-        "per": "turn",
-        "condition": { "type": "hasBuilding", "id": "B_FARMLAND" }
-      }
-    ]
-  },
-  {
-    "id": "B_CHARCOAL_KILN",
-    "name": "炭窑",
-    "desc": "木材→木炭（开启冶炼链）",
-    "defaultUnlock": false,
-    "cost": [{ "id": "R_WOOD", "need": 6 }, { "id": "R_STONE", "need": 2 }],
-    "prereqs": [{ "type": "hasResearch", "id": "T_CHARCOALING" }],
-    "effects": [
-      { "type": "unlock", "target": "resource", "id": "R_CHARCOAL" },
-      { "type": "unlock", "target": "profession", "id": "P_CHARCOAL_BURNER" },
-      { "type": "add", "target": "profession", "id": "P_CHARCOAL_BURNER", "count": 1 },
-      {
-        "type": "convert",
-        "inTargets": [{ "resourceId": "R_WOOD", "need": 2 }],
-        "outTarget": { "resourceId": "R_CHARCOAL", "amount": 1 },
-        "per": "turn",
-        "condition": { "type": "jobFilled", "profession": "P_CHARCOAL_BURNER" }
-      }
+      { "type": "addLimit", "target": "resource", "id": "R_FOOD", "count": 50 },
+      { "type": "addLimit", "target": "resource", "id": "R_WOOD", "count": 20 },
+      { "type": "addLimit", "target": "resource", "id": "R_STONE", "count": 20 }
     ]
   }
 ]

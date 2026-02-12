@@ -1,9 +1,10 @@
 import time
+from collections import deque
 from GameBuilding import BuildingManager
 from GameResource import ResourceManager
 from GameProfession import ProfessionManager
 from GameResearch import ResearchManager
-from GameEffect import EffectExecutor
+from GameEffect import EffectExecutor, Effect, AddEffect
 from GameUtils import Utils
 
 
@@ -35,15 +36,18 @@ class GameEngine :
         for rState in self.researcheManager.state.values() :
             Utils.AddEntityToNameMap(rState.researchDef.id, rState.researchDef.name)
 
-        self.effectExecutor = EffectExecutor(
-            self.buildingManager,
-            self.resourceManager,
-            self.professionManager,
-            self.researcheManager,
-        )
+        EffectExecutor.Init(self.buildingManager, self.resourceManager, self.professionManager, self.researcheManager)
         
         # 记录上次更新时间
         self.updateTime = time.time()
+
+    def StartGame(self) :
+        # 默认开局三个人力
+        effect = { "type": "addLimit", "target": "profession", "id": "P_IDLE", "count": 3}
+        self.ApplyEffects([EffectExecutor.FromDict(effect)])
+        effect = { "type": "add", "target": "profession", "id": "P_IDLE", "count": 3}
+        self.ApplyEffects([EffectExecutor.FromDict(effect)])
+        return
 
     def Build(self, buildingId : str) :
         # 非法入参或者建筑未解锁直接返回
@@ -61,17 +65,12 @@ class GameEngine :
 
         # 应用建筑效果
         effects = self.buildingManager.Build(buildingId)
-        self.ApplyEffects(buildingId, effects)
+        self.ApplyEffects(effects)
         return
 
     def Research(self, researchId: str) :
         # 研究未解锁或已完成，直接返回
         if not self.researcheManager.IsUnlocked(researchId) or self.researcheManager.IsFinished(researchId):
-            return
-
-        # 不满足研究前置直接返回
-        prereqs = self.researcheManager.GetResearchPrereqs(researchId)
-        if not self.CheckPrereqs(prereqs) :
             return
 
         # 不够研究资源直接返回
@@ -98,8 +97,8 @@ class GameEngine :
 
         # 进行职业分配
         revertEffects, newEffects = self.professionManager.Dispatch(fromProfessionId, toProfessionId)
-        self.RevertEffects(fromProfessionId, revertEffects)
-        self.ApplyEffects(toProfessionId, newEffects)
+        self.ApplyEffects(revertEffects)
+        self.ApplyEffects(newEffects)
         return True
    
     def GetFrontData(self) :
@@ -121,27 +120,11 @@ class GameEngine :
         mainInfos = self.GetFrontData()
         return mainInfos, buildingInfos, resourceInfos, professionInfos, researchInfos
 
-    def ApplyEffects(self, fromEntifyId : str, effects: list) :
-        for effect in effects :
-            effectExec = self.effectExecutor.FromDict(fromEntifyId, effect)
-            effectExec.Apply()
+    def ApplyEffects(self,  effects: list) :
+        effectQue = deque(effects)
+        while len(effectQue) > 0 :
+            effectExec = effectQue.popleft()
+            additionalEffect = EffectExecutor.Exec(effectExec)
+            if additionalEffect is not None :
+                effectQue.extend(additionalEffect)
         return
-    
-    def RevertEffects(self, fromEntifyId : str, effects: list) :
-        for effect in effects :
-            effectExec = self.effectExecutor.FromDict(fromEntifyId, effect)
-            effectExec.Revert()
-        return
-
-    def CheckPrereqs(self, prereqs: list) :
-        for prereq in prereqs :
-            pType = prereq.get("type", "")
-            if pType == "hasBuilding" :
-                if self.buildingManager.GetOwnedCount(prereq.get("id", "")) <= 0 :
-                    return False
-                continue
-            if pType == "hasResearch" :
-                if not self.researcheManager.IsFinished(prereq.get("id", "")) :
-                    return False
-                continue
-        return True

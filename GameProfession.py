@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List
 from GameUtils import Utils
-from GameEffect import Effect, AddEffect, ClampEffect
+from GameEffect import EffectExecutor, Effect, UnlockEffect, AddEffect, ClampEffect, AddLimitEffect
 
 
 @dataclass(frozen=True)
@@ -78,32 +78,24 @@ class ProfessionManager:
     def Dispatch(self, fromProfessionId: str, toProfessionId: str) :
         self.state[fromProfessionId].amount -= 1
         self.state[toProfessionId].amount += 1
-        return self.state[fromProfessionId].profDef.effects, self.state[toProfessionId].profDef.effects
+        return [EffectExecutor.FromDict(x).GetOppositeEffect() for x in self.state[fromProfessionId].profDef.effects], \
+            [EffectExecutor.FromDict(x) for x in self.state[toProfessionId].profDef.effects]
 
-    def ApplyEffect(self, fromEntityId: str, toEntityId: str, effect: Effect) :
-        if isinstance(effect, AddEffect) :
-            if toEntityId == "P_IDLE" :
-                self.state[effect.toId].amount += effect.count
-            self.state[effect.toId].limit += effect.count
+    def ApplyEffect(self, effect: Effect) :
+        if isinstance(effect, UnlockEffect) :
+            self.Unlock(effect.toId)
+            return
+        elif isinstance(effect, AddEffect) :
+            self.state[effect.toId].amount += effect.count
+            return [EffectExecutor.FromDict(x) for x in self.state[effect.toId].profDef.effects]
         elif isinstance(effect, ClampEffect) :
-            if toEntityId == "P_IDLE" :
-                self.state[effect.toId].amount -= effect.count
-            self.state[effect.toId].limit -= effect.count
+            self.state[effect.toId].amount -= effect.count
+            return [EffectExecutor.FromDict(x).GetOppositeEffect() for x in self.state[effect.toId].profDef.effects]
+        elif isinstance(effect, AddLimitEffect) :
+            self.state[effect.toId].limit += effect.count
+            return
 
         return
-
-    def RevertEffect(self, fromEntityId: str, toEntityId: str, effect: Effect) :
-        if isinstance(effect, AddEffect) :
-            if toEntityId == "P_IDLE" :
-                self.state[effect.toId].amount -= effect.count
-            self.state[effect.toId].limit -= effect.count
-        elif isinstance(effect, ClampEffect) :
-            if toEntityId == "P_IDLE" :
-                self.state[effect.toId].amount += effect.count
-            self.state[effect.toId].limit += effect.count
-
-        return
-
 
     def GetFrontData(self) :
         data = list()

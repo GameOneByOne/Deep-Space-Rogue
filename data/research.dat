@@ -4,38 +4,171 @@
     "name": "基础工程",
     "desc": "建立最初的工程认知，解锁采石场与后续工业研究。",
     "defaultUnlock": true,
-    "cost": [{ "id": "R_KNOWLEDGE", "need": 8 }],
-    "prereqs": [{ "type": "hasBuilding", "id": "B_CAMPFIRE" }],
-    "effects": [
-      { "type": "unlock", "target": "building", "id": "B_QUARRY" },
-      { "type": "unlock", "target": "research", "id": "T_WATERWORKS" },
-      { "type": "unlock", "target": "research", "id": "T_CHARCOALING" }
-    ]
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 8
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasBuilding",
+        "id": "B_CAMPFIRE"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_HUNTING",
+    "name": "狩猎技巧",
+    "desc": "掌握协作狩猎，获得稳定食物来源。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 6
+      },
+      {
+        "id": "R_FOOD",
+        "need": 6
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_BASIC_ENGINEERING"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_LUMBERING",
+    "name": "伐木技术",
+    "desc": "系统化采伐木材，提升建造能力。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 6
+      },
+      {
+        "id": "R_WOOD",
+        "need": 6
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_BASIC_ENGINEERING"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_POTTERY",
+    "name": "制陶技术",
+    "desc": "掌握陶器与砖材的生产。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 8
+      },
+      {
+        "id": "R_STONE",
+        "need": 6
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_BASIC_ENGINEERING"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_MASONRY",
+    "name": "砖石建筑",
+    "desc": "发展砖石结构，提升居住品质。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 10
+      },
+      {
+        "id": "R_STONE",
+        "need": 10
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_POTTERY"
+      }
+    ],
+    "effects": []
   },
   {
     "id": "T_WATERWORKS",
     "name": "水利基础",
     "desc": "学习基础引水与储水技术，解锁水井。",
     "defaultUnlock": false,
-    "cost": [{ "id": "R_KNOWLEDGE", "need": 10 }, { "id": "R_STONE", "need": 6 }],
-    "prereqs": [{ "type": "hasResearch", "id": "T_BASIC_ENGINEERING" }],
-    "effects": [
-      { "type": "unlock", "target": "building", "id": "B_WELL" },
-      { "type": "unlock", "target": "research", "id": "T_IRRIGATION" }
-    ]
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 10
+      },
+      {
+        "id": "R_STONE",
+        "need": 6
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_BASIC_ENGINEERING"
+      }
+    ],
+    "effects": []
   },
   {
     "id": "T_IRRIGATION",
     "name": "灌溉沟渠",
     "desc": "将水资源稳定引入农业系统，解锁水渠。",
     "defaultUnlock": false,
-    "cost": [{ "id": "R_KNOWLEDGE", "need": 12 }, { "id": "R_WATER", "need": 8 }],
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 12
+      },
+      {
+        "id": "R_WATER",
+        "need": 8
+      }
+    ],
     "prereqs": [
-      { "type": "hasResearch", "id": "T_WATERWORKS" },
-      { "type": "hasBuilding", "id": "B_WELL" }
+      {
+        "type": "hasResearch",
+        "id": "T_WATERWORKS"
+      },
+      {
+        "type": "hasBuilding",
+        "id": "B_WELL"
+      }
     ],
     "effects": [
-      { "type": "unlock", "target": "building", "id": "B_IRRIGATION_DITCH" }
+      {
+        "type": "modifier",
+        "scope": {
+          "building": "B_FARMLAND",
+          "effect": "add",
+          "resource": "R_FOOD"
+        },
+        "op": "mul",
+        "value": 1.5
+      }
     ]
   },
   {
@@ -43,21 +176,483 @@
     "name": "木炭烧制",
     "desc": "掌握木炭制备流程，解锁炭窑与燃料链。",
     "defaultUnlock": false,
-    "cost": [{ "id": "R_KNOWLEDGE", "need": 10 }, { "id": "R_WOOD", "need": 12 }],
-    "prereqs": [{ "type": "hasResearch", "id": "T_BASIC_ENGINEERING" }],
-    "effects": [
-      { "type": "unlock", "target": "building", "id": "B_CHARCOAL_KILN" }
-    ]
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 10
+      },
+      {
+        "id": "R_WOOD",
+        "need": 12
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_BASIC_ENGINEERING"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_MINING",
+    "name": "采矿技术",
+    "desc": "系统化开采矿石，进入金属时代。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 12
+      },
+      {
+        "id": "R_STONE",
+        "need": 10
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_BASIC_ENGINEERING"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_BRONZE_WORKING",
+    "name": "青铜冶炼",
+    "desc": "使用铜与锡合金，进入青铜时代。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 14
+      },
+      {
+        "id": "R_COPPER_ORE",
+        "need": 6
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_MINING"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_IRONWORKING",
+    "name": "铁器时代",
+    "desc": "掌握铁矿冶炼，解锁铁锭。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 16
+      },
+      {
+        "id": "R_CHARCOAL",
+        "need": 8
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_CHARCOALING"
+      },
+      {
+        "type": "hasResearch",
+        "id": "T_MINING"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_TOOLMAKING",
+    "name": "工具制造",
+    "desc": "发展铁器工具，推进工业化。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 18
+      },
+      {
+        "id": "R_IRON_INGOT",
+        "need": 6
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_IRONWORKING"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_COAL_MINING",
+    "name": "煤矿开采",
+    "desc": "掌握煤炭开采，为钢铁与动力做准备。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 14
+      },
+      {
+        "id": "R_STONE",
+        "need": 12
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_MINING"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_STEELMAKING",
+    "name": "炼钢工艺",
+    "desc": "开发钢铁生产线，迈向工业时代。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 20
+      },
+      {
+        "id": "R_COAL",
+        "need": 8
+      },
+      {
+        "id": "R_IRON_INGOT",
+        "need": 6
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_COAL_MINING"
+      },
+      {
+        "type": "hasResearch",
+        "id": "T_IRONWORKING"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_MECHANICS",
+    "name": "机械学",
+    "desc": "建立机械化生产体系。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 24
+      },
+      {
+        "id": "R_STEEL",
+        "need": 6
+      },
+      {
+        "id": "R_TOOLS",
+        "need": 6
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_TOOLMAKING"
+      },
+      {
+        "type": "hasResearch",
+        "id": "T_STEELMAKING"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_STEAM_POWER",
+    "name": "蒸汽动力",
+    "desc": "掌握蒸汽动力，为电力时代铺路。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 26
+      },
+      {
+        "id": "R_MECHANICAL_PARTS",
+        "need": 6
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_MECHANICS"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_ELECTRICITY",
+    "name": "电力系统",
+    "desc": "建立电力生产与传输体系。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 30
+      },
+      {
+        "id": "R_COPPER_INGOT",
+        "need": 8
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_STEAM_POWER"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_OIL_EXTRACTION",
+    "name": "石油开采",
+    "desc": "进入石油时代。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 26
+      },
+      {
+        "id": "R_STEEL",
+        "need": 6
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_STEELMAKING"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_REFINING",
+    "name": "炼化工业",
+    "desc": "精炼燃料与化工原料。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 28
+      },
+      {
+        "id": "R_OIL",
+        "need": 8
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_OIL_EXTRACTION"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_CHEMISTRY",
+    "name": "化学工业",
+    "desc": "发展医药与材料化学。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 30
+      },
+      {
+        "id": "R_PLASTIC",
+        "need": 6
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_REFINING"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_ELECTRONICS",
+    "name": "电子工业",
+    "desc": "建立电子元件生产线。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 34
+      },
+      {
+        "id": "R_COPPER_INGOT",
+        "need": 10
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_ELECTRICITY"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_COMPUTING",
+    "name": "计算技术",
+    "desc": "进入信息时代。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 36
+      },
+      {
+        "id": "R_ELECTRONICS",
+        "need": 8
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_ELECTRONICS"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_MODERN_INFRA",
+    "name": "现代基建",
+    "desc": "推进现代建筑体系。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 34
+      },
+      {
+        "id": "R_STEEL",
+        "need": 8
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_COMPUTING"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_URBANIZATION",
+    "name": "城市化",
+    "desc": "形成现代城市人口结构。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 34
+      },
+      {
+        "id": "R_CONCRETE",
+        "need": 8
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_MODERN_INFRA"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_UNIVERSITY",
+    "name": "大学体系",
+    "desc": "建立现代高等教育。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 40
+      },
+      {
+        "id": "R_CONCRETE",
+        "need": 12
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_COMPUTING"
+      }
+    ],
+    "effects": []
+  },
+  {
+    "id": "T_HEALTHCARE",
+    "name": "现代医疗",
+    "desc": "建立完整的医疗系统。",
+    "defaultUnlock": false,
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 32
+      },
+      {
+        "id": "R_FOOD",
+        "need": 10
+      },
+      {
+        "id": "R_WATER",
+        "need": 10
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasResearch",
+        "id": "T_CHEMISTRY"
+      }
+    ],
+    "effects": []
   },
   {
     "id": "T_EARLY_EDUCATION",
     "name": "早期教育",
     "desc": "组织知识传承，形成专门研究岗位。",
     "defaultUnlock": false,
-    "cost": [{ "id": "R_KNOWLEDGE", "need": 16 }, { "id": "R_FOOD", "need": 10 }],
-    "prereqs": [{ "type": "hasBuilding", "id": "B_CAMPFIRE" }],
-    "effects": [
-      { "type": "unlock", "target": "profession", "id": "P_SCHOLAR" }
-    ]
+    "cost": [
+      {
+        "id": "R_KNOWLEDGE",
+        "need": 16
+      },
+      {
+        "id": "R_FOOD",
+        "need": 10
+      }
+    ],
+    "prereqs": [
+      {
+        "type": "hasBuilding",
+        "id": "B_CAMPFIRE"
+      }
+    ],
+    "effects": []
   }
 ]

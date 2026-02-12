@@ -1,11 +1,6 @@
 [
-    {"id": "R_FOOD", "name": "食物", "desc": "用于生存与烹饪", "defaultUnlock": false, "defaultCapacity": 150},
-    {"id": "R_WOOD", "name": "木材", "desc": "用于建造与加工", "defaultUnlock": false, "defaultCapacity": 150},
-    {"id": "R_STONE", "name": "石头", "desc": "用于建造与升级", "defaultUnlock": false, "defaultCapacity": 150},
-    {"id": "R_WATER", "name": "水", "desc": "用于灌溉与生存相关系统", "defaultUnlock": false, "defaultCapacity": 150},
-    {"id": "R_FIBER", "name": "纤维", "desc": "用于绳索、织物与部分建筑", "defaultUnlock": false, "defaultCapacity": 150},
-    {"id": "R_CHARCOAL", "name": "木炭", "desc": "用于冶炼与高级加工", "defaultUnlock": false, "defaultCapacity": 150},
-    {"id": "R_IRON_ORE", "name": "铁矿", "desc": "冶炼原料", "defaultUnlock": false, "defaultCapacity": 150},
-    {"id": "R_IRON_INGOT", "name": "铁锭", "desc": "制造工具与升级的关键材料", "defaultUnlock": false, "defaultCapacity": 150},
-    {"id": "R_KNOWLEDGE", "name": "知识", "desc": "用于研究与解锁科技", "defaultUnlock": false, "defaultCapacity": 150}
+  {"id": "R_FOOD", "name": "食物", "desc": "用于生存与烹饪", "defaultUnlock": true, "defaultCapacity": 100},
+  {"id": "R_WOOD", "name": "木材", "desc": "用于建造与加工", "defaultUnlock": true, "defaultCapacity": 50},
+  {"id": "R_STONE", "name": "石头", "desc": "用于建造与升级", "defaultUnlock": true, "defaultCapacity": 50},
+  {"id": "R_ANIMAL_HIDE", "name": "兽皮", "desc": "用于保暖", "defaultUnlock": true, "defaultCapacity": 20}
 ]

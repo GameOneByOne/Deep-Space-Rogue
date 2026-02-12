@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List
 from GameUtils import Utils
+from GameEffect import EffectExecutor
 
 
 @dataclass(frozen=True)
@@ -73,11 +74,6 @@ class ResearchManager:
             return False
         return self.state[researchId].finished
 
-    def GetResearchPrereqs(self, researchId: str):
-        if researchId not in self.state:
-            return []
-        return self.state[researchId].researchDef.prereqs
-
     def GetResearchCost(self, researchId: str):
         if researchId not in self.state:
             return []
@@ -90,7 +86,7 @@ class ResearchManager:
         if not rState.unlocked or rState.finished:
             return []
         rState.finished = True
-        return rState.researchDef.effects
+        return [EffectExecutor.FromDict(x) for x in rState.researchDef.effects]
 
     def GetDef(self, researchId: str) -> ResearchDef:
         return self.state[researchId].researchDef

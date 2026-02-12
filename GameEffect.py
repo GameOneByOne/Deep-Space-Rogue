@@ -1,93 +1,77 @@
 from __future__ import annotations
 
 class Effect :
-    def __init__(self, fromEntityId:str, raw: dict, belongTo) :
-        self.raw = raw
-        self.fromId = fromEntityId
-        self.belongTo = belongTo
+    def __init__(self, raw: dict = dict()) :
+        self.target = raw.get("target", "")
+        self.toId = raw.get("id", "")
         self.onlyOnce = True
-
-    def Apply(self) :
-        return
     
-    def Revert(self) :
-        return
-
-    def IsOnlyOnce(self) :
-        return self.onlyOnce
+    def GetOppositeEffect(self) :
+        return Effect()
 
 
 class UnlockEffect(Effect) :
-    def __init__(self, fromEntityId:str, raw: dict, belongTo) :
-        super().__init__(fromEntityId, raw, belongTo)
-        self.toId = raw.get("id", "")
-    
-    def Apply(self) :
-        self.belongTo.Unlock(self.toId)
-        return
-    
-    def Revert(self) :
-        return
+    def __init__(self, raw: dict = dict()) :
+        super().__init__(raw)
 
 
 class AddEffect(Effect) :
-    def __init__(self, fromEntityId:str, raw: dict, belongTo) :
-        super().__init__(fromEntityId, raw, belongTo)
-        self.toId = raw.get("id", "")
+    def __init__(self, raw: dict = dict()) :
+        super().__init__(raw)
         self.count = raw.get("count", 0)
         self.per = raw.get("per", "")
         self.condition = raw.get("condition", {})
         self.onlyOnce = False if self.per == "turn" else True
 
-    def Apply(self) :
-        self.belongTo.ApplyEffect(self.fromId, self.toId, self)
-        return
-    
-    def Revert(self) :
-        self.belongTo.RevertEffect(self.fromId, self.toId, self)
-        return
+    def GetOppositeEffect(self) :
+        effect = ClampEffect()
+        effect.target = self.target
+        effect.toId = self.toId
+        effect.count = self.count
+        effect.per = self.per
+        effect.condition = self.condition
+        effect.onlyOnce = self.onlyOnce
+        return effect
                 
 
 class ClampEffect(Effect) :
-    def __init__(self, fromEntityId:str, raw: dict, belongTo) :
-        super().__init__(fromEntityId, raw, belongTo)
-        self.toId = raw.get("id", "")
+    def __init__(self, raw: dict = dict()) :
+        super().__init__(raw)
         self.count = raw.get("count", 0)
         self.per = raw.get("per", "")
         self.condition = raw.get("condition", {})
         self.onlyOnce = False if self.per == "turn" else True
 
-    def Apply(self) :
-        self.belongTo.ApplyEffect(self.fromId, self.toId, self)
-        return
-    
-    def Revert(self) :
-        self.belongTo.RevertEffect(self.fromId, self.toId, self)
-        return
+    def GetOppositeEffect(self) :
+        effect = AddEffect()
+        effect.target = self.target
+        effect.toId = self.toId
+        effect.count = self.count
+        effect.per = self.per
+        effect.condition = self.condition
+        effect.onlyOnce = self.onlyOnce
+        return effect
 
 
 class ConvertEffect(Effect) :
-    def __init__(self, fromEntityId:str, raw: dict, belongTo) :
-        super().__init__(fromEntityId, raw, belongTo)
-        self.toId = ""
+    def __init__(self, raw: dict = dict()) :
+        super().__init__(raw)
         self.inTargets = raw.get("inTargets", [])
         self.outTarget = raw.get("outTarget", {})
         self.per = raw.get("per", "")
         self.condition = raw.get("condition", {})
         self.onlyOnce = False if self.per == "turn" else True
 
-    def Apply(self) :
-        self.belongTo.ApplyEffect(self.fromId, self.toId, self)
-        return
 
-    def Revert(self) :
-        self.belongTo.RevertEffect(self.fromId, self.toId, self)
-        return
+class AddLimitEffect(Effect) :
+    def __init__(self, raw: dict = dict()) :
+        super().__init__(raw)
+        self.count = raw.get("count", 0)
 
 
 class ModifierEffect(Effect) :
-    def __init__(self, fromEntityId:str, raw: dict, belongTo) :
-        super().__init__(fromEntityId, raw, belongTo)
+    def __init__(self, raw: dict = dict()) :
+        super().__init__(raw)
         self.scope = raw.get("scope", {})
         self.op = raw.get("op", "")
         self.value = raw.get("value", 0)
@@ -95,44 +79,51 @@ class ModifierEffect(Effect) :
 
 
 class EffectExecutor :
-    def __init__(self, buildingManager, resourceManager, professionManager, researchManager) :
-        self.buildingManager = buildingManager
-        self.resourceManager = resourceManager
-        self.professionManager = professionManager
-        self.researchManager = researchManager
+    buildingManager = None
+    resourceManager = None
+    professionManager = None
+    researchManager = None
 
-    def FromDict(self, fromEntityId: str, effect: list) :
+    @staticmethod
+    def Init(buildingManager, resourceManager, professionManager, researchManager) :
+        EffectExecutor.buildingManager = buildingManager
+        EffectExecutor.resourceManager = resourceManager
+        EffectExecutor.professionManager = professionManager
+        EffectExecutor.researchManager = researchManager
+
+    @staticmethod
+    def FromDict(effect: dict) :
         effectType = effect.get("type", "")
-        target = effect.get("target", "")
 
         if effectType == "unlock" :
-            if target == "resource" :
-                return UnlockEffect(fromEntityId, effect, self.resourceManager)
-            elif target == "building" :
-                return UnlockEffect(fromEntityId, effect, self.buildingManager)
-            elif target == "profession" :
-                return UnlockEffect(fromEntityId, effect, self.professionManager)
-            elif target == "research" :
-                return UnlockEffect(fromEntityId, effect, self.researchManager)
-            return Effect(fromEntityId, effect, None)
+            return UnlockEffect(effect)
 
         if effectType == "add" :
-            if target == "resource" :
-                return AddEffect(fromEntityId, effect, self.resourceManager)
-            elif target == "profession" :
-                return AddEffect(fromEntityId, effect, self.professionManager)
-            return Effect(fromEntityId, effect, None)
+            return AddEffect(effect)
 
         if effectType == "clamp" :
-            if target == "resource" :
-                return ClampEffect(fromEntityId, effect, self.resourceManager)
-            elif target == "profession" :
-                return ClampEffect(fromEntityId, effect, self.professionManager)
-            return Effect(fromEntityId, effect, None)
+            return ClampEffect(effect)
 
         if effectType == "convert" :
-            if target == "resource" :
-                return ClampEffect(fromEntityId, effect, self.resourceManager)
-            return Effect(fromEntityId, effect, None)
+            return ConvertEffect(effect)
 
-        return Effect(fromEntityId, effect, None)
+        if effectType == "addLimit" :
+            return AddLimitEffect(effect)   
+
+        return Effect(effect, None)
+
+    @staticmethod
+    def Exec(effect: Effect) :
+        if effect.target == "resource" :
+            return EffectExecutor.resourceManager.ApplyEffect(effect)
+
+        if effect.target == "building" :
+            return EffectExecutor.buildingManager.ApplyEffect(effect)
+
+        if effect.target == "profession" :
+            return EffectExecutor.professionManager.ApplyEffect(effect)
+
+        if effect.target == "research" :
+            return EffectExecutor.researchManager.ApplyEffect(effect)
+        
+        return

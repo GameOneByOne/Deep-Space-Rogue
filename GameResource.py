@@ -4,7 +4,7 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict
-from GameEffect import Effect, AddEffect, ClampEffect, ConvertEffect
+from GameEffect import Effect, UnlockEffect, AddEffect, ClampEffect, AddLimitEffect
 
 
 @dataclass(frozen=True)
@@ -87,36 +87,22 @@ class ResourceManager:
                 return False
         return True
 
-    def ApplyEffect(self, fromEntityId: str, toEntityId: str, effect : Effect) :
-        if isinstance(effect, AddEffect) :
-            if effect.IsOnlyOnce():
+    def ApplyEffect(self, effect : Effect) :
+        if isinstance(effect, UnlockEffect) :
+            self.Unlock(effect.toId)
+            return
+        elif isinstance(effect, AddEffect) :
+            if effect.onlyOnce:
                 self.Add(effect.toId, effect.count)
             else :
                 self.state[effect.toId].rate += effect.count
-            pass
-
         elif isinstance(effect, ClampEffect) :
-            if effect.IsOnlyOnce():
+            if effect.onlyOnce:
                 self.Clamp(effect.toId, effect.count)
             else :
                 self.state[effect.toId].rate -= effect.count
-            pass
-        return
-
-    def RevertEffect(self, fromEntityId: str, toEntityId: str, effect: Effect) :
-        if isinstance(effect, AddEffect) :
-            if effect.IsOnlyOnce():
-                self.Clamp(effect.toId, effect.count)
-            else :
-                self.state[effect.toId].rate -= effect.count
-            pass
-
-        elif isinstance(effect, ClampEffect) :
-            if effect.IsOnlyOnce():
-                self.Add(effect.toId, effect.count)
-            else :
-                self.state[effect.toId].rate += effect.count
-            pass
+        elif isinstance(effect, AddLimitEffect) :
+            self.state[effect.toId].capacity += effect.count
         return
     
     def Tick(self, timeDelta) :

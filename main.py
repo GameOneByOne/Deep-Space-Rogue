@@ -75,6 +75,7 @@ def GetEngine(
         engine = g_engineByClient.get(clientId)
         if engine is None:
             engine = GameEngine()
+            engine.StartGame()
             g_engineByClient[clientId] = engine
         return engine
 
