@@ -8,11 +8,17 @@ class Effect :
     
     def GetOppositeEffect(self) :
         return Effect()
+    
+    def __str__(self) :
+        return "No Effect."
 
 
 class UnlockEffect(Effect) :
     def __init__(self, raw: dict = dict()) :
         super().__init__(raw)
+
+    def __str__(self) :
+        return "Unlock " + self.target + " - " + self.toId
 
 
 class AddEffect(Effect) :
@@ -32,6 +38,9 @@ class AddEffect(Effect) :
         effect.condition = self.condition
         effect.onlyOnce = self.onlyOnce
         return effect
+    
+    def __str__(self) :
+        return "Add " + self.target + " - " + self.toId + " - " + str(self.count) + " every " + self.per
                 
 
 class ClampEffect(Effect) :
@@ -52,6 +61,8 @@ class ClampEffect(Effect) :
         effect.onlyOnce = self.onlyOnce
         return effect
 
+    def __str__(self) :
+        return "Clamp " + self.target + " - " + self.toId + " - " + str(self.count) + " every " + self.per
 
 class ConvertEffect(Effect) :
     def __init__(self, raw: dict = dict()) :
@@ -68,6 +79,8 @@ class AddLimitEffect(Effect) :
         super().__init__(raw)
         self.count = raw.get("count", 0)
 
+    def __str__(self) :
+        return "Add limit " + self.target + " - " + self.toId + " - " + str(self.count)
 
 class ModifierEffect(Effect) :
     def __init__(self, raw: dict = dict()) :

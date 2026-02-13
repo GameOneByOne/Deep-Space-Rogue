@@ -43,6 +43,7 @@ class ResourceState:
         state.resDef = ResourceDef.FromDict(data)
         state.unlocked = True if state.resDef.defaultUnlock else False
         state.capacity = state.resDef.defaultCapacity
+        print(state.amount)
         return state
 
     def UpdateState(self) :

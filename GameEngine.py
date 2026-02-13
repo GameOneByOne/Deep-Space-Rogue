@@ -39,13 +39,13 @@ class GameEngine :
         EffectExecutor.Init(self.buildingManager, self.resourceManager, self.professionManager, self.researcheManager)
         
         # 记录上次更新时间
-        self.updateTime = time.time()
+        self.updateTime = int(time.time())
 
     def StartGame(self) :
-        # 默认开局三个人力
-        effect = { "type": "addLimit", "target": "profession", "id": "P_IDLE", "count": 3}
+        # 默认开局两个人力
+        effect = { "type": "addLimit", "target": "profession", "id": "P_IDLE", "count": 2}
         self.ApplyEffects([EffectExecutor.FromDict(effect)])
-        effect = { "type": "add", "target": "profession", "id": "P_IDLE", "count": 3}
+        effect = { "type": "add", "target": "profession", "id": "P_IDLE", "count": 2}
         self.ApplyEffects([EffectExecutor.FromDict(effect)])
         return
 

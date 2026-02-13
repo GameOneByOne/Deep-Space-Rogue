@@ -87,10 +87,10 @@ class ProfessionManager:
             return
         elif isinstance(effect, AddEffect) :
             self.state[effect.toId].amount += effect.count
-            return [EffectExecutor.FromDict(x) for x in self.state[effect.toId].profDef.effects]
+            return [EffectExecutor.FromDict(x) for x in self.state[effect.toId].profDef.effects] * effect.count
         elif isinstance(effect, ClampEffect) :
             self.state[effect.toId].amount -= effect.count
-            return [EffectExecutor.FromDict(x).GetOppositeEffect() for x in self.state[effect.toId].profDef.effects]
+            return [EffectExecutor.FromDict(x).GetOppositeEffect() for x in self.state[effect.toId].profDef.effects] * effect.count
         elif isinstance(effect, AddLimitEffect) :
             self.state[effect.toId].limit += effect.count
             return
