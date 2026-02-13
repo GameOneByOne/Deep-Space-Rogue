@@ -82,13 +82,14 @@ def GetEngine(
 @app.get("/state")
 def GetState(engine: GameEngine = Depends(GetEngine)):
     engine.Tick()
-    mainInfos, buildings, resources, professions, researchInfos = engine.Show()
+    mainInfos, buildings, resources, professions, researchInfos, eventInfos = engine.Show()
     return {
         "main": mainInfos,
         "buildings": buildings,
         "resources": resources,
         "professions": professions,
         "research": researchInfos,
+        "events": eventInfos,
     }
 
 @app.post("/build/{buildingId}")

@@ -23,6 +23,7 @@ if (!clientId) {
 const els = {
   resources: document.getElementById("resource-list"),
   buildings: document.getElementById("building-list"),
+  events: document.getElementById("event-list"),
   professions: document.getElementById("profession-list"),
   researches: document.getElementById("research-list"),
   tooltip: document.getElementById("tooltip"),
@@ -184,6 +185,48 @@ function renderBuildings(buildings, nameOf, dontChangeButtonStatus = false) {
   });
 }
 
+function renderEvents(events) {
+  if (!els.events) return;
+  const exist = els.events.querySelectorAll("[data-id]");
+  const existMap = new Map();
+  exist.forEach((node) => {
+    existMap.set(node.dataset.id, node);
+  });
+  const seen = new Set();
+  events.forEach((ev) => {
+    let label = existMap.get(ev.id);
+    const isNew = !label;
+    if (!label) {
+      label = document.createElement("div");
+      label.className = "event-label";
+      label.dataset.id = ev.id;
+    }
+    if (label.textContent !== ev.name) {
+      label.textContent = ev.name;
+    }
+    const effects = (ev.effects || []).join("\n");
+    let tip = `【事件】${ev.name}\n${ev.desc || ""}\n`;
+    if (typeof ev.weight !== "undefined") {
+      tip += `\n【权重】${ev.weight}`;
+    }
+    if (typeof ev.cooldown !== "undefined") {
+      tip += `\n【冷却】${ev.cooldown}`;
+    }
+    if (effects) {
+      tip += `\n\n【效果】\n${effects}`;
+    }
+    setTip(label, tip);
+    if (isNew) {
+      els.events.appendChild(label);
+    }
+    seen.add(ev.id);
+  });
+
+  existMap.forEach((node, id) => {
+    if (!seen.has(id)) node.remove();
+  });
+}
+
 function renderProfessions(professions) {
   els.professions.innerHTML = "";
   const idle = professions.find((p) => p.id === "P_IDLE");
@@ -275,10 +318,12 @@ function render(state) {
   const buildings = Object.values(state.buildings || {});
   const professions = Object.values(state.professions || {});
   const researches = Object.values(state.research || {});
+  const events = Object.values(state.events || {});
   const nameOf = buildNameMap(resources, buildings, professions, researches);
 
   renderResources(resources);
   renderBuildings(buildings, nameOf, true);
+  renderEvents(events);
   renderProfessions(professions);
   renderResearches(researches, nameOf, true);
 }

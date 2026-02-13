@@ -43,7 +43,7 @@ def ShowInfo() :
             gameEngine.Tick()
             tickCount = 0.0
 
-        mainInfos, buildings, resources, professions, researchInfos = gameEngine.Show()
+        mainInfos, buildings, resources, professions, researchInfos, eventInfos = gameEngine.Show()
 
         # 更新资源显示模块
         for resource in resources.values() :

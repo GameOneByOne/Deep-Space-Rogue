@@ -113,9 +113,9 @@ class GameEngine :
         buildingInfos = {info["id"]: info for info in self.buildingManager.GetFrontData() }
         professionInfos = {info["id"]: info for info in self.professionManager.GetFrontData()}
         researchInfos = {info["id"]: info for info in self.researcheManager.GetFrontData()}
-        eventInfos = {info["id"]: info for info in self.researcheManager.GetFrontData()}
+        eventInfos = {info["id"]: info for info in self.eventManager.GetFrontData()}
         mainInfos = self.GetFrontData()
-        return mainInfos, buildingInfos, resourceInfos, professionInfos, researchInfos
+        return mainInfos, buildingInfos, resourceInfos, professionInfos, researchInfos, eventInfos
 
     def ApplyEffects(self,  effects: list) :
         effectQue = deque(effects)

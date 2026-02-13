@@ -9,6 +9,7 @@ TARGET_NAME_CONVERT = {
 
 PER_NAME_CONVERT= {
     "turn" : "每秒",
+    "occur":"每次发生",
     "click": "每次点击"
 }
 
