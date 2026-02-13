@@ -4,14 +4,15 @@ from GameBuilding import BuildingManager
 from GameResource import ResourceManager
 from GameProfession import ProfessionManager
 from GameResearch import ResearchManager
-from GameEffect import EffectExecutor, Effect, AddEffect
+from GameEvent import EventManager
+from GameEffect import EffectExecutor
 
 
 BUILDING_DATA_PATH = "data/building.dat"
 RESOURCE_DATA_PATH = "data/resource.dat"
 PROFESSION_DATA_PATH = "data/profession.dat"
 RESEARCH_DATA_PATH = "data/research.dat"
-
+EVENT_DATA_PATH = "data/event.dat"
 
 class GameEngine :
     def __init__(self) :
@@ -21,11 +22,14 @@ class GameEngine :
         # 初始化资源数据
         self.resourceManager = ResourceManager(RESOURCE_DATA_PATH)
 
-        # 初始化人力职业数据
+        # 初始化人力数据
         self.professionManager = ProfessionManager(PROFESSION_DATA_PATH)
 
         # 初始化研究数据
         self.researcheManager = ResearchManager(RESEARCH_DATA_PATH)
+
+        # 初始化事件数据
+        self.eventManager = EventManager(EVENT_DATA_PATH)
 
         # 初始化效果执行器
         EffectExecutor.Init(self.buildingManager, self.resourceManager, self.professionManager, self.researcheManager)
@@ -109,6 +113,7 @@ class GameEngine :
         buildingInfos = {info["id"]: info for info in self.buildingManager.GetFrontData() }
         professionInfos = {info["id"]: info for info in self.professionManager.GetFrontData()}
         researchInfos = {info["id"]: info for info in self.researcheManager.GetFrontData()}
+        eventInfos = {info["id"]: info for info in self.researcheManager.GetFrontData()}
         mainInfos = self.GetFrontData()
         return mainInfos, buildingInfos, resourceInfos, professionInfos, researchInfos
 

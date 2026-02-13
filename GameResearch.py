@@ -87,9 +87,6 @@ class ResearchManager:
         rState.finished = True
         return [EffectExecutor.FromDict(x) for x in rState.researchDef.effects]
 
-    def GetDef(self, researchId: str) -> ResearchDef:
-        return self.state[researchId].researchDef
-
     def GetFrontData(self):
         data = list()
         for researchState in self.state.values():

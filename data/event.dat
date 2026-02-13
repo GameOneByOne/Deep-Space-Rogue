@@ -1,0 +1,16 @@
+[
+  {
+    "id": "E_COLD",
+    "name": "寒冷",
+    "desc": "晚上和冬天",
+    "defaultUnlock": true,
+    "weight": 10,
+    "cooldown": 20,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_WORKSHOP" }
+    ],
+    "effects": [
+      { "type": "clamp", "target": "resource", "id": "R_WOOD", "count": 20, "per": "occur" }
+    ]
+  }
+]
