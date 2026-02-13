@@ -10,8 +10,10 @@
     "prereqs": [],
     "effects": [
       { "type": "addLimit", "target": "profession", "id": "P_IDLE", "count": 3},
-      { "type": "add", "target": "profession", "id": "P_IDLE", "count": 3},
+      { "type": "add", "target": "profession", "id": "P_IDLE", "count": 3, "per":"click"},
       { "type": "unlock", "target": "profession", "id": "P_HUNTER"},
+      { "type": "unlock", "target": "resource", "id": "R_KNOWLEDGE"},
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 1, "per":"turn"},
       { "type": "unlock", "target": "building", "id": "B_FARMLAND"}
     ]
   },

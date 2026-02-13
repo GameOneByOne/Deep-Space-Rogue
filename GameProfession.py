@@ -4,7 +4,6 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List
-from GameUtils import Utils
 from GameEffect import EffectExecutor, Effect, UnlockEffect, AddEffect, ClampEffect, AddLimitEffect
 
 
@@ -110,6 +109,6 @@ class ProfessionManager:
             info["count"] = professionState.amount
             info["limit"] = professionState.limit
             info["canEdit"] = professionState.profDef.editable
-            info["effectsDesc"] = [Utils.GetEffectDesc(effect) for effect in professionState.profDef.effects]
+            info["effectsDesc"] = [str(EffectExecutor.FromDict(effect)) for effect in professionState.profDef.effects]
             data.append(info)
         return data

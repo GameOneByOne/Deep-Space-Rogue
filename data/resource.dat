@@ -1,4 +1,5 @@
 [
+  {"id": "R_KNOWLEDGE", "name": "知识", "desc": "用于研究和升级", "defaultUnlock": false, "defaultCapacity": 100},
   {"id": "R_FOOD", "name": "食物", "desc": "用于生存与烹饪", "defaultUnlock": true, "defaultCapacity": 100},
   {"id": "R_WOOD", "name": "木材", "desc": "用于建造与加工", "defaultUnlock": true, "defaultCapacity": 50},
   {"id": "R_STONE", "name": "石头", "desc": "用于建造与升级", "defaultUnlock": true, "defaultCapacity": 50},

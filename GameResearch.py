@@ -4,7 +4,6 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List
-from GameUtils import Utils
 from GameEffect import EffectExecutor
 
 
@@ -104,7 +103,7 @@ class ResearchManager:
             info["cost"] = researchState.researchDef.cost
             info["finished"] = researchState.finished
             info["unlocked"] = researchState.unlocked
-            info["costDesc"] = [Utils.GetCostDesc(cost) for cost in researchState.researchDef.cost]
-            info["effectsDesc"] = [Utils.GetEffectDesc(effect) for effect in researchState.researchDef.effects]
+            info["costDesc"] = [EffectExecutor.GetCostDesc(cost) for cost in researchState.researchDef.cost]
+            info["effectsDesc"] = [str(EffectExecutor.FromDict(effect)) for effect in researchState.researchDef.effects]
             data.append(info)
         return data

@@ -6,15 +6,15 @@
     "defaultUnlock": true,
     "editable": false,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_WOOD", "count": 0.5, "per": "turn" },
-      { "type": "add", "target": "resource", "id": "R_STONE", "count": 0.5, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_WOOD", "count": 0.25, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_STONE", "count": 0.25, "per": "turn" }
     ]
   },
   {
     "id": "P_HUNTER",
     "name": "猎人",
     "desc": "稳定获取食物",
-    "defaultUnlock": false,
+    "defaultUnlock": true,
     "editable": true,
     "effects": [
       { "type": "add", "target": "resource", "id": "R_FOOD", "count": 1, "per": "turn" },

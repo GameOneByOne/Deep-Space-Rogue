@@ -4,7 +4,6 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List
-from GameUtils import Utils
 from GameEffect import EffectExecutor, Effect, UnlockEffect
 
 
@@ -97,7 +96,7 @@ class BuildingManager:
             info["desc"] = buildingState.buildingDef.desc
             info["cost"] = buildingState.buildingDef.cost
             info["count"] = buildingState.ownedCount
-            info["costDesc"] = [Utils.GetCostDesc(cost) for cost in buildingState.buildingDef.cost]
-            info["effectsDesc"] = [Utils.GetEffectDesc(effect) for effect in buildingState.buildingDef.effects]
+            info["costDesc"] = [EffectExecutor.GetCostDesc(cost) for cost in buildingState.buildingDef.cost]
+            info["effectsDesc"] = [str(EffectExecutor.FromDict(effect)) for effect in buildingState.buildingDef.effects]
             data.append(info)
         return data

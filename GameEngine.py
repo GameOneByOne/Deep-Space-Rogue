@@ -5,7 +5,6 @@ from GameResource import ResourceManager
 from GameProfession import ProfessionManager
 from GameResearch import ResearchManager
 from GameEffect import EffectExecutor, Effect, AddEffect
-from GameUtils import Utils
 
 
 BUILDING_DATA_PATH = "data/building.dat"
@@ -18,24 +17,17 @@ class GameEngine :
     def __init__(self) :
         # 初始化建筑数据
         self.buildingManager =  BuildingManager(BUILDING_DATA_PATH)
-        for bState in self.buildingManager.state.values() :
-            Utils.AddEntityToNameMap(bState.buildingDef.id, bState.buildingDef.name)
 
         # 初始化资源数据
         self.resourceManager = ResourceManager(RESOURCE_DATA_PATH)
-        for rState in self.resourceManager.state.values() :
-            Utils.AddEntityToNameMap(rState.resDef.id, rState.resDef.name)
 
         # 初始化人力职业数据
         self.professionManager = ProfessionManager(PROFESSION_DATA_PATH)
-        for pState in self.professionManager.state.values() :
-            Utils.AddEntityToNameMap(pState.profDef.id, pState.profDef.name)
 
         # 初始化研究数据
         self.researcheManager = ResearchManager(RESEARCH_DATA_PATH)
-        for rState in self.researcheManager.state.values() :
-            Utils.AddEntityToNameMap(rState.researchDef.id, rState.researchDef.name)
 
+        # 初始化效果执行器
         EffectExecutor.Init(self.buildingManager, self.resourceManager, self.professionManager, self.researcheManager)
         
         # 记录上次更新时间
@@ -83,7 +75,7 @@ class GameEngine :
             self.resourceManager.Clamp(item["id"], item["need"])
 
         effects = self.researcheManager.Finish(researchId)
-        self.ApplyEffects(researchId, effects)
+        self.ApplyEffects(effects)
         return True
     
     def Dispatch(self, fromProfessionId : str, toProfessionId : str) :
