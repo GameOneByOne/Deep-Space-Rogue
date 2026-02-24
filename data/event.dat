@@ -2,15 +2,277 @@
   {
     "id": "E_COLD",
     "name": "寒冷",
-    "desc": "晚上和冬天",
+    "desc": "气温骤降，需要更多燃料维持生存",
     "defaultUnlock": true,
     "weight": 10,
     "cooldown": 20,
     "prereqs": [
+      { "type": "hasBuilding", "id": "B_CAMPFIRE" }
+    ],
+    "effects": [
+      { "type": "clamp", "target": "resource", "id": "R_WOOD", "count": 5, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_BOUNTIFUL_HARVEST",
+    "name": "丰收",
+    "desc": "这一年风调雨顺，农作物产量大增",
+    "defaultUnlock": false,
+    "weight": 15,
+    "cooldown": 30,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_FARMLAND" }
+    ],
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 30, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_CROP", "count": 20, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_FOREST_FIRE",
+    "name": "森林火灾",
+    "desc": "一场大火烧毁了附近的森林",
+    "defaultUnlock": false,
+    "weight": 8,
+    "cooldown": 40,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_LUMBER_CAMP" }
+    ],
+    "effects": [
+      { "type": "clamp", "target": "resource", "id": "R_WOOD", "count": 20, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_FOOD", "count": -10, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_WOLF_ATTACK",
+    "name": "狼群袭击",
+    "desc": "饥饿的狼群袭击了营地",
+    "defaultUnlock": true,
+    "weight": 12,
+    "cooldown": 25,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_CAMPFIRE" }
+    ],
+    "effects": [
+      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 10, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_ANIMAL_HIDE", "count": 5, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_MIGRANTS",
+    "name": "移民抵达",
+    "desc": "一群流浪者加入了你的聚落",
+    "defaultUnlock": false,
+    "weight": 10,
+    "cooldown": 35,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_HUT" }
+    ],
+    "effects": [
+      { "type": "add", "target": "profession", "id": "P_IDLE", "count": 2, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_FOOD", "count": -15, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_DISEASE",
+    "name": "疾病爆发",
+    "desc": "瘟疫在聚落中蔓延",
+    "defaultUnlock": false,
+    "weight": 8,
+    "cooldown": 50,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_HUT" }
+    ],
+    "effects": [
+      { "type": "clamp", "target": "profession", "id": "P_IDLE", "count": 1, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_FOOD", "count": -20, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_MINERAL_VEIN",
+    "name": "发现矿脉",
+    "desc": "勘探队发现了丰富的矿藏",
+    "defaultUnlock": false,
+    "weight": 10,
+    "cooldown": 45,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_MINE" }
+    ],
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_METAL_ORE", "count": 25, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_COAL", "count": 20, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_CAVE_IN",
+    "name": "矿洞塌方",
+    "desc": "矿洞发生塌方，采矿工作中断",
+    "defaultUnlock": false,
+    "weight": 7,
+    "cooldown": 40,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_MINE" }
+    ],
+    "effects": [
+      { "type": "clamp", "target": "resource", "id": "R_METAL_ORE", "count": 15, "per": "occur" },
+      { "type": "clamp", "target": "profession", "id": "P_MINER", "count": 1, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_MARKET_BOOM",
+    "name": "市场繁荣",
+    "desc": "贸易兴盛，资源交换效率提高",
+    "defaultUnlock": false,
+    "weight": 12,
+    "cooldown": 30,
+    "prereqs": [
       { "type": "hasBuilding", "id": "B_WORKSHOP" }
     ],
     "effects": [
-      { "type": "clamp", "target": "resource", "id": "R_WOOD", "count": 20, "per": "occur" }
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 15, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_TOOLS", "count": 10, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_INDUSTRIAL_ACCIDENT",
+    "name": "工业事故",
+    "desc": "工厂发生爆炸，造成损失",
+    "defaultUnlock": false,
+    "weight": 6,
+    "cooldown": 35,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_FACTORY" }
+    ],
+    "effects": [
+      { "type": "clamp", "target": "resource", "id": "R_STEEL", "count": 15, "per": "occur" },
+      { "type": "clamp", "target": "resource", "id": "R_PARTS", "count": 10, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": -10, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_POWER_OUTAGE",
+    "name": "停电事故",
+    "desc": "电网发生故障，供电中断",
+    "defaultUnlock": false,
+    "weight": 8,
+    "cooldown": 25,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_POWER_PLANT" }
+    ],
+    "effects": [
+      { "type": "clamp", "target": "resource", "id": "R_ELECTRICITY", "count": 50, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": -20, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_OIL_DISCOVERY",
+    "name": "发现油田",
+    "desc": "地质勘探发现了大型油田",
+    "defaultUnlock": false,
+    "weight": 10,
+    "cooldown": 50,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_REFINERY" }
+    ],
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_OIL", "count": 50, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_PLASTIC", "count": 20, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_RESEARCH_BREAKTHROUGH",
+    "name": "科研突破",
+    "desc": "科学家取得重大发现",
+    "defaultUnlock": false,
+    "weight": 8,
+    "cooldown": 40,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_TECH_CENTER" }
+    ],
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 100, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_CHIP", "count": 5, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_RADIATION_LEAK",
+    "name": "核泄漏",
+    "desc": "核电站发生泄漏事故",
+    "defaultUnlock": false,
+    "weight": 5,
+    "cooldown": 60,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_NUCLEAR_PLANT" }
+    ],
+    "effects": [
+      { "type": "clamp", "target": "resource", "id": "R_NUCLEAR_ENERGY", "count": 100, "per": "occur" },
+      { "type": "clamp", "target": "profession", "id": "P_PHYSICIST", "count": 1, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": -50, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_METEOR_SHOWER",
+    "name": "流星雨",
+    "desc": "壮观的流星雨带来了稀有矿物",
+    "defaultUnlock": false,
+    "weight": 7,
+    "cooldown": 80,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_SPACE_STATION" }
+    ],
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_ALLOY", "count": 30, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_URANIUM", "count": 10, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 50, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_ALIEN_CONTACT",
+    "name": "外星接触",
+    "desc": "收到了来自其他文明的信号",
+    "defaultUnlock": false,
+    "weight": 5,
+    "cooldown": 100,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_INTERSTELLAR_GATE" }
+    ],
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_ALIEN_TECH", "count": 5, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 200, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_ANTIMATTER", "count": 2, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_SOLAR_FLARE",
+    "name": "太阳耀斑",
+    "desc": "强烈的太阳活动影响了电子设备",
+    "defaultUnlock": false,
+    "weight": 6,
+    "cooldown": 45,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_ROCKET_SILO" }
+    ],
+    "effects": [
+      { "type": "clamp", "target": "resource", "id": "R_ELECTRICITY", "count": 100, "per": "occur" },
+      { "type": "clamp", "target": "resource", "id": "R_CIRCUIT", "count": 15, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_CHIP", "count": -5, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_VOLCANIC_ERUPTION",
+    "name": "火山喷发",
+    "desc": "附近火山喷发，改变地形但带来肥沃土壤",
+    "defaultUnlock": false,
+    "weight": 4,
+    "cooldown": 100,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_SMELTER" }
+    ],
+    "effects": [
+      { "type": "clamp", "target": "profession", "id": "P_IDLE", "count": 2, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_STONE", "count": 50, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_CROP", "count": 30, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_METAL_ORE", "count": 20, "per": "occur" }
     ]
   }
 ]

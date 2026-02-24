@@ -23,17 +23,18 @@
   },
   {
     "id": "P_FARMER",
-    "name": "种植",
-    "desc": "能生产食物",
+    "name": "农夫",
+    "desc": "种植农作物",
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 1, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_CROP", "count": 1.5, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 0.5, "per": "turn" }
     ]
   },
   {
     "id": "P_LUMBERJACK",
-    "name": "伐木",
+    "name": "伐木工",
     "desc": "稳定产出木材",
     "defaultUnlock": false,
     "editable": true,
@@ -43,12 +44,191 @@
   },
   {
     "id": "P_QUARRYMAN",
-    "name": "采石",
-    "desc": "提升采石场产出效率",
+    "name": "采石工",
+    "desc": "开采石头",
     "defaultUnlock": false,
     "editable": true,
     "effects": [
       { "type": "add", "target": "resource", "id": "R_STONE", "count": 1.5, "per": "turn" }
+    ]
+  },
+  {
+    "id": "P_HERDER",
+    "name": "牧民",
+    "desc": "驯养动物获取资源",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 0.8, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_ANIMAL_HIDE", "count": 0.5, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_FABRIC", "count": 0.3, "per": "turn" }
+    ]
+  },
+  {
+    "id": "P_WEAVER",
+    "name": "织工",
+    "desc": "将兽皮制成布匹",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_FABRIC", "count": 1, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_ANIMAL_HIDE", "count": 0.5, "per": "turn" }
+    ]
+  },
+  {
+    "id": "P_MINER",
+    "name": "矿工",
+    "desc": "开采地下矿石",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_METAL_ORE", "count": 1, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_COAL", "count": 0.5, "per": "turn" }
+    ]
+  },
+  {
+    "id": "P_CRAFTSMAN",
+    "name": "工匠",
+    "desc": "制作工具和器具",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_TOOLS", "count": 0.8, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_METAL", "count": 0.3, "per": "turn" }
+    ]
+  },
+  {
+    "id": "P_SMELTER",
+    "name": "冶炼工",
+    "desc": "将矿石冶炼成金属",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_METAL", "count": 0.8, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_METAL_ORE", "count": 1, "per": "turn" }
+    ]
+  },
+  {
+    "id": "P_STEELWORKER",
+    "name": "炼钢工",
+    "desc": "生产高强度钢材",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_STEEL", "count": 0.6, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_METAL", "count": 0.5, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_COAL", "count": 0.3, "per": "turn" }
+    ]
+  },
+  {
+    "id": "P_MACHINIST",
+    "name": "机械师",
+    "desc": "制造机械零件",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_PARTS", "count": 0.5, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_STEEL", "count": 0.3, "per": "turn" }
+    ]
+  },
+  {
+    "id": "P_ENGINEER",
+    "name": "工程师",
+    "desc": "设计和维护复杂设备",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 2, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_CIRCUIT", "count": 0.3, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_PLASTIC", "count": 0.2, "per": "turn" }
+    ]
+  },
+  {
+    "id": "P_CHEMIST",
+    "name": "化学家",
+    "desc": "研究化学工艺",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_PLASTIC", "count": 0.6, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_ROCKET_FUEL", "count": 0.4, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_OIL", "count": 0.5, "per": "turn" }
+    ]
+  },
+  {
+    "id": "P_PHYSICIST",
+    "name": "物理学家",
+    "desc": "研究核能与高能物理",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 3, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_ENRICHED_URANIUM", "count": 0.1, "per": "turn" }
+    ]
+  },
+  {
+    "id": "P_TECHNICIAN",
+    "name": "技术员",
+    "desc": "维护电力和自动化设备",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_ELECTRICITY", "count": 5, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_CHIP", "count": 0.2, "per": "turn" }
+    ]
+  },
+  {
+    "id": "P_ASTRONAUT",
+    "name": "宇航员",
+    "desc": "接受专业训练的太空人员",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 1, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_LIFE_SUPPORT", "count": 0.3, "per": "turn" }
+    ]
+  },
+  {
+    "id": "P_PILOT",
+    "name": "飞行员",
+    "desc": "驾驶飞船的专业人员",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 1, "per": "turn" }
+    ]
+  },
+  {
+    "id": "P_ALLOY_SMITH",
+    "name": "合金工匠",
+    "desc": "制造航天级合金材料",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_ALLOY", "count": 0.4, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_STEEL", "count": 0.3, "per": "turn" }
+    ]
+  },
+  {
+    "id": "P_XENOBIOLOGIST",
+    "name": "外星生物学家",
+    "desc": "研究外星生命和生态系统",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 4, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_ALIEN_TECH", "count": 0.1, "per": "turn" }
+    ]
+  },
+  {
+    "id": "P_QUANTUM_PHYSICIST",
+    "name": "量子物理学家",
+    "desc": "研究反物质和暗能量",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 5, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_ANTIMATTER", "count": 0.05, "per": "turn" }
     ]
   }
 ]
