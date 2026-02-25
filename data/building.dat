@@ -130,8 +130,7 @@
     "defaultUnlock": false,
     "cost": [
       { "id": "R_WOOD", "need": 15 },
-      { "id": "R_STONE", "need": 10 },
-      { "id": "R_TOOLS", "need": 5 }
+      { "id": "R_STONE", "need": 10 }
     ],
     "effects": [
       { "type": "unlock", "target": "profession", "id": "P_MINER" },

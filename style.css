@@ -64,7 +64,16 @@ body {
   border-radius: 12px;
   padding: calc(12px * var(--ui-scale));
   min-height: calc(220px * var(--ui-scale));
+  max-height: calc(480px * var(--ui-scale));
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel > .list {
+  overflow-y: auto;
+  flex: 1;
 }
 
 .panel-events {
@@ -101,16 +110,20 @@ body {
 
 .button-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(calc(120px * var(--ui-scale)), 1fr));
   gap: calc(8px * var(--ui-scale));
   justify-content: start;
+  max-height: calc(400px * var(--ui-scale));
+  overflow-y: auto;
 }
 
 .event-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(calc(120px * var(--ui-scale)), 1fr));
   gap: calc(8px * var(--ui-scale));
   justify-content: start;
+  max-height: calc(460px * var(--ui-scale));
+  overflow-y: auto;
 }
 
 .btn {
