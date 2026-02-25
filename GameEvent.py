@@ -66,6 +66,9 @@ class EventManager:
             return False
         return self.state[eventId].unlocked
 
+    def Tick(self):
+        return
+
     def GetFrontData(self):
         data = list()
         for eventState in self.state.values():
