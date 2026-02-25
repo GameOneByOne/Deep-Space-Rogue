@@ -111,10 +111,10 @@ async function refreshState() {
 async function postAction(path) {
   try {
     await apiJson(path, { method: "POST" });
-    // showToast("操作完成", path, "success");
+    showToast("操作完成", path, "success");
   } catch (err) {
-    // setStatus(`操作失败: ${String(err)}`);
-    // showToast("操作失败", String(err), "error", 3200);
+    setStatus(`操作失败: ${String(err)}`);
+    showToast("操作失败", String(err), "error", 3200);
   } finally {
     refreshState();
   }
@@ -334,9 +334,13 @@ function applyLocalResourceTick(seconds = 1) {
   const resources = Object.values(currentState.resources || {});
   resources.forEach((r) => {
     const rate = Number(r.rate || 0);
-    const limit = Number(r.limit ?? r.count ?? 0);
-    const next = Number(r.count || 0) + rate * seconds;
-    r.count = Math.max(0, Math.min(limit, next));
+    const limit = Number(r.limit ?? 0);
+    let next = Number(r.count || 0) + rate * seconds;
+    // 只有 limit > 0 时才限制上限
+    if (limit > 0) {
+      next = Math.min(next, limit);
+    }
+    r.count = Math.max(0, next);
   });
   const resMap = new Map(resources.map((r) => [r.id, r]));
   const isEnough = (cost = []) =>
