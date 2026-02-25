@@ -323,10 +323,10 @@ function render(state) {
   const nameOf = buildNameMap(resources, buildings, professions, researches);
 
   renderResources(resources);
-  renderBuildings(buildings, nameOf, true);
+  renderBuildings(buildings, nameOf, false);
   renderEvents(events);
   renderProfessions(professions);
-  renderResearches(researches, nameOf, true);
+  renderResearches(researches, nameOf, false);
 }
 
 function applyLocalResourceTick(seconds = 1) {
