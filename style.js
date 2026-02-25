@@ -3,7 +3,8 @@ const params = new URLSearchParams(location.search);
 const DEFAULT_API_BASE = (() => {
   if (window.DSR_API_BASE) return window.DSR_API_BASE;
   if (location.protocol === "file:") return "http://127.0.0.1:8000";
-  return "";
+  // Railway 部署地址
+  return "https://web-production-92a08.up.railway.app";
 })();
 const API_BASE = params.get("api") || DEFAULT_API_BASE;
 
