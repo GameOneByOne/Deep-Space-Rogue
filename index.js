@@ -2971,7 +2971,7 @@ const EMBEDDED_DATA = {
       ]
     }
   ],
-  "events": [
+  "events":   [
     {
       "id": "E_COLD",
       "name": "寒冷",
@@ -2989,8 +2989,8 @@ const EMBEDDED_DATA = {
         {
           "type": "clamp",
           "target": "resource",
-          "id": "R_WOOD",
-          "count": 5,
+          "id": "R_FOOD",
+          "count": 30,
           "per": "occur"
         }
       ]
@@ -3013,14 +3013,7 @@ const EMBEDDED_DATA = {
           "type": "add",
           "target": "resource",
           "id": "R_FOOD",
-          "count": 25,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_CROP",
-          "count": 15,
+          "count": 50,
           "per": "occur"
         }
       ]
@@ -3043,21 +3036,7 @@ const EMBEDDED_DATA = {
           "type": "clamp",
           "target": "resource",
           "id": "R_WOOD",
-          "count": 25,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": -15,
-          "per": "occur"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_TOOLS",
-          "count": 3,
+          "count": 20,
           "per": "occur"
         }
       ]
@@ -3077,17 +3056,10 @@ const EMBEDDED_DATA = {
       ],
       "effects": [
         {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 12,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_ANIMAL_HIDE",
-          "count": 6,
+          "type": "randomProfessionLoss",
+          "target": "profession",
+          "id": "",
+          "count": 1,
           "per": "occur"
         }
       ]
@@ -3165,642 +3137,8 @@ const EMBEDDED_DATA = {
           "per": "occur"
         }
       ]
-    },
-    {
-      "id": "E_MINERAL_VEIN",
-      "name": "发现矿脉",
-      "desc": "勘探队发现了丰富的矿藏",
-      "defaultUnlock": false,
-      "weight": 10,
-      "cooldown": 45,
-      "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_MINE"
-        }
-      ],
-      "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_METAL_ORE",
-          "count": 30,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_COAL",
-          "count": 25,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_URANIUM",
-          "count": 5,
-          "per": "occur"
-        }
-      ]
-    },
-    {
-      "id": "E_CAVE_IN",
-      "name": "矿洞塌方",
-      "desc": "矿洞发生塌方，采矿工作中断",
-      "defaultUnlock": false,
-      "weight": 7,
-      "cooldown": 40,
-      "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_MINE"
-        }
-      ],
-      "effects": [
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_METAL_ORE",
-          "count": 20,
-          "per": "occur"
-        },
-        {
-          "type": "clamp",
-          "target": "profession",
-          "id": "P_MINER",
-          "count": 1,
-          "per": "occur"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_TOOLS",
-          "count": 5,
-          "per": "occur"
-        }
-      ]
-    },
-    {
-      "id": "E_MARKET_BOOM",
-      "name": "市场繁荣",
-      "desc": "贸易兴盛，资源交换效率提高",
-      "defaultUnlock": false,
-      "weight": 12,
-      "cooldown": 30,
-      "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_WORKSHOP"
-        }
-      ],
-      "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": 20,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_TOOLS",
-          "count": 12,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_PARTS",
-          "count": 5,
-          "per": "occur"
-        }
-      ]
-    },
-    {
-      "id": "E_INDUSTRIAL_ACCIDENT",
-      "name": "工业事故",
-      "desc": "工厂发生爆炸，造成损失",
-      "defaultUnlock": false,
-      "weight": 6,
-      "cooldown": 35,
-      "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_FACTORY"
-        }
-      ],
-      "effects": [
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_STEEL",
-          "count": 20,
-          "per": "occur"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_PARTS",
-          "count": 15,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": -15,
-          "per": "occur"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_MACHINERY",
-          "count": 3,
-          "per": "occur"
-        }
-      ]
-    },
-    {
-      "id": "E_POWER_OUTAGE",
-      "name": "停电事故",
-      "desc": "电网发生故障，供电中断",
-      "defaultUnlock": false,
-      "weight": 8,
-      "cooldown": 25,
-      "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_POWER_PLANT"
-        }
-      ],
-      "effects": [
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_ELECTRICITY",
-          "count": 80,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": -30,
-          "per": "occur"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_CHIP",
-          "count": 2,
-          "per": "occur"
-        }
-      ]
-    },
-    {
-      "id": "E_OIL_DISCOVERY",
-      "name": "发现油田",
-      "desc": "地质勘探发现了大型油田",
-      "defaultUnlock": false,
-      "weight": 10,
-      "cooldown": 50,
-      "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_REFINERY"
-        }
-      ],
-      "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_OIL",
-          "count": 60,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_PLASTIC",
-          "count": 25,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_ROCKET_FUEL",
-          "count": 15,
-          "per": "occur"
-        }
-      ]
-    },
-    {
-      "id": "E_RESEARCH_BREAKTHROUGH",
-      "name": "科研突破",
-      "desc": "科学家取得重大发现",
-      "defaultUnlock": false,
-      "weight": 8,
-      "cooldown": 40,
-      "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_TECH_CENTER"
-        }
-      ],
-      "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": 120,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_CHIP",
-          "count": 8,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_CIRCUIT",
-          "count": 5,
-          "per": "occur"
-        }
-      ]
-    },
-    {
-      "id": "E_RADIATION_LEAK",
-      "name": "核泄漏",
-      "desc": "核电站发生泄漏事故",
-      "defaultUnlock": false,
-      "weight": 5,
-      "cooldown": 60,
-      "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_NUCLEAR_PLANT"
-        }
-      ],
-      "effects": [
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_NUCLEAR_ENERGY",
-          "count": 150,
-          "per": "occur"
-        },
-        {
-          "type": "clamp",
-          "target": "profession",
-          "id": "P_PHYSICIST",
-          "count": 1,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": -60,
-          "per": "occur"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_ENRICHED_URANIUM",
-          "count": 5,
-          "per": "occur"
-        }
-      ]
-    },
-    {
-      "id": "E_METEOR_SHOWER",
-      "name": "流星雨",
-      "desc": "壮观的流星雨带来了稀有矿物",
-      "defaultUnlock": false,
-      "weight": 7,
-      "cooldown": 80,
-      "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_SPACE_STATION"
-        }
-      ],
-      "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_ALLOY",
-          "count": 40,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_URANIUM",
-          "count": 15,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": 60,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_CHIP",
-          "count": 5,
-          "per": "occur"
-        }
-      ]
-    },
-    {
-      "id": "E_ALIEN_CONTACT",
-      "name": "外星接触",
-      "desc": "收到了来自其他文明的信号",
-      "defaultUnlock": false,
-      "weight": 5,
-      "cooldown": 100,
-      "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_INTERSTELLAR_GATE"
-        }
-      ],
-      "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_ALIEN_TECH",
-          "count": 8,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": 250,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_ANTIMATTER",
-          "count": 3,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_DARK_ENERGY",
-          "count": 2,
-          "per": "occur"
-        }
-      ]
-    },
-    {
-      "id": "E_SOLAR_FLARE",
-      "name": "太阳耀斑",
-      "desc": "强烈的太阳活动影响了电子设备",
-      "defaultUnlock": false,
-      "weight": 6,
-      "cooldown": 45,
-      "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_ROCKET_SILO"
-        }
-      ],
-      "effects": [
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_ELECTRICITY",
-          "count": 150,
-          "per": "occur"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_CIRCUIT",
-          "count": 20,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_CHIP",
-          "count": -8,
-          "per": "occur"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_MACHINERY",
-          "count": 5,
-          "per": "occur"
-        }
-      ]
-    },
-    {
-      "id": "E_VOLCANIC_ERUPTION",
-      "name": "火山喷发",
-      "desc": "附近火山喷发，改变地形但带来肥沃土壤",
-      "defaultUnlock": false,
-      "weight": 4,
-      "cooldown": 100,
-      "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_SMELTER"
-        }
-      ],
-      "effects": [
-        {
-          "type": "clamp",
-          "target": "profession",
-          "id": "P_IDLE",
-          "count": 2,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_STONE",
-          "count": 60,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_CROP",
-          "count": 40,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_METAL_ORE",
-          "count": 25,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_COAL",
-          "count": 30,
-          "per": "occur"
-        }
-      ]
-    },
-    {
-      "id": "E_FOOD_SPOILAGE",
-      "name": "食物腐败",
-      "desc": "由于储存不当，部分食物变质",
-      "defaultUnlock": false,
-      "weight": 9,
-      "cooldown": 25,
-      "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_CELLAR"
-        }
-      ],
-      "effects": [
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 15,
-          "per": "occur"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_CROP",
-          "count": 10,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": 5,
-          "per": "occur"
-        }
-      ]
-    },
-    {
-      "id": "E_TOOL_BREAKAGE",
-      "name": "工具损坏",
-      "desc": "一批工具磨损严重需要更换",
-      "defaultUnlock": false,
-      "weight": 11,
-      "cooldown": 20,
-      "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_WORKSHOP"
-        }
-      ],
-      "effects": [
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_TOOLS",
-          "count": 8,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_METAL",
-          "count": 5,
-          "per": "occur"
-        }
-      ]
-    },
-    {
-      "id": "E_EQUIPMENT_FAILURE",
-      "name": "设备故障",
-      "desc": "关键机械设备发生故障",
-      "defaultUnlock": false,
-      "weight": 8,
-      "cooldown": 30,
-      "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_FACTORY"
-        }
-      ],
-      "effects": [
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_MACHINERY",
-          "count": 5,
-          "per": "occur"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_PARTS",
-          "count": 10,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_STEEL",
-          "count": 8,
-          "per": "occur"
-        }
-      ]
-    },
-    {
-      "id": "E_CHIP_SHORTAGE",
-      "name": "芯片短缺",
-      "desc": "芯片生产受阻，供应紧张",
-      "defaultUnlock": false,
-      "weight": 7,
-      "cooldown": 35,
-      "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_CHIP_FAB"
-        }
-      ],
-      "effects": [
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_CHIP",
-          "count": 5,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_CIRCUIT",
-          "count": 8,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_PLASTIC",
-          "count": 10,
-          "per": "occur"
-        }
-      ]
     }
-  ]
+  ],
 };
 
 const TARGET_NAME_CONVERT = {
@@ -3826,6 +3164,7 @@ const els = {
   resetButton: document.getElementById("reset-save-btn"),
   tooltip: document.getElementById("tooltip"),
   status: document.getElementById("status-text"),
+  calendar: document.getElementById("calendar-text"),
   toastStack: document.getElementById("toast-stack"),
 };
 
@@ -3846,6 +3185,11 @@ function updateUiScale() {
 function setStatus(text) {
   if (!els.status) return;
   els.status.textContent = text || "";
+}
+
+function setCalendar(year, day) {
+  if (!els.calendar) return;
+  els.calendar.textContent = `${year}年 ${day}天`;
 }
 
 function fnum(value) {
@@ -3886,6 +3230,8 @@ class LocalGameEngine {
     this.researches = new Map();
     this.events = new Map();
     this.lastTickAt = Date.now();
+    this.totalSimSeconds = 0;
+    this.lastProcessedDay = 0;
     this.buildEntityNames();
     this.loadOrReset();
   }
@@ -3978,11 +3324,15 @@ class LocalGameEngine {
         {
           def,
           unlocked: !!def.defaultUnlock,
+          activeUntilDay: 0,
+          cooldownUntilDay: 0,
         },
       ]),
     );
 
     this.lastTickAt = Date.now();
+    this.totalSimSeconds = 0;
+    this.lastProcessedDay = 0;
     this.startGame();
     this.recomputeResourceRates();
     if (save) this.save();
@@ -4008,6 +3358,14 @@ class LocalGameEngine {
     if (!Number.isFinite(this.lastTickAt)) {
       this.lastTickAt = Date.now();
     }
+    this.totalSimSeconds = Number(snapshot.totalSimSeconds || 0);
+    if (!Number.isFinite(this.totalSimSeconds) || this.totalSimSeconds < 0) {
+      this.totalSimSeconds = 0;
+    }
+    this.lastProcessedDay = Number(snapshot.lastProcessedDay || Math.floor(this.totalSimSeconds / 60));
+    if (!Number.isFinite(this.lastProcessedDay) || this.lastProcessedDay < 0) {
+      this.lastProcessedDay = Math.floor(this.totalSimSeconds / 60);
+    }
     this.recomputeResourceRates();
     this.save();
   }
@@ -4029,8 +3387,10 @@ class LocalGameEngine {
       buildings: serialize(this.buildings, ["unlocked", "ownedCount"]),
       professions: serialize(this.professions, ["unlocked", "amount", "limit"]),
       researches: serialize(this.researches, ["unlocked", "finished"]),
-      events: serialize(this.events, ["unlocked"]),
+      events: serialize(this.events, ["unlocked", "activeUntilDay", "cooldownUntilDay"]),
       lastTickAt: this.lastTickAt,
+      totalSimSeconds: this.totalSimSeconds,
+      lastProcessedDay: this.lastProcessedDay,
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(snapshot));
   }
@@ -4042,11 +3402,53 @@ class LocalGameEngine {
     ]);
   }
 
+  processEventDay(day) {
+    let hasTriggered = false;
+    this.events.forEach((state) => {
+      if (!state.unlocked) return;
+
+      // 冷却期内不进行判定
+      if (day < (state.cooldownUntilDay || 0)) return;
+
+      // 已触发高亮状态期间不重复触发
+      if (day < (state.activeUntilDay || 0)) return;
+
+      // 把原来的权重字段按“概率(%)”处理
+      const probability = Math.max(0, Math.min(100, Number(state.def.weight || 0)));
+      const roll = Math.random() * 100;
+      if (roll < probability) {
+        hasTriggered = true;
+        // 触发后高亮1天
+        state.activeUntilDay = day + 1;
+        // 进入冷却（按“触发后 cd 天不可再次判定”）
+        // 例如 cd=1，则下一天不可判定
+        const cd = Math.max(0, Number(state.def.cooldown || 0));
+        state.cooldownUntilDay = day + cd + 1;
+
+        // 触发时立即执行一次性事件效果
+        this.applyEffects(state.def.effects || []);
+      }
+    });
+
+    if (hasTriggered) {
+      this.recomputeResourceRates();
+    }
+  }
+
+  processEventDays() {
+    const currentDay = Math.floor(this.totalSimSeconds / 60);
+    for (let day = this.lastProcessedDay + 1; day <= currentDay; day += 1) {
+      this.processEventDay(day);
+    }
+    this.lastProcessedDay = currentDay;
+  }
+
   tick() {
     const now = Date.now();
     const seconds = Math.floor((now - this.lastTickAt) / 1000);
     if (seconds <= 0) return false;
     this.lastTickAt += seconds * 1000;
+    this.totalSimSeconds += seconds;
 
     this.resources.forEach((state) => {
       if (state.rate >= 0) {
@@ -4056,12 +3458,21 @@ class LocalGameEngine {
       }
     });
 
+    this.processEventDays();
     this.save();
     return true;
   }
 
   getEntityName(id) {
     return this.entityNames.get(id) || id;
+  }
+
+  getScaledCost(cost = [], ownedCount = 0) {
+    const factor = Math.pow(1.2, Math.max(0, Number(ownedCount || 0)));
+    return (cost || []).map((item) => ({
+      id: item.id,
+      need: Math.ceil(Number(item.need || 0) * factor),
+    }));
   }
 
   getCostDesc(cost) {
@@ -4121,6 +3532,9 @@ class LocalGameEngine {
     }
     if (effect.type === "professionRateBuff") {
       return `提升职业 ${this.getEntityName(effect.toId)} 的资源增长速率: +${(effect.count * 100).toFixed(0)}%`;
+    }
+    if (effect.type === "randomProfessionLoss") {
+      return `随机职业人数减少: ${effect.count}`;
     }
     if (effect.type === "convert") {
       return "转换作用";
@@ -4270,6 +3684,29 @@ class LocalGameEngine {
   }
 
   execProfessionEffect(effect) {
+    if (effect.type === "randomProfessionLoss") {
+      const lossCount = Math.max(1, Math.floor(effect.count || 1));
+      const candidates = [];
+      this.professions.forEach((profState, profId) => {
+        if (!profState.unlocked || profState.amount <= 0) return;
+        if (profId === "P_IDLE") return;
+        candidates.push({ profId, profState });
+      });
+      if (candidates.length <= 0) return null;
+
+      const pick = candidates[Math.floor(Math.random() * candidates.length)];
+      const actualLoss = Math.min(lossCount, pick.profState.amount);
+      pick.profState.amount -= actualLoss;
+
+      const extras = [];
+      for (let i = 0; i < actualLoss; i += 1) {
+        (pick.profState.def.effects || []).forEach((raw) => {
+          extras.push(this.getOppositeEffect(this.normalizeEffect(raw)));
+        });
+      }
+      return extras;
+    }
+
     const state = this.professions.get(effect.toId);
     if (!state) return null;
 
@@ -4329,7 +3766,7 @@ class LocalGameEngine {
     this.tick();
     const state = this.buildings.get(buildingId);
     if (!state || !state.unlocked) return false;
-    const cost = state.def.cost || [];
+    const cost = this.getScaledCost(state.def.cost || [], state.ownedCount);
     if (!this.isEnough(cost)) return false;
 
     cost.forEach((item) => {
@@ -4459,7 +3896,7 @@ class LocalGameEngine {
     const buildings = {};
     this.buildings.forEach((state, id) => {
       if (!state.unlocked) return;
-      const cost = state.def.cost || [];
+      const cost = this.getScaledCost(state.def.cost || [], state.ownedCount);
       buildings[id] = {
         id,
         name: state.def.name,
@@ -4504,21 +3941,37 @@ class LocalGameEngine {
     });
 
     const events = {};
+    const currentDay = Math.floor(this.totalSimSeconds / 60);
     this.events.forEach((state, id) => {
       if (!state.unlocked) return;
+      const probability = Number(state.def.weight || 0);
+      const cooldown = Number(state.def.cooldown || 0);
+      const isActive = currentDay < (state.activeUntilDay || 0);
+      const cooldownRemaining = Math.max(0, (state.cooldownUntilDay || 0) - currentDay);
       events[id] = {
         id,
         name: state.def.name,
         desc: state.def.desc,
-        weight: state.def.weight,
-        cooldown: state.def.cooldown,
+        probability,
+        cooldown,
+        cooldownRemaining,
+        isActive,
         prereqs: state.def.prereqs || [],
         effects: (state.def.effects || []).map((effect) => this.effectDesc(effect)),
       };
     });
 
+    const totalDays = Math.floor(this.totalSimSeconds / 60);
+    const year = Math.floor(totalDays / 365);
+    const day = totalDays % 365;
+
     return {
-      main: {},
+      main: {
+        totalSimSeconds: this.totalSimSeconds,
+        totalDays,
+        year,
+        day,
+      },
       resources,
       buildings,
       professions,
@@ -4549,6 +4002,9 @@ function refreshState() {
   currentState = engine.getFrontState();
   render(currentState || {});
   setStatus("本地模式 | 进度保存在浏览器");
+  const year = Number(currentState?.main?.year || 0);
+  const day = Number(currentState?.main?.day || 0);
+  setCalendar(year, day);
 }
 
 function formatRateBreakdown(resource) {
@@ -4664,13 +4120,20 @@ function renderEvents(events) {
     if (label.textContent !== ev.name) {
       label.textContent = ev.name;
     }
+    label.classList.toggle("active-event", !!ev.isActive);
     const effects = (ev.effects || []).join("\n");
     let tip = `【事件】${ev.name}\n${ev.desc || ""}\n`;
-    if (typeof ev.weight !== "undefined") {
-      tip += `\n【权重】${ev.weight}`;
+    if (typeof ev.probability !== "undefined") {
+      tip += `\n【触发概率】${ev.probability}%`;
     }
     if (typeof ev.cooldown !== "undefined") {
-      tip += `\n【冷却】${ev.cooldown}`;
+      tip += `\n【冷却(天)】${ev.cooldown}`;
+    }
+    if (typeof ev.cooldownRemaining !== "undefined") {
+      tip += `\n【剩余冷却】${ev.cooldownRemaining}天`;
+    }
+    if (ev.isActive) {
+      tip += `\n【状态】已触发（本天高亮）`;
     }
     if (effects) {
       tip += `\n\n【效果】\n${effects}`;
