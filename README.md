@@ -1,172 +1,127 @@
-# 🚀 Deep Space Rogue | 远航
+# Deep Space Rogue | 远航
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.13+-blue.svg" alt="Python 3.13+">
-  <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="MIT License">
-  <img src="https://img.shields.io/badge/Status-DEMO-orange.svg" alt="DEMO">
+  <img src="https://img.shields.io/badge/Platform-Web-blue.svg" alt="Web">
+  <img src="https://img.shields.io/badge/Storage-localStorage-green.svg" alt="localStorage">
+  <img src="https://img.shields.io/badge/License-MIT-brightgreen.svg" alt="MIT License">
 </p>
 
 <p align="center">
-  <b>一款背景是宇宙探索的文字肉鸽游戏</b><br>
-  <i>从篝火旁的原住民到驾驶星际飞船的指挥官，见证文明的每一次跃迁</i>
+  <b>一款以文明演进与宇宙探索为主题的文字经营游戏</b><br>
+  <i>从篝火营地出发，发展科技、调配人力、积累资源，最终迈向星际时代</i>
 </p>
 
 ---
 
-## 🎮 游戏简介
+## 游戏简介
 
-《远航》是一款以宇宙探索为背景的文字类 Roguelike 游戏。你将扮演一个文明的引导者，从最初的原始部落开始，逐步发展科技、建造设施、调配人力资源，最终迈向星际航行时代。
+《远航》是一款运行在浏览器中的文字经营游戏。你将从一个资源匮乏的早期聚落开始，通过建造设施、研究技术、分配人口与管理资源，逐步解锁更复杂的生产链，推动文明不断升级。
 
-### ✨ 核心特色
+当前版本已经改为纯前端运行：
 
-- **🌍 文明演进**：从石器时代到星际文明，经历完整的科技树发展
-- **🏗️ 五大模块**：建筑、职业、资源、研究、事件五大系统深度联动
-- **🎯 策略经营**：合理分配人力资源，平衡资源产出与消耗
-- **🌌 分支选择**：大量随机事件与科技分支，每局体验不同
-- **💻 双端支持**：本地 tkinter 客户端 + Web 在线版本，随时畅玩
+- 游戏逻辑全部在浏览器内执行
+- 不依赖远端服务器
+- 存档保存在浏览器 `localStorage`
+- 游戏数据已直接内嵌在前端脚本中
 
 ---
 
-## 🚀 快速开始
+## 核心玩法
 
-### 环境要求
+- 建造：消耗资源解锁新建筑、资源与职业
+- 研究：消耗知识推进科技树，打开后续发展路线
+- 人力：在不同职业之间调配人口，平衡生产与消耗
+- 资源：管理基础资源、工业资源与高阶资源的增长
+- 事件：查看当前事件条目与效果说明
 
-- **Python** = 3.13+
+---
 
-### 本地运行
+## 快速开始
+
+### 方式一：直接打开
+
+由于当前游戏数据已经内嵌到 [index.js](./index.js)，可以直接打开 [game.html](./game.html) 运行。
+
+### 方式二：本地预览（推荐）
+
+项目保留了 `vite`，可用于本地静态预览：
 
 ```bash
-# 克隆仓库
-git clone https://github.com/GameOneByOne/Deep-Space-Rogue.git
-cd Deep-Space-Rogue
-
-# 运行本地版本（tkinter GUI）
-python mainWithPC.py
+npm install
+npm run dev
 ```
 
-### Web 版本
+然后在浏览器中打开终端输出的本地地址。
 
-```bash
-# 启动服务端
-python main.py
+### 存档说明
 
-# 浏览器访问
-open http://localhost:8000
-```
-
-或者访问在线演示：**https://gameonebyone.github.io/Deep-Space-Rogue/**
+- 游戏进度自动保存在浏览器 `localStorage`
+- 页面顶部提供“重置存档”按钮，可直接重新开局
+- 更换浏览器、清空站点数据或手动清理本地存储后，存档会丢失
 
 ---
 
-## 🎯 游戏系统
+## 游戏数据
 
-### 🏗️ 建筑系统
-从简单的「篝火」到复杂的「曲率引擎」，每种建筑都会解锁新的可能性：
-- 消耗资源建造
-- 解锁新职业与资源
-- 提供被动产出或特殊效果
-
-### 👥 职业系统
-合理分配人力资源是游戏的核心：
-- **空闲者**：人口增长的基础
-- **猎人/农民/伐木工**：基础资源产出
-- **学者**：推进科技研究
-- **工程师/飞行员**：星际时代的高级职业
-
-### 💎 资源系统
-管理多种资源的产出与消耗：
-- 基础资源：食物、木材、石材
-- 工业资源：金属、燃料、能源
-- 高级资源：知识、科技点数、星际货币
-
-### 🔬 研究系统
-解锁新建筑与职业的关键：
-- 消耗知识进行研究
-- 多分支科技树
-- 关键科技改变游戏进程
-
-### 📜 事件系统
-随机事件带来挑战与机遇：
-- 自然灾害、资源发现
-- 文明抉择、道德困境
-- 外星接触、星际冒险
-
----
-
-## 📊 游戏数据
-
-所有游戏内容均通过 JSON 数据文件配置，位于 `data/` 目录：
+原始游戏配置仍保存在 `data/` 目录中，便于维护和编辑：
 
 | 文件 | 说明 |
 |------|------|
-| `building.dat` | 建筑定义（成本、效果、解锁条件） |
-| `resource.dat` | 资源定义（产出、消耗、上限） |
-| `profession.dat` | 职业定义（产出、前置条件） |
-| `research.dat` | 研究定义（成本、效果） |
-| `event.dat` | 事件定义（触发条件、选项） |
+| `data/building.dat` | 建筑定义（消耗、解锁、效果） |
+| `data/resource.dat` | 资源定义（初始解锁、容量） |
+| `data/profession.dat` | 职业定义（可分配性、效果） |
+| `data/research.dat` | 研究定义（消耗、解锁、效果） |
+| `data/event.dat` | 事件定义（描述、权重、效果） |
+
+运行时使用的是 [index.js](./index.js) 中内嵌的数据副本。
 
 ---
 
-## 🛠️ 项目结构
+## 项目结构
 
-```
+当前文档只展示前端运行相关结构：
+
+```text
 Deep-Space-Rogue/
-├── 📁 data/              # 游戏数据配置文件
-├── 📁 tool/              # 开发工具脚本
-├── 🐍 main.py            # Web 服务端入口 (FastAPI)
-├── 🐍 mainWithPC.py      # 本地 GUI 入口 (tkinter)
-├── 🐍 GameEngine.py      # 游戏核心引擎
-├── 🐍 GameBuilding.py    # 建筑管理模块
-├── 🐍 GameResource.py    # 资源管理模块
-├── 🐍 GameProfession.py  # 职业管理模块
-├── 🐍 GameResearch.py    # 研究管理模块
-├── 🐍 GameEvent.py       # 事件管理模块
-├── 🐍 GameEffect.py      # 效果执行器
-├── 🐍 GameUI.py          # 本地 GUI 界面
-├── 🌐 index.html         # Web 版启动页面
-├── 🌐 game.html          # Web 版游戏页面
-├── 🎨 style.css          # Web 版样式
-├── ⚙️ style.js           # Web 版逻辑
-└── 📄 README.md          # 本文件
+├── data/               # 原始游戏配置数据
+├── game.html           # 游戏主页面
+├── index.html          # 入口页面/说明页
+├── index.js            # 前端游戏逻辑、本地引擎、内嵌数据
+├── style.css           # 页面样式
+├── package.json        # 本地预览脚本（vite）
+├── package-lock.json   # 依赖锁定
+├── tool/               # 开发辅助脚本
+└── README.md           # 项目说明
 ```
 
 ---
 
-## 🗺️ 开发路线
+## 当前实现
 
-- [x] 基础游戏框架搭建
-- [x] 建筑、资源、职业、研究四大模块
-- [x] 事件系统（基础 UI）
-- [x] 完整的科技树（原始时代 → 星际航行）
-- [x] Web 版本上线
-- [ ] 事件系统完善（随机触发、分支剧情）
-- [ ] 存档系统
-- [ ] 成就系统
-- [ ] 更多随机事件
-- [ ] 多语言支持
+- 纯前端本地运行
+- 浏览器端资源自动结算
+- 建筑、研究、人力分配可直接在前端计算
+- 本地存档与重置存档
+- 自适应布局与面板缩放
 
 ---
 
-## 🤝 参与贡献
+## 开发说明
 
-欢迎 Issue 和 PR！在提交之前，请确保：
+如果你准备继续扩展内容，优先关注以下文件：
 
-1. 代码符合项目现有风格
-2. 测试通过本地运行
-3. 更新相关文档
+- [index.js](./index.js)：核心逻辑、状态管理、UI 渲染
+- [style.css](./style.css)：界面布局与视觉样式
+- `data/*.dat`：原始内容配置，可作为后续平衡调整来源
+
+当前前端逻辑已经不再依赖远端接口，因此新增内容时，默认应直接修改前端逻辑与本地数据。
 
 ---
 
-## 📄 开源协议
+## 开源协议
 
-本项目采用 [MIT License](LICENSE) 开源协议。
+本项目采用 [MIT License](./LICENSE)。
 
-```
+```text
 Copyright (c) 2026 GameOneByOne
 ```
-
----
-
-<p align="center">
-  <b>🌟 觉得好玩的话，点个 Star 支持一下吧！</b>
-</p>
