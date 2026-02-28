@@ -3161,6 +3161,7 @@ const els = {
   events: document.getElementById("event-list"),
   professions: document.getElementById("profession-list"),
   researches: document.getElementById("research-list"),
+  logs: document.getElementById("log-list"),
   resetButton: document.getElementById("reset-save-btn"),
   tooltip: document.getElementById("tooltip"),
   status: document.getElementById("status-text"),
@@ -3173,7 +3174,10 @@ let currentState = null;
 let previousResources = null;
 let previousBuildings = null;
 let previousResearches = null;
+let previousEvents = null;
 let showResourceDeltaFx = false;
+const actionLogs = [];
+const MAX_LOGS = 120;
 
 function updateUiScale() {
   const widthScale = window.innerWidth / 1280;
@@ -3202,22 +3206,30 @@ function setTip(el, text) {
   el.dataset.tip = text || "";
 }
 
+function addLog(message) {
+  const year = Number(currentState?.main?.year || 0);
+  const day = Number(currentState?.main?.day || 0);
+  const entry = {
+    time: `${year}年${day}天`,
+    message: message || "",
+  };
+  actionLogs.unshift(entry);
+  if (actionLogs.length > MAX_LOGS) actionLogs.length = MAX_LOGS;
+
+  if (!els.logs) return;
+  els.logs.innerHTML = "";
+  actionLogs.forEach((log) => {
+    const row = document.createElement("div");
+    row.className = "log-item";
+    row.innerHTML = `<span class="log-time">[${log.time}]</span><span>${log.message}</span>`;
+    els.logs.appendChild(row);
+  });
+}
+
 function showToast(title, message, type = "info", ttl = 2400) {
-  if (!els.toastStack) return;
-  const toast = document.createElement("div");
-  toast.className = `toast ${type}`;
-  const titleEl = document.createElement("div");
-  titleEl.className = "toast-title";
-  titleEl.textContent = title;
-  const msgEl = document.createElement("div");
-  msgEl.className = "toast-sub";
-  msgEl.textContent = message || "";
-  toast.appendChild(titleEl);
-  toast.appendChild(msgEl);
-  els.toastStack.appendChild(toast);
-  setTimeout(() => {
-    toast.remove();
-  }, ttl);
+  // 已停用右上角弹窗，统一改为日志输出
+  const text = message ? `${title}：${message}` : title;
+  addLog(text);
 }
 
 class LocalGameEngine {
@@ -3997,6 +4009,7 @@ function refreshState() {
     previousResources = currentState.resources ? Object.values(currentState.resources) : null;
     previousBuildings = currentState.buildings ? Object.values(currentState.buildings) : null;
     previousResearches = currentState.research ? Object.values(currentState.research) : null;
+    previousEvents = currentState.events ? Object.values(currentState.events) : null;
   }
 
   currentState = engine.getFrontState();
@@ -4178,6 +4191,8 @@ function renderProfessions(professions) {
         const ok = engine.dispatch("P_IDLE", p.id);
         if (!ok) {
           showToast("无法分配", "闲置人口不足或职业已满", "warn");
+        } else {
+          addLog(`职业变动：闲置 -> ${p.name}`);
         }
         refreshState();
       });
@@ -4192,6 +4207,8 @@ function renderProfessions(professions) {
         const ok = engine.dispatch(p.id, "P_IDLE");
         if (!ok) {
           showToast("无法撤回", "没有可撤回的人力", "warn");
+        } else {
+          addLog(`职业变动：${p.name} -> 闲置`);
         }
         refreshState();
       });
@@ -4296,12 +4313,19 @@ function render(state) {
       const btn = document.querySelector(`[data-building-id="${b.id}"]`);
       if (!btn) return;
       triggerPulseAnimation(btn);
-      showToast("建筑完成", `${b.name} 建造完成！`, "success");
+      addLog(`建造完成：${b.name}`);
     });
 
     const newResearches = detectNewResearches(researches, previousResearches);
     (newResearches || []).forEach((r) => {
+      addLog(`研究完成：${r.name}`);
       showFullscreenNotify("研究完成！", `${r.name} - ${r.desc || "新技术已解锁"}`, "🔬");
+    });
+
+    const newActiveEvents = detectNewActiveEvents(events, previousEvents);
+    (newActiveEvents || []).forEach((ev) => {
+      const effectText = (ev.effects && ev.effects.length > 0) ? ev.effects.join("；") : "无";
+      addLog(`事件触发：${ev.name}｜影响：${effectText}`);
     });
   });
 }
@@ -4402,6 +4426,14 @@ function detectNewResearches(current, previous) {
   });
 }
 
+function detectNewActiveEvents(current, previous) {
+  if (!previous) return [];
+  return current.filter((ev) => {
+    const prev = previous.find((p) => p.id === ev.id);
+    return prev && ev.isActive && !prev.isActive;
+  });
+}
+
 async function boot() {
   updateUiScale();
   window.addEventListener("resize", updateUiScale);
@@ -4413,14 +4445,17 @@ async function boot() {
       previousResources = null;
       previousBuildings = null;
       previousResearches = null;
+      previousEvents = null;
+      actionLogs.length = 0;
       refreshState();
-      showToast("存档已重置", "已重新开始本地存档", "success", 2800);
+      addLog("存档已重置，重新开始");
     });
   }
 
   try {
     engine = await LocalGameEngine.create();
     refreshState();
+    addLog("系统初始化完成");
     setInterval(() => refreshState(), 1000);
   } catch (err) {
     const msg = String(err);

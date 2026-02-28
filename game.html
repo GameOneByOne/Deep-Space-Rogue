@@ -20,35 +20,39 @@
     </header>
 
     <main class="grid">
+      <section class="panel panel-resources">
+        <div class="panel-title">资源面板</div>
+        <div id="resource-list" class="list resource-list"></div>
+      </section>
+
+      <section class="panel panel-buildings">
+        <div class="panel-title">操作面板</div>
+        <div id="building-list" class="list button-grid"></div>
+      </section>
+
+      <section class="panel panel-professions">
+        <div class="panel-title">人力面板</div>
+        <div id="profession-list" class="list profession-list"></div>
+      </section>
+
+      <section class="panel panel-researches">
+        <div class="panel-title">研究面板</div>
+        <div id="research-list" class="list button-grid"></div>
+      </section>
+
       <section class="panel panel-events">
         <div class="panel-title">事件面板</div>
         <div id="event-list" class="list event-grid"></div>
       </section>
 
-      <section class="panel">
-        <div class="panel-title">资源面板</div>
-        <div id="resource-list" class="list resource-list"></div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-title">操作面板</div>
-        <div id="building-list" class="list button-grid"></div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-title">人力面板</div>
-        <div id="profession-list" class="list profession-list"></div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-title">研究面板</div>
-        <div id="research-list" class="list button-grid"></div>
+      <section class="panel panel-logs">
+        <div class="panel-title">日志面板</div>
+        <div id="log-list" class="list log-list"></div>
       </section>
     </main>
   </div>
 
   <div id="tooltip" class="tooltip hidden"></div>
-  <div id="toast-stack" class="toast-stack" aria-live="polite"></div>
   <script src="./index.js"></script>
 </body>
 </html>
