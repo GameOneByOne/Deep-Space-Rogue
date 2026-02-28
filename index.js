@@ -3217,7 +3217,6 @@ function toggleTheme() {
   const next = current === "dark" ? "light" : "dark";
   localStorage.setItem(THEME_KEY, next);
   applyTheme(next);
-  addLog(`主题切换：${next === "light" ? "浅色" : "深色"}`);
 }
 
 async function syncVersionFromPackage() {
@@ -3246,14 +3245,20 @@ function setTip(el, text) {
 
 function fitButtonText(btn, { max = 13, min = 9 } = {}) {
   if (!btn) return;
-  const len = (btn.textContent || "").length;
+
+  // 先用最大字号，再按实际像素宽度逐步缩小
   let size = max;
-  if (len > 14) size = max - 1;
-  if (len > 18) size = max - 2;
-  if (len > 24) size = max - 3;
-  if (len > 30) size = max - 4;
-  size = Math.max(min, size);
   btn.style.fontSize = `calc(${size}px * var(--ui-scale))`;
+
+  // 使用 scrollWidth/clientWidth 做真实宽度测量
+  while (size > min && btn.scrollWidth > btn.clientWidth - 2) {
+    size -= 0.5;
+    btn.style.fontSize = `calc(${size}px * var(--ui-scale))`;
+  }
+
+  if (size < min) {
+    btn.style.fontSize = `calc(${min}px * var(--ui-scale))`;
+  }
 }
 
 function addLog(message) {

@@ -242,6 +242,9 @@ body {
   transition: filter 120ms ease, box-shadow 120ms ease;
   width: 100%;
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
 }
 
 .research-btn {
@@ -250,7 +253,7 @@ body {
   min-height: calc(44px * var(--ui-scale));
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: clip;
 }
 
 .research-btn.completed {
@@ -565,6 +568,25 @@ body[data-theme="light"] .log-item,
 body[data-theme="light"] .event-label {
   background: #fffdf7;
   box-shadow: none;
+  color: #1a1a1a;
+}
+
+body[data-theme="light"] .panel-title,
+body[data-theme="light"] .subtitle,
+body[data-theme="light"] .profession-name,
+body[data-theme="light"] .toast-title,
+body[data-theme="light"] .toast-sub,
+body[data-theme="light"] .log-time,
+body[data-theme="light"] .resource-rate.zero {
+  color: #222222;
+}
+
+body[data-theme="light"] .resource-rate.pos {
+  color: #1f7a3f;
+}
+
+body[data-theme="light"] .resource-rate.neg {
+  color: #a13d3d;
 }
 
 body[data-theme="light"] .btn,
@@ -596,6 +618,26 @@ body[data-theme="light"] .tooltip {
   color: #111111;
   border-color: #a8a8a8;
   box-shadow: none;
+}
+
+body[data-theme="light"] .fullscreen-notify {
+  background: rgba(245, 240, 228, 0.85);
+}
+
+body[data-theme="light"] .fullscreen-notify-content {
+  background: #fffdf7;
+  border-color: #a8a8a8;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+body[data-theme="light"] .fullscreen-notify-title {
+  color: #1a1a1a;
+  text-shadow: none;
+}
+
+body[data-theme="light"] .fullscreen-notify-desc,
+body[data-theme="light"] .fullscreen-notify-icon {
+  color: #2a2a2a;
 }
 
 @media (max-width: 900px) {
