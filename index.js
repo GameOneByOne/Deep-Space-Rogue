@@ -3162,6 +3162,8 @@ const els = {
   professions: document.getElementById("profession-list"),
   researches: document.getElementById("research-list"),
   logs: document.getElementById("log-list"),
+  versionBadge: document.getElementById("version-badge"),
+  themeToggleButton: document.getElementById("theme-toggle-btn"),
   resetButton: document.getElementById("reset-save-btn"),
   tooltip: document.getElementById("tooltip"),
   status: document.getElementById("status-text"),
@@ -3178,6 +3180,7 @@ let previousEvents = null;
 let showResourceDeltaFx = false;
 const actionLogs = [];
 const MAX_LOGS = 120;
+const THEME_KEY = "dsr_theme";
 
 function updateUiScale() {
   const widthScale = window.innerWidth / 1280;
@@ -3193,7 +3196,42 @@ function setStatus(text) {
 
 function setCalendar(year, day) {
   if (!els.calendar) return;
-  els.calendar.textContent = `${year}年 ${day}天`;
+  els.calendar.textContent = `🗓️ 第 ${year} 年 · 第 ${day} 天`;
+}
+
+function applyTheme(theme) {
+  const next = theme === "light" ? "light" : "dark";
+  document.body.setAttribute("data-theme", next);
+  if (els.themeToggleButton) {
+    els.themeToggleButton.textContent = next === "light" ? "切换深色" : "切换浅色";
+  }
+}
+
+function loadTheme() {
+  const saved = localStorage.getItem(THEME_KEY) || "dark";
+  applyTheme(saved);
+}
+
+function toggleTheme() {
+  const current = document.body.getAttribute("data-theme") || "dark";
+  const next = current === "dark" ? "light" : "dark";
+  localStorage.setItem(THEME_KEY, next);
+  applyTheme(next);
+  addLog(`主题切换：${next === "light" ? "浅色" : "深色"}`);
+}
+
+async function syncVersionFromPackage() {
+  if (!els.versionBadge) return;
+  try {
+    const res = await fetch("./package.json", { cache: "no-store" });
+    if (!res.ok) return;
+    const pkg = await res.json();
+    if (pkg && pkg.version) {
+      els.versionBadge.textContent = `v${pkg.version}`;
+    }
+  } catch {
+    // 静默失败，保留默认版本文案
+  }
 }
 
 function fnum(value) {
@@ -3204,6 +3242,18 @@ function fnum(value) {
 
 function setTip(el, text) {
   el.dataset.tip = text || "";
+}
+
+function fitButtonText(btn, { max = 13, min = 9 } = {}) {
+  if (!btn) return;
+  const len = (btn.textContent || "").length;
+  let size = max;
+  if (len > 14) size = max - 1;
+  if (len > 18) size = max - 2;
+  if (len > 24) size = max - 3;
+  if (len > 30) size = max - 4;
+  size = Math.max(min, size);
+  btn.style.fontSize = `calc(${size}px * var(--ui-scale))`;
 }
 
 function addLog(message) {
@@ -4014,7 +4064,6 @@ function refreshState() {
 
   currentState = engine.getFrontState();
   render(currentState || {});
-  setStatus("本地模式 | 进度保存在浏览器");
   const year = Number(currentState?.main?.year || 0);
   const day = Number(currentState?.main?.day || 0);
   setCalendar(year, day);
@@ -4082,6 +4131,8 @@ function renderBuildings(buildings, nameOf, dontChangeButtonStatus = false) {
     if (btn.textContent !== nextText) {
       btn.textContent = nextText;
     }
+    // 建筑按钮动态字体，避免文字长度挤压 UI
+    fitButtonText(btn, { max: 13, min: 9 });
 
     if (isNew) {
       btn.addEventListener("click", () => {
@@ -4244,6 +4295,10 @@ function renderResearches(researches, nameOf, dontChangeButtonStatus = false) {
     if (btn.textContent !== nextText) {
       btn.textContent = nextText;
     }
+
+    btn.classList.toggle("completed", !!r.finished);
+    // 研究按钮预留完成态空间，完成后略微缩小字体
+    fitButtonText(btn, r.finished ? { max: 10, min: 8 } : { max: 11, min: 9 });
 
     if (!dontChangeButtonStatus) {
       btn.disabled = !!r.finished || r.canResearch === false;
@@ -4438,6 +4493,13 @@ async function boot() {
   updateUiScale();
   window.addEventListener("resize", updateUiScale);
   bindTooltip();
+  loadTheme();
+  syncVersionFromPackage();
+  if (els.themeToggleButton) {
+    els.themeToggleButton.addEventListener("click", () => {
+      toggleTheme();
+    });
+  }
   if (els.resetButton) {
     els.resetButton.addEventListener("click", () => {
       if (!engine) return;

@@ -10,11 +10,14 @@
   <div class="bg-glow"></div>
   <div class="app">
     <header class="topbar">
-      <h1>Deep Space Rogue</h1>
-      <p class="subtitle">Web Client (Local)</p>
-      <div class="subtitle" id="status-text"></div>
-      <div class="subtitle" id="calendar-text">0年 0天</div>
+      <h1>远航</h1>
+      <div class="top-meta">
+        <span id="version-badge" class="version-badge">v0.1</span>
+        <span id="calendar-text" class="calendar-pill">🗓️ 第 0 年 · 第 0 天</span>
+      </div>
+      <div id="status-text" class="status-hidden"></div>
       <div class="top-actions">
+        <button id="theme-toggle-btn" class="secondary-btn" type="button">切换主题</button>
         <button id="reset-save-btn" class="secondary-btn" type="button">重置存档</button>
       </div>
     </header>
