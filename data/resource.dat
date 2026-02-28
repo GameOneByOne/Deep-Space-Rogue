@@ -1,36 +1,38 @@
 [
   {"id": "R_KNOWLEDGE", "name": "知识", "desc": "用于研究和升级", "defaultUnlock": false, "defaultCapacity": 100},
-  {"id": "R_FOOD", "name": "食物", "desc": "用于生存与烹饪", "defaultUnlock": true, "defaultCapacity": 100},
+  {"id": "R_FOOD", "name": "食物", "desc": "用于生存与烹饪", "defaultUnlock": true, "defaultCapacity": 80},
+  {"id": "R_RATION", "name": "口粮", "desc": "加工后的高效食物，促进人口增长", "defaultUnlock": false, "defaultCapacity": 50},
   {"id": "R_WOOD", "name": "木材", "desc": "用于建造与加工", "defaultUnlock": true, "defaultCapacity": 50},
   {"id": "R_STONE", "name": "石头", "desc": "用于建造与升级", "defaultUnlock": true, "defaultCapacity": 50},
   {"id": "R_ANIMAL_HIDE", "name": "兽皮", "desc": "用于保暖", "defaultUnlock": true, "defaultCapacity": 20},
   
-  {"id": "R_CROP", "name": "农作物", "desc": "农业产出的粮食作物", "defaultUnlock": false, "defaultCapacity": 100},
-  {"id": "R_FABRIC", "name": "布匹", "desc": "用于制作衣物", "defaultUnlock": false, "defaultCapacity": 50},
+  {"id": "R_CROP", "name": "农作物", "desc": "农业产出的粮食作物", "defaultUnlock": false, "defaultCapacity": 80},
+  {"id": "R_FABRIC", "name": "布匹", "desc": "用于制作衣物", "defaultUnlock": false, "defaultCapacity": 40},
   
-  {"id": "R_METAL_ORE", "name": "金属矿石", "desc": "含有金属的原始矿石", "defaultUnlock": false, "defaultCapacity": 50},
-  {"id": "R_METAL", "name": "金属锭", "desc": "冶炼后的可用金属", "defaultUnlock": false, "defaultCapacity": 50},
-  {"id": "R_TOOLS", "name": "工具", "desc": "提高工作效率的器具", "defaultUnlock": false, "defaultCapacity": 30},
+  {"id": "R_METAL_ORE", "name": "金属矿石", "desc": "含有金属的原始矿石", "defaultUnlock": false, "defaultCapacity": 40},
+  {"id": "R_METAL", "name": "金属锭", "desc": "冶炼后的可用金属", "defaultUnlock": false, "defaultCapacity": 40},
+  {"id": "R_TOOLS", "name": "工具", "desc": "提高工作效率的器具", "defaultUnlock": false, "defaultCapacity": 25},
   
-  {"id": "R_COAL", "name": "煤炭", "desc": "工业时代的燃料", "defaultUnlock": false, "defaultCapacity": 100},
-  {"id": "R_STEEL", "name": "钢铁", "desc": "高强度建筑材料", "defaultUnlock": false, "defaultCapacity": 50},
-  {"id": "R_PARTS", "name": "机械零件", "desc": "机械装置的组件", "defaultUnlock": false, "defaultCapacity": 40},
+  {"id": "R_COAL", "name": "煤炭", "desc": "工业时代的燃料", "defaultUnlock": false, "defaultCapacity": 80},
+  {"id": "R_STEEL", "name": "钢铁", "desc": "高强度建筑材料", "defaultUnlock": false, "defaultCapacity": 40},
+  {"id": "R_PARTS", "name": "机械零件", "desc": "机械装置的组件", "defaultUnlock": false, "defaultCapacity": 30},
+  {"id": "R_MACHINERY", "name": "机械设备", "desc": "复杂的机械装置", "defaultUnlock": false, "defaultCapacity": 20},
   
-  {"id": "R_ELECTRICITY", "name": "电力", "desc": "电气时代的能量来源", "defaultUnlock": false, "defaultCapacity": 200},
-  {"id": "R_OIL", "name": "石油", "desc": "液态化石燃料", "defaultUnlock": false, "defaultCapacity": 100},
-  {"id": "R_PLASTIC", "name": "塑料", "desc": "合成材料", "defaultUnlock": false, "defaultCapacity": 50},
-  {"id": "R_CIRCUIT", "name": "电路板", "desc": "电子设备的基板", "defaultUnlock": false, "defaultCapacity": 30},
+  {"id": "R_ELECTRICITY", "name": "电力", "desc": "电气时代的能量来源", "defaultUnlock": false, "defaultCapacity": 300},
+  {"id": "R_OIL", "name": "石油", "desc": "液态化石燃料", "defaultUnlock": false, "defaultCapacity": 80},
+  {"id": "R_PLASTIC", "name": "塑料", "desc": "合成材料", "defaultUnlock": false, "defaultCapacity": 40},
+  {"id": "R_CIRCUIT", "name": "电路板", "desc": "电子设备的基板", "defaultUnlock": false, "defaultCapacity": 25},
   
-  {"id": "R_URANIUM", "name": "铀矿石", "desc": "放射性矿物", "defaultUnlock": false, "defaultCapacity": 30},
-  {"id": "R_ENRICHED_URANIUM", "name": "浓缩铀", "desc": "核能燃料", "defaultUnlock": false, "defaultCapacity": 20},
-  {"id": "R_NUCLEAR_ENERGY", "name": "核能", "desc": "强大的能源", "defaultUnlock": false, "defaultCapacity": 500},
+  {"id": "R_URANIUM", "name": "铀矿石", "desc": "放射性矿物", "defaultUnlock": false, "defaultCapacity": 25},
+  {"id": "R_ENRICHED_URANIUM", "name": "浓缩铀", "desc": "核能燃料", "defaultUnlock": false, "defaultCapacity": 15},
+  {"id": "R_NUCLEAR_ENERGY", "name": "核能", "desc": "强大的能源", "defaultUnlock": false, "defaultCapacity": 600},
   
-  {"id": "R_ROCKET_FUEL", "name": "火箭燃料", "desc": "高能推进剂", "defaultUnlock": false, "defaultCapacity": 50},
-  {"id": "R_ALLOY", "name": "航天合金", "desc": "轻量化高强度材料", "defaultUnlock": false, "defaultCapacity": 40},
-  {"id": "R_CHIP", "name": "芯片", "desc": "高级计算元件", "defaultUnlock": false, "defaultCapacity": 20},
-  {"id": "R_LIFE_SUPPORT", "name": "生命维持", "desc": "太空生存必需品", "defaultUnlock": false, "defaultCapacity": 30},
+  {"id": "R_ROCKET_FUEL", "name": "火箭燃料", "desc": "高能推进剂", "defaultUnlock": false, "defaultCapacity": 40},
+  {"id": "R_ALLOY", "name": "航天合金", "desc": "轻量化高强度材料", "defaultUnlock": false, "defaultCapacity": 30},
+  {"id": "R_CHIP", "name": "芯片", "desc": "高级计算元件", "defaultUnlock": false, "defaultCapacity": 15},
+  {"id": "R_LIFE_SUPPORT", "name": "生命维持", "desc": "太空生存必需品", "defaultUnlock": false, "defaultCapacity": 25},
   
-  {"id": "R_ANTIMATTER", "name": "反物质", "desc": "终极能源", "defaultUnlock": false, "defaultCapacity": 10},
-  {"id": "R_DARK_ENERGY", "name": "暗能量", "desc": "宇宙的神秘力量", "defaultUnlock": false, "defaultCapacity": 5},
-  {"id": "R_ALIEN_TECH", "name": "外星科技", "desc": "来自其他文明的技术", "defaultUnlock": false, "defaultCapacity": 10}
+  {"id": "R_ANTIMATTER", "name": "反物质", "desc": "终极能源", "defaultUnlock": false, "defaultCapacity": 8},
+  {"id": "R_DARK_ENERGY", "name": "暗能量", "desc": "宇宙的神秘力量", "defaultUnlock": false, "defaultCapacity": 4},
+  {"id": "R_ALIEN_TECH", "name": "外星科技", "desc": "来自其他文明的技术", "defaultUnlock": false, "defaultCapacity": 8}
 ]

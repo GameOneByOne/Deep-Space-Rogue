@@ -2,23 +2,36 @@
   {
     "id": "P_IDLE",
     "name": "闲置",
-    "desc": "未分配工作的居民",
+    "desc": "未分配工作的居民，人口增长的基础",
     "defaultUnlock": true,
     "editable": false,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_WOOD", "count": 0.25, "per": "turn" },
-      { "type": "add", "target": "resource", "id": "R_STONE", "count": 0.25, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_WOOD", "count": 0.2, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_STONE", "count": 0.1, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.05, "per": "turn" }
     ]
   },
   {
     "id": "P_HUNTER",
     "name": "猎人",
-    "desc": "稳定获取食物",
+    "desc": "稳定获取食物和兽皮",
     "defaultUnlock": true,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 1, "per": "turn" },
-      { "type": "add", "target": "resource", "id": "R_ANIMAL_HIDE", "count": 0.2, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 1.2, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_ANIMAL_HIDE", "count": 0.3, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_TOOLS", "count": 0.01, "per": "turn" }
+    ]
+  },
+  {
+    "id": "P_COOK",
+    "name": "厨师",
+    "desc": "将食物加工成口粮，提高人口增长效率",
+    "defaultUnlock": false,
+    "editable": true,
+    "effects": [
+      { "type": "add", "target": "resource", "id": "R_RATION", "count": 0.8, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 1.0, "per": "turn" }
     ]
   },
   {
@@ -28,8 +41,9 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_CROP", "count": 1.5, "per": "turn" },
-      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 0.5, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_CROP", "count": 1.8, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 0.4, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_TOOLS", "count": 0.01, "per": "turn" }
     ]
   },
   {
@@ -39,7 +53,8 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_WOOD", "count": 1.5, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_WOOD", "count": 2.0, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_TOOLS", "count": 0.02, "per": "turn" }
     ]
   },
   {
@@ -49,7 +64,8 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_STONE", "count": 1.5, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_STONE", "count": 1.8, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_TOOLS", "count": 0.02, "per": "turn" }
     ]
   },
   {
@@ -59,9 +75,10 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 0.8, "per": "turn" },
-      { "type": "add", "target": "resource", "id": "R_ANIMAL_HIDE", "count": 0.5, "per": "turn" },
-      { "type": "add", "target": "resource", "id": "R_FABRIC", "count": 0.3, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 1.0, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_ANIMAL_HIDE", "count": 0.6, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_FABRIC", "count": 0.2, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_RATION", "count": 0.1, "per": "turn" }
     ]
   },
   {
@@ -71,8 +88,8 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_FABRIC", "count": 1, "per": "turn" },
-      { "type": "clamp", "target": "resource", "id": "R_ANIMAL_HIDE", "count": 0.5, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_FABRIC", "count": 1.2, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_ANIMAL_HIDE", "count": 0.6, "per": "turn" }
     ]
   },
   {
@@ -82,8 +99,9 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_METAL_ORE", "count": 1, "per": "turn" },
-      { "type": "add", "target": "resource", "id": "R_COAL", "count": 0.5, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_METAL_ORE", "count": 1.2, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_COAL", "count": 0.6, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_TOOLS", "count": 0.03, "per": "turn" }
     ]
   },
   {
@@ -93,8 +111,9 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_TOOLS", "count": 0.8, "per": "turn" },
-      { "type": "clamp", "target": "resource", "id": "R_METAL", "count": 0.3, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_TOOLS", "count": 1.0, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_METAL", "count": 0.4, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_WOOD", "count": 0.2, "per": "turn" }
     ]
   },
   {
@@ -104,8 +123,9 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_METAL", "count": 0.8, "per": "turn" },
-      { "type": "clamp", "target": "resource", "id": "R_METAL_ORE", "count": 1, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_METAL", "count": 1.0, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_METAL_ORE", "count": 1.2, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_COAL", "count": 0.4, "per": "turn" }
     ]
   },
   {
@@ -115,9 +135,9 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_STEEL", "count": 0.6, "per": "turn" },
-      { "type": "clamp", "target": "resource", "id": "R_METAL", "count": 0.5, "per": "turn" },
-      { "type": "clamp", "target": "resource", "id": "R_COAL", "count": 0.3, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_STEEL", "count": 0.8, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_METAL", "count": 0.6, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_COAL", "count": 0.4, "per": "turn" }
     ]
   },
   {
@@ -127,8 +147,10 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_PARTS", "count": 0.5, "per": "turn" },
-      { "type": "clamp", "target": "resource", "id": "R_STEEL", "count": 0.3, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_PARTS", "count": 0.6, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_MACHINERY", "count": 0.2, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_STEEL", "count": 0.4, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_TOOLS", "count": 0.1, "per": "turn" }
     ]
   },
   {
@@ -138,9 +160,10 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 2, "per": "turn" },
-      { "type": "add", "target": "resource", "id": "R_CIRCUIT", "count": 0.3, "per": "turn" },
-      { "type": "clamp", "target": "resource", "id": "R_PLASTIC", "count": 0.2, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 3, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_CIRCUIT", "count": 0.4, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_PLASTIC", "count": 0.3, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_ELECTRICITY", "count": 2, "per": "turn" }
     ]
   },
   {
@@ -150,9 +173,10 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_PLASTIC", "count": 0.6, "per": "turn" },
-      { "type": "add", "target": "resource", "id": "R_ROCKET_FUEL", "count": 0.4, "per": "turn" },
-      { "type": "clamp", "target": "resource", "id": "R_OIL", "count": 0.5, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_PLASTIC", "count": 0.8, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_ROCKET_FUEL", "count": 0.5, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_OIL", "count": 0.6, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_ELECTRICITY", "count": 1, "per": "turn" }
     ]
   },
   {
@@ -162,8 +186,10 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 3, "per": "turn" },
-      { "type": "add", "target": "resource", "id": "R_ENRICHED_URANIUM", "count": 0.1, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 5, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_ENRICHED_URANIUM", "count": 0.15, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_URANIUM", "count": 0.2, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_ELECTRICITY", "count": 3, "per": "turn" }
     ]
   },
   {
@@ -173,8 +199,10 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_ELECTRICITY", "count": 5, "per": "turn" },
-      { "type": "add", "target": "resource", "id": "R_CHIP", "count": 0.2, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_ELECTRICITY", "count": 8, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_CHIP", "count": 0.3, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_CIRCUIT", "count": 0.2, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_MACHINERY", "count": 0.05, "per": "turn" }
     ]
   },
   {
@@ -184,8 +212,10 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 1, "per": "turn" },
-      { "type": "add", "target": "resource", "id": "R_LIFE_SUPPORT", "count": 0.3, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 2, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_LIFE_SUPPORT", "count": 0.4, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_RATION", "count": 0.2, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_ELECTRICITY", "count": 2, "per": "turn" }
     ]
   },
   {
@@ -195,7 +225,8 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 1, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 2, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_RATION", "count": 0.15, "per": "turn" }
     ]
   },
   {
@@ -205,8 +236,9 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_ALLOY", "count": 0.4, "per": "turn" },
-      { "type": "clamp", "target": "resource", "id": "R_STEEL", "count": 0.3, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_ALLOY", "count": 0.5, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_STEEL", "count": 0.4, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_NUCLEAR_ENERGY", "count": 1, "per": "turn" }
     ]
   },
   {
@@ -216,8 +248,9 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 4, "per": "turn" },
-      { "type": "add", "target": "resource", "id": "R_ALIEN_TECH", "count": 0.1, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 6, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_ALIEN_TECH", "count": 0.15, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_LIFE_SUPPORT", "count": 0.1, "per": "turn" }
     ]
   },
   {
@@ -227,8 +260,10 @@
     "defaultUnlock": false,
     "editable": true,
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 5, "per": "turn" },
-      { "type": "add", "target": "resource", "id": "R_ANTIMATTER", "count": 0.05, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 8, "per": "turn" },
+      { "type": "add", "target": "resource", "id": "R_ANTIMATTER", "count": 0.08, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_NUCLEAR_ENERGY", "count": 3, "per": "turn" },
+      { "type": "clamp", "target": "resource", "id": "R_CHIP", "count": 0.1, "per": "turn" }
     ]
   }
 ]

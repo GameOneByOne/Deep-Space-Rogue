@@ -24,8 +24,8 @@
       { "type": "hasBuilding", "id": "B_FARMLAND" }
     ],
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 30, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_CROP", "count": 20, "per": "occur" }
+      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 25, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_CROP", "count": 15, "per": "occur" }
     ]
   },
   {
@@ -39,8 +39,9 @@
       { "type": "hasBuilding", "id": "B_LUMBER_CAMP" }
     ],
     "effects": [
-      { "type": "clamp", "target": "resource", "id": "R_WOOD", "count": 20, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_FOOD", "count": -10, "per": "occur" }
+      { "type": "clamp", "target": "resource", "id": "R_WOOD", "count": 25, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_FOOD", "count": -15, "per": "occur" },
+      { "type": "clamp", "target": "resource", "id": "R_TOOLS", "count": 3, "per": "occur" }
     ]
   },
   {
@@ -54,8 +55,8 @@
       { "type": "hasBuilding", "id": "B_CAMPFIRE" }
     ],
     "effects": [
-      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 10, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_ANIMAL_HIDE", "count": 5, "per": "occur" }
+      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 12, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_ANIMAL_HIDE", "count": 6, "per": "occur" }
     ]
   },
   {
@@ -70,7 +71,8 @@
     ],
     "effects": [
       { "type": "add", "target": "profession", "id": "P_IDLE", "count": 2, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_FOOD", "count": -15, "per": "occur" }
+      { "type": "add", "target": "resource", "id": "R_FOOD", "count": -20, "per": "occur" },
+      { "type": "clamp", "target": "resource", "id": "R_RATION", "count": 5, "per": "occur" }
     ]
   },
   {
@@ -85,7 +87,8 @@
     ],
     "effects": [
       { "type": "clamp", "target": "profession", "id": "P_IDLE", "count": 1, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_FOOD", "count": -20, "per": "occur" }
+      { "type": "add", "target": "resource", "id": "R_FOOD", "count": -25, "per": "occur" },
+      { "type": "clamp", "target": "resource", "id": "R_RATION", "count": 8, "per": "occur" }
     ]
   },
   {
@@ -99,8 +102,9 @@
       { "type": "hasBuilding", "id": "B_MINE" }
     ],
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_METAL_ORE", "count": 25, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_COAL", "count": 20, "per": "occur" }
+      { "type": "add", "target": "resource", "id": "R_METAL_ORE", "count": 30, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_COAL", "count": 25, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_URANIUM", "count": 5, "per": "occur" }
     ]
   },
   {
@@ -114,8 +118,9 @@
       { "type": "hasBuilding", "id": "B_MINE" }
     ],
     "effects": [
-      { "type": "clamp", "target": "resource", "id": "R_METAL_ORE", "count": 15, "per": "occur" },
-      { "type": "clamp", "target": "profession", "id": "P_MINER", "count": 1, "per": "occur" }
+      { "type": "clamp", "target": "resource", "id": "R_METAL_ORE", "count": 20, "per": "occur" },
+      { "type": "clamp", "target": "profession", "id": "P_MINER", "count": 1, "per": "occur" },
+      { "type": "clamp", "target": "resource", "id": "R_TOOLS", "count": 5, "per": "occur" }
     ]
   },
   {
@@ -129,8 +134,9 @@
       { "type": "hasBuilding", "id": "B_WORKSHOP" }
     ],
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 15, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_TOOLS", "count": 10, "per": "occur" }
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 20, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_TOOLS", "count": 12, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_PARTS", "count": 5, "per": "occur" }
     ]
   },
   {
@@ -144,9 +150,10 @@
       { "type": "hasBuilding", "id": "B_FACTORY" }
     ],
     "effects": [
-      { "type": "clamp", "target": "resource", "id": "R_STEEL", "count": 15, "per": "occur" },
-      { "type": "clamp", "target": "resource", "id": "R_PARTS", "count": 10, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": -10, "per": "occur" }
+      { "type": "clamp", "target": "resource", "id": "R_STEEL", "count": 20, "per": "occur" },
+      { "type": "clamp", "target": "resource", "id": "R_PARTS", "count": 15, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": -15, "per": "occur" },
+      { "type": "clamp", "target": "resource", "id": "R_MACHINERY", "count": 3, "per": "occur" }
     ]
   },
   {
@@ -160,8 +167,9 @@
       { "type": "hasBuilding", "id": "B_POWER_PLANT" }
     ],
     "effects": [
-      { "type": "clamp", "target": "resource", "id": "R_ELECTRICITY", "count": 50, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": -20, "per": "occur" }
+      { "type": "clamp", "target": "resource", "id": "R_ELECTRICITY", "count": 80, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": -30, "per": "occur" },
+      { "type": "clamp", "target": "resource", "id": "R_CHIP", "count": 2, "per": "occur" }
     ]
   },
   {
@@ -175,8 +183,9 @@
       { "type": "hasBuilding", "id": "B_REFINERY" }
     ],
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_OIL", "count": 50, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_PLASTIC", "count": 20, "per": "occur" }
+      { "type": "add", "target": "resource", "id": "R_OIL", "count": 60, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_PLASTIC", "count": 25, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_ROCKET_FUEL", "count": 15, "per": "occur" }
     ]
   },
   {
@@ -190,8 +199,9 @@
       { "type": "hasBuilding", "id": "B_TECH_CENTER" }
     ],
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 100, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_CHIP", "count": 5, "per": "occur" }
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 120, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_CHIP", "count": 8, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_CIRCUIT", "count": 5, "per": "occur" }
     ]
   },
   {
@@ -205,9 +215,10 @@
       { "type": "hasBuilding", "id": "B_NUCLEAR_PLANT" }
     ],
     "effects": [
-      { "type": "clamp", "target": "resource", "id": "R_NUCLEAR_ENERGY", "count": 100, "per": "occur" },
+      { "type": "clamp", "target": "resource", "id": "R_NUCLEAR_ENERGY", "count": 150, "per": "occur" },
       { "type": "clamp", "target": "profession", "id": "P_PHYSICIST", "count": 1, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": -50, "per": "occur" }
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": -60, "per": "occur" },
+      { "type": "clamp", "target": "resource", "id": "R_ENRICHED_URANIUM", "count": 5, "per": "occur" }
     ]
   },
   {
@@ -221,9 +232,10 @@
       { "type": "hasBuilding", "id": "B_SPACE_STATION" }
     ],
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_ALLOY", "count": 30, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_URANIUM", "count": 10, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 50, "per": "occur" }
+      { "type": "add", "target": "resource", "id": "R_ALLOY", "count": 40, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_URANIUM", "count": 15, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 60, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_CHIP", "count": 5, "per": "occur" }
     ]
   },
   {
@@ -237,9 +249,10 @@
       { "type": "hasBuilding", "id": "B_INTERSTELLAR_GATE" }
     ],
     "effects": [
-      { "type": "add", "target": "resource", "id": "R_ALIEN_TECH", "count": 5, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 200, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_ANTIMATTER", "count": 2, "per": "occur" }
+      { "type": "add", "target": "resource", "id": "R_ALIEN_TECH", "count": 8, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 250, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_ANTIMATTER", "count": 3, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_DARK_ENERGY", "count": 2, "per": "occur" }
     ]
   },
   {
@@ -253,9 +266,10 @@
       { "type": "hasBuilding", "id": "B_ROCKET_SILO" }
     ],
     "effects": [
-      { "type": "clamp", "target": "resource", "id": "R_ELECTRICITY", "count": 100, "per": "occur" },
-      { "type": "clamp", "target": "resource", "id": "R_CIRCUIT", "count": 15, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_CHIP", "count": -5, "per": "occur" }
+      { "type": "clamp", "target": "resource", "id": "R_ELECTRICITY", "count": 150, "per": "occur" },
+      { "type": "clamp", "target": "resource", "id": "R_CIRCUIT", "count": 20, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_CHIP", "count": -8, "per": "occur" },
+      { "type": "clamp", "target": "resource", "id": "R_MACHINERY", "count": 5, "per": "occur" }
     ]
   },
   {
@@ -270,9 +284,73 @@
     ],
     "effects": [
       { "type": "clamp", "target": "profession", "id": "P_IDLE", "count": 2, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_STONE", "count": 50, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_CROP", "count": 30, "per": "occur" },
-      { "type": "add", "target": "resource", "id": "R_METAL_ORE", "count": 20, "per": "occur" }
+      { "type": "add", "target": "resource", "id": "R_STONE", "count": 60, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_CROP", "count": 40, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_METAL_ORE", "count": 25, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_COAL", "count": 30, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_FOOD_SPOILAGE",
+    "name": "食物腐败",
+    "desc": "由于储存不当，部分食物变质",
+    "defaultUnlock": false,
+    "weight": 9,
+    "cooldown": 25,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_CELLAR" }
+    ],
+    "effects": [
+      { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 15, "per": "occur" },
+      { "type": "clamp", "target": "resource", "id": "R_CROP", "count": 10, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 5, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_TOOL_BREAKAGE",
+    "name": "工具损坏",
+    "desc": "一批工具磨损严重需要更换",
+    "defaultUnlock": false,
+    "weight": 11,
+    "cooldown": 20,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_WORKSHOP" }
+    ],
+    "effects": [
+      { "type": "clamp", "target": "resource", "id": "R_TOOLS", "count": 8, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_METAL", "count": 5, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_EQUIPMENT_FAILURE",
+    "name": "设备故障",
+    "desc": "关键机械设备发生故障",
+    "defaultUnlock": false,
+    "weight": 8,
+    "cooldown": 30,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_FACTORY" }
+    ],
+    "effects": [
+      { "type": "clamp", "target": "resource", "id": "R_MACHINERY", "count": 5, "per": "occur" },
+      { "type": "clamp", "target": "resource", "id": "R_PARTS", "count": 10, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_STEEL", "count": 8, "per": "occur" }
+    ]
+  },
+  {
+    "id": "E_CHIP_SHORTAGE",
+    "name": "芯片短缺",
+    "desc": "芯片生产受阻，供应紧张",
+    "defaultUnlock": false,
+    "weight": 7,
+    "cooldown": 35,
+    "prereqs": [
+      { "type": "hasBuilding", "id": "B_CHIP_FAB" }
+    ],
+    "effects": [
+      { "type": "clamp", "target": "resource", "id": "R_CHIP", "count": 5, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_CIRCUIT", "count": 8, "per": "occur" },
+      { "type": "add", "target": "resource", "id": "R_PLASTIC", "count": 10, "per": "occur" }
     ]
   }
 ]

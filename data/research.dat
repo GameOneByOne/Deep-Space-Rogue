@@ -5,7 +5,7 @@
     "desc": "建立最初的工程认知，解锁采石场与后续工业研究。",
     "defaultUnlock": true,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 8 }
+      { "id": "R_KNOWLEDGE", "need": 10 }
     ],
     "effects": [
       { "type": "unlock", "target": "building", "id": "B_QUARRY" },
@@ -19,13 +19,14 @@
     "desc": "掌握协作狩猎，获得稳定食物来源。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 6 },
-      { "id": "R_FOOD", "need": 6 }
+      { "id": "R_KNOWLEDGE", "need": 8 },
+      { "id": "R_FOOD", "need": 8 },
+      { "id": "R_ANIMAL_HIDE", "need": 3 }
     ],
     "prereqs": [],
     "effects": [
       { "type": "unlock", "target": "profession", "id": "P_HUNTER" },
-      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 5, "per": "click" }
+      { "type": "add", "target": "resource", "id": "R_FOOD", "count": 8, "per": "click" }
     ]
   },
   {
@@ -34,13 +35,31 @@
     "desc": "学会种植作物，食物来源更加稳定。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 12 },
-      { "id": "R_WOOD", "need": 10 }
+      { "id": "R_KNOWLEDGE", "need": 15 },
+      { "id": "R_WOOD", "need": 15 },
+      { "id": "R_FOOD", "need": 10 }
     ],
     "prereqs": [],
     "effects": [
       { "type": "unlock", "target": "building", "id": "B_FARMLAND" },
-      { "type": "unlock", "target": "research", "id": "T_ANIMAL_HUSBANDRY" }
+      { "type": "unlock", "target": "research", "id": "T_ANIMAL_HUSBANDRY" },
+      { "type": "unlock", "target": "research", "id": "T_FOOD_PROCESSING" }
+    ]
+  },
+  {
+    "id": "T_FOOD_PROCESSING",
+    "name": "食物加工",
+    "desc": "学会制作口粮，提高食物效率。",
+    "defaultUnlock": false,
+    "cost": [
+      { "id": "R_KNOWLEDGE", "need": 12 },
+      { "id": "R_FOOD", "need": 15 },
+      { "id": "R_STONE", "need": 10 }
+    ],
+    "prereqs": [],
+    "effects": [
+      { "type": "unlock", "target": "building", "id": "B_KITCHEN" },
+      { "type": "unlock", "target": "resource", "id": "R_RATION" }
     ]
   },
   {
@@ -49,9 +68,10 @@
     "desc": "驯养动物获取持续资源。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 15 },
-      { "id": "R_FOOD", "need": 20 },
-      { "id": "R_ANIMAL_HIDE", "need": 5 }
+      { "id": "R_KNOWLEDGE", "need": 18 },
+      { "id": "R_FOOD", "need": 25 },
+      { "id": "R_ANIMAL_HIDE", "need": 8 },
+      { "id": "R_RATION", "need": 5 }
     ],
     "prereqs": [],
     "effects": [
@@ -65,8 +85,9 @@
     "desc": "将兽皮加工成布匹。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 18 },
-      { "id": "R_FABRIC", "need": 10 }
+      { "id": "R_KNOWLEDGE", "need": 22 },
+      { "id": "R_FABRIC", "need": 15 },
+      { "id": "R_ANIMAL_HIDE", "need": 10 }
     ],
     "prereqs": [],
     "effects": [
@@ -80,9 +101,10 @@
     "desc": "深入地下开采有价值的矿石。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 25 },
-      { "id": "R_STONE", "need": 30 },
-      { "id": "R_TOOLS", "need": 5 }
+      { "id": "R_KNOWLEDGE", "need": 30 },
+      { "id": "R_STONE", "need": 40 },
+      { "id": "R_TOOLS", "need": 8 },
+      { "id": "R_WOOD", "need": 20 }
     ],
     "prereqs": [],
     "effects": [
@@ -96,9 +118,10 @@
     "desc": "将矿石冶炼成可用金属。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 30 },
-      { "id": "R_METAL_ORE", "need": 15 },
-      { "id": "R_COAL", "need": 10 }
+      { "id": "R_KNOWLEDGE", "need": 35 },
+      { "id": "R_METAL_ORE", "need": 20 },
+      { "id": "R_COAL", "need": 15 },
+      { "id": "R_TOOLS", "need": 5 }
     ],
     "prereqs": [],
     "effects": [
@@ -112,9 +135,10 @@
     "desc": "生产高强度的钢材。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 40 },
-      { "id": "R_METAL", "need": 20 },
-      { "id": "R_COAL", "need": 25 }
+      { "id": "R_KNOWLEDGE", "need": 45 },
+      { "id": "R_METAL", "need": 25 },
+      { "id": "R_COAL", "need": 30 },
+      { "id": "R_TOOLS", "need": 10 }
     ],
     "prereqs": [],
     "effects": [
@@ -128,13 +152,15 @@
     "desc": "用机器替代人力进行生产。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 50 },
-      { "id": "R_STEEL", "need": 15 },
-      { "id": "R_PARTS", "need": 10 }
+      { "id": "R_KNOWLEDGE", "need": 60 },
+      { "id": "R_STEEL", "need": 20 },
+      { "id": "R_PARTS", "need": 15 },
+      { "id": "R_TOOLS", "need": 12 }
     ],
     "prereqs": [],
     "effects": [
       { "type": "unlock", "target": "building", "id": "B_FACTORY" },
+      { "type": "unlock", "target": "resource", "id": "R_MACHINERY" },
       { "type": "unlock", "target": "research", "id": "T_ELECTRIFICATION" }
     ]
   },
@@ -144,9 +170,10 @@
     "desc": "掌握电能的生产和应用。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 60 },
-      { "id": "R_STEEL", "need": 25 },
-      { "id": "R_PARTS", "need": 20 }
+      { "id": "R_KNOWLEDGE", "need": 75 },
+      { "id": "R_STEEL", "need": 35 },
+      { "id": "R_PARTS", "need": 25 },
+      { "id": "R_MACHINERY", "need": 8 }
     ],
     "prereqs": [],
     "effects": [
@@ -160,9 +187,10 @@
     "desc": "研究物质的化学性质和转化。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 70 },
-      { "id": "R_ELECTRICITY", "need": 50 },
-      { "id": "R_COAL", "need": 30 }
+      { "id": "R_KNOWLEDGE", "need": 85 },
+      { "id": "R_ELECTRICITY", "need": 80 },
+      { "id": "R_COAL", "need": 40 },
+      { "id": "R_PARTS", "need": 15 }
     ],
     "prereqs": [],
     "effects": [
@@ -176,9 +204,11 @@
     "desc": "制造电路和电子设备。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 80 },
-      { "id": "R_PLASTIC", "need": 20 },
-      { "id": "R_ELECTRICITY", "need": 100 }
+      { "id": "R_KNOWLEDGE", "need": 100 },
+      { "id": "R_PLASTIC", "need": 25 },
+      { "id": "R_ELECTRICITY", "need": 150 },
+      { "id": "R_PARTS", "need": 20 },
+      { "id": "R_MACHINERY", "need": 10 }
     ],
     "prereqs": [],
     "effects": [
@@ -192,9 +222,10 @@
     "desc": "开发强大的计算机系统。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 100 },
-      { "id": "R_CIRCUIT", "need": 30 },
-      { "id": "R_ELECTRICITY", "need": 150 }
+      { "id": "R_KNOWLEDGE", "need": 120 },
+      { "id": "R_CIRCUIT", "need": 40 },
+      { "id": "R_ELECTRICITY", "need": 250 },
+      { "id": "R_MACHINERY", "need": 15 }
     ],
     "prereqs": [],
     "effects": [
@@ -208,9 +239,10 @@
     "desc": "研究原子核的结构和能量。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 150 },
-      { "id": "R_ELECTRICITY", "need": 200 },
-      { "id": "R_CHIP", "need": 20 }
+      { "id": "R_KNOWLEDGE", "need": 180 },
+      { "id": "R_ELECTRICITY", "need": 350 },
+      { "id": "R_CHIP", "need": 25 },
+      { "id": "R_MACHINERY", "need": 20 }
     ],
     "prereqs": [],
     "effects": [
@@ -224,10 +256,11 @@
     "desc": "开发进入太空的运载工具。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 200 },
-      { "id": "R_STEEL", "need": 50 },
-      { "id": "R_ROCKET_FUEL", "need": 50 },
-      { "id": "R_NUCLEAR_ENERGY", "need": 100 }
+      { "id": "R_KNOWLEDGE", "need": 250 },
+      { "id": "R_STEEL", "need": 60 },
+      { "id": "R_ROCKET_FUEL", "need": 60 },
+      { "id": "R_NUCLEAR_ENERGY", "need": 150 },
+      { "id": "R_MACHINERY", "need": 25 }
     ],
     "prereqs": [],
     "effects": [
@@ -241,9 +274,11 @@
     "desc": "开发轻量化高强度的航天材料。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 250 },
-      { "id": "R_STEEL", "need": 40 },
-      { "id": "R_NUCLEAR_ENERGY", "need": 150 }
+      { "id": "R_KNOWLEDGE", "need": 300 },
+      { "id": "R_STEEL", "need": 50 },
+      { "id": "R_NUCLEAR_ENERGY", "need": 200 },
+      { "id": "R_CHIP", "need": 15 },
+      { "id": "R_MACHINERY", "need": 20 }
     ],
     "prereqs": [],
     "effects": [
@@ -257,10 +292,11 @@
     "desc": "制造高精度微型芯片。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 300 },
-      { "id": "R_ALLOY", "need": 30 },
-      { "id": "R_CIRCUIT", "need": 50 },
-      { "id": "R_NUCLEAR_ENERGY", "need": 200 }
+      { "id": "R_KNOWLEDGE", "need": 350 },
+      { "id": "R_ALLOY", "need": 40 },
+      { "id": "R_CIRCUIT", "need": 60 },
+      { "id": "R_NUCLEAR_ENERGY", "need": 300 },
+      { "id": "R_MACHINERY", "need": 25 }
     ],
     "prereqs": [],
     "effects": [
@@ -274,10 +310,12 @@
     "desc": "在轨道上建立永久居住点。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 400 },
-      { "id": "R_ALLOY", "need": 60 },
-      { "id": "R_CHIP", "need": 40 },
-      { "id": "R_ROCKET_FUEL", "need": 100 }
+      { "id": "R_KNOWLEDGE", "need": 450 },
+      { "id": "R_ALLOY", "need": 70 },
+      { "id": "R_CHIP", "need": 50 },
+      { "id": "R_ROCKET_FUEL", "need": 120 },
+      { "id": "R_LIFE_SUPPORT", "need": 30 },
+      { "id": "R_MACHINERY", "need": 30 }
     ],
     "prereqs": [],
     "effects": [
@@ -291,9 +329,11 @@
     "desc": "探索微观世界的物理规律。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 600 },
-      { "id": "R_CHIP", "need": 60 },
-      { "id": "R_NUCLEAR_ENERGY", "need": 400 }
+      { "id": "R_KNOWLEDGE", "need": 700 },
+      { "id": "R_CHIP", "need": 70 },
+      { "id": "R_NUCLEAR_ENERGY", "need": 500 },
+      { "id": "R_ANTIMATTER", "need": 3 },
+      { "id": "R_MACHINERY", "need": 40 }
     ],
     "prereqs": [],
     "effects": [
@@ -307,15 +347,17 @@
     "desc": "突破光速限制，进行星际旅行。",
     "defaultUnlock": false,
     "cost": [
-      { "id": "R_KNOWLEDGE", "need": 1000 },
-      { "id": "R_ALLOY", "need": 100 },
-      { "id": "R_CHIP", "need": 80 },
-      { "id": "R_ANTIMATTER", "need": 10 }
+      { "id": "R_KNOWLEDGE", "need": 1200 },
+      { "id": "R_ALLOY", "need": 120 },
+      { "id": "R_CHIP", "need": 100 },
+      { "id": "R_ANTIMATTER", "need": 15 },
+      { "id": "R_DARK_ENERGY", "need": 5 },
+      { "id": "R_MACHINERY", "need": 50 }
     ],
     "prereqs": [],
     "effects": [
       { "type": "unlock", "target": "building", "id": "B_INTERSTELLAR_GATE" },
-      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 50, "per": "turn" }
+      { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 60, "per": "turn" }
     ]
   }
 ]

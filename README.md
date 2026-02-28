@@ -1,127 +1,156 @@
-# Deep Space Rogue | 远航
+# 🚀 Deep Space Rogue | 远航
 
 <p align="center">
   <img src="https://img.shields.io/badge/Platform-Web-blue.svg" alt="Web">
+  <img src="https://img.shields.io/badge/Engine-Vanilla%20JS-informational" alt="Vanilla JS">
   <img src="https://img.shields.io/badge/Storage-localStorage-green.svg" alt="localStorage">
   <img src="https://img.shields.io/badge/License-MIT-brightgreen.svg" alt="MIT License">
 </p>
 
 <p align="center">
-  <b>一款以文明演进与宇宙探索为主题的文字经营游戏</b><br>
-  <i>从篝火营地出发，发展科技、调配人力、积累资源，最终迈向星际时代</i>
+  <b>一款文字肉鸽 / 文明演进经营游戏</b><br>
+  <i>从篝火时代起步，发展产业链、推进科技树，最终迈向星际文明</i>
 </p>
 
 ---
 
-## 游戏简介
+## 项目状态（请先看这里）
 
-《远航》是一款运行在浏览器中的文字经营游戏。你将从一个资源匮乏的早期聚落开始，通过建造设施、研究技术、分配人口与管理资源，逐步解锁更复杂的生产链，推动文明不断升级。
+本仓库当前以 **前端版本** 为主：
 
-当前版本已经改为纯前端运行：
-
-- 游戏逻辑全部在浏览器内执行
-- 不依赖远端服务器
-- 存档保存在浏览器 `localStorage`
-- 游戏数据已直接内嵌在前端脚本中
-
----
-
-## 核心玩法
-
-- 建造：消耗资源解锁新建筑、资源与职业
-- 研究：消耗知识推进科技树，打开后续发展路线
-- 人力：在不同职业之间调配人口，平衡生产与消耗
-- 资源：管理基础资源、工业资源与高阶资源的增长
-- 事件：查看当前事件条目与效果说明
+- ✅ 主游戏运行在浏览器（HTML + CSS + JavaScript）
+- ✅ 核心逻辑在 `index.js` 的 `LocalGameEngine`
+- ✅ 进度保存在浏览器 `localStorage`
+- ⚠️ 仓库中仍保留 Python/FastAPI 旧代码，仅作历史参考，**已不作为当前运行入口**
 
 ---
 
 ## 快速开始
 
-### 方式一：直接打开
-
-由于当前游戏数据已经内嵌到 [index.js](./index.js)，可以直接打开 [game.html](./game.html) 运行。
-
-### 方式二：本地预览（推荐）
-
-项目保留了 `vite`，可用于本地静态预览：
+### 推荐方式（本地开发）
 
 ```bash
 npm install
 npm run dev
 ```
 
-然后在浏览器中打开终端输出的本地地址。
+然后打开终端输出的本地地址（通常是 `http://localhost:5173`）。
 
-### 存档说明
+### 生产预览
 
-- 游戏进度自动保存在浏览器 `localStorage`
-- 页面顶部提供“重置存档”按钮，可直接重新开局
-- 更换浏览器、清空站点数据或手动清理本地存储后，存档会丢失
-
----
-
-## 游戏数据
-
-原始游戏配置仍保存在 `data/` 目录中，便于维护和编辑：
-
-| 文件 | 说明 |
-|------|------|
-| `data/building.dat` | 建筑定义（消耗、解锁、效果） |
-| `data/resource.dat` | 资源定义（初始解锁、容量） |
-| `data/profession.dat` | 职业定义（可分配性、效果） |
-| `data/research.dat` | 研究定义（消耗、解锁、效果） |
-| `data/event.dat` | 事件定义（描述、权重、效果） |
-
-运行时使用的是 [index.js](./index.js) 中内嵌的数据副本。
-
----
-
-## 项目结构
-
-当前文档只展示前端运行相关结构：
-
-```text
-Deep-Space-Rogue/
-├── data/               # 原始游戏配置数据
-├── game.html           # 游戏主页面
-├── index.html          # 入口页面/说明页
-├── index.js            # 前端游戏逻辑、本地引擎、内嵌数据
-├── style.css           # 页面样式
-├── package.json        # 本地预览脚本（vite）
-├── package-lock.json   # 依赖锁定
-├── tool/               # 开发辅助脚本
-└── README.md           # 项目说明
+```bash
+npm run build
+npm run preview
 ```
 
 ---
 
-## 当前实现
+## 运行入口
 
-- 纯前端本地运行
-- 浏览器端资源自动结算
-- 建筑、研究、人力分配可直接在前端计算
-- 本地存档与重置存档
-- 自适应布局与面板缩放
+- `index.html`：启动页 / 展示页（飞船动画）
+- `game.html`：游戏主界面（资源、建筑、人力、研究、事件）
 
 ---
 
-## 开发说明
+## 前端代码结构（当前重点）
 
-如果你准备继续扩展内容，优先关注以下文件：
+### `index.js`
 
-- [index.js](./index.js)：核心逻辑、状态管理、UI 渲染
-- [style.css](./style.css)：界面布局与视觉样式
-- `data/*.dat`：原始内容配置，可作为后续平衡调整来源
+核心逻辑文件，包含：
 
-当前前端逻辑已经不再依赖远端接口，因此新增内容时，默认应直接修改前端逻辑与本地数据。
+- **内嵌数据**：`EMBEDDED_DATA`
+  - 资源 / 建筑 / 职业 / 研究 / 事件定义
+- **本地引擎**：`LocalGameEngine`
+  - `tick()` 资源结算
+  - `build()` 建造
+  - `research()` 研究
+  - `dispatch()` 人力分配
+  - `save()/load/reset()` 存档管理
+- **渲染层**
+  - `renderResources / renderBuildings / renderProfessions / renderResearches / renderEvents`
+- **交互与反馈**
+  - toast 提示
+  - tooltip 说明
+  - 资源浮动数字
+  - 建筑脉冲动画
+  - 研究完成全屏通知
+  - 顶部“重置存档”按钮
+
+### `style.css`
+
+UI与动效样式：
+
+- 面板网格布局（事件、资源、操作、人力、研究）
+- 响应式布局（窄屏下自动降列）
+- 按钮与职业操作样式
+- tooltip / toast 样式
+- 浮动数字、脉冲、全屏通知动画
+- `--ui-scale` 动态缩放变量（由 JS 根据窗口尺寸更新）
+
+### `game.html`
+
+游戏UI骨架页面：
+
+- 顶栏状态与重置按钮
+- 五大核心面板容器
+- 挂载 `index.js`（当前唯一游戏脚本入口）
+
+### `index.html`
+
+视觉启动页：
+
+- 飞船 SVG 动画
+- 背景扫描线、地平线、发光文字等效果
+
+---
+
+## 存档机制
+
+- 键名：`dsr_local_save_v1`
+- 存储位置：浏览器 `localStorage`
+- 自动保存时机：建造、研究、人力变更、时间结算等
+- 可通过游戏内“重置存档”按钮清档重开
+
+> 注意：更换浏览器、清理站点数据后，存档会丢失。
+
+---
+
+## 数据维护说明
+
+当前运行使用的是 `index.js` 中的 `EMBEDDED_DATA`。
+
+仓库中的 `data/*.dat` 仍可作为平衡配置参考，但**不会自动驱动前端运行**。如果你修改了 `data/*.dat`，需要同步到 `index.js` 的内嵌数据。
+
+---
+
+## 目录概览
+
+```text
+Deep-Space-Rogue/
+├── game.html            # 游戏页面（主入口）
+├── index.html           # 启动页
+├── index.js             # 前端本地引擎 + UI逻辑 + 内嵌数据
+├── style.css            # 样式与动画
+├── data/                # 原始配置数据（参考/维护用）
+├── package.json         # Vite 脚本
+├── package-lock.json
+├── requirements.txt     # 旧 Python 依赖（历史遗留）
+├── main.py              # 旧后端入口（已废弃）
+├── mainWithPC.py        # 旧桌面入口（已废弃）
+└── README.md
+```
+
+---
+
+## 后续开发建议（前端方向）
+
+1. 建立 `data/*.dat -> index.js` 自动同步脚本，避免双份数据手改
+2. 增加版本化存档（兼容字段迁移）
+3. 拆分 `index.js`（engine/ui/data 分文件）降低维护成本
+4. 为关键数值平衡添加调试面板或可视化工具
 
 ---
 
 ## 开源协议
 
 本项目采用 [MIT License](./LICENSE)。
-
-```text
-Copyright (c) 2026 GameOneByOne
-```

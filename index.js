@@ -1,4 +1,5 @@
-const SAVE_KEY = "dsr_local_save_v1";
+const SAVE_KEY = "dsr_local_save_v2";
+
 const EMBEDDED_DATA = {
   "resources": [
     {
@@ -234,11 +235,6 @@ const EMBEDDED_DATA = {
         },
         {
           "type": "unlock",
-          "target": "profession",
-          "id": "P_HUNTER"
-        },
-        {
-          "type": "unlock",
           "target": "resource",
           "id": "R_KNOWLEDGE"
         },
@@ -253,6 +249,11 @@ const EMBEDDED_DATA = {
           "type": "unlock",
           "target": "building",
           "id": "B_FARMLAND"
+        },
+        {
+          "type": "unlock",
+          "target": "building",
+          "id": "B_HUNTING_CAMP"
         }
       ]
     },
@@ -337,8 +338,8 @@ const EMBEDDED_DATA = {
     },
     {
       "id": "B_HUNTING_CAMP",
-      "name": "狩猎营地",
-      "desc": "专注狩猎获取食物和兽皮",
+      "name": "猎人小屋",
+      "desc": "提供猎人的岗位，稳定获取食物和兽皮",
       "defaultUnlock": false,
       "cost": [
         {
@@ -352,15 +353,15 @@ const EMBEDDED_DATA = {
       ],
       "effects": [
         {
+          "type": "unlock",
+          "target": "profession",
+          "id": "P_HUNTER"
+        },
+        {
           "type": "addLimit",
           "target": "profession",
           "id": "P_HUNTER",
           "count": 2
-        },
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_COOK"
         },
         {
           "type": "unlock",
@@ -442,41 +443,6 @@ const EMBEDDED_DATA = {
           "type": "unlock",
           "target": "building",
           "id": "B_HUT"
-        }
-      ]
-    },
-    {
-      "id": "B_KITCHEN",
-      "name": "厨房",
-      "desc": "将食物加工成口粮，提高人口增长效率",
-      "defaultUnlock": false,
-      "cost": [
-        {
-          "id": "R_WOOD",
-          "need": 8
-        },
-        {
-          "id": "R_STONE",
-          "need": 4
-        }
-      ],
-      "effects": [
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_COOK",
-          "count": 2
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_RATION"
-        },
-        {
-          "type": "addLimit",
-          "target": "resource",
-          "id": "R_RATION",
-          "count": 50
         }
       ]
     },
@@ -1407,7 +1373,7 @@ const EMBEDDED_DATA = {
       ]
     }
   ],
-  "professions": [
+  "professions":   [
     {
       "id": "P_IDLE",
       "name": "闲置",
@@ -1428,13 +1394,6 @@ const EMBEDDED_DATA = {
           "id": "R_STONE",
           "count": 0.1,
           "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.05,
-          "per": "turn"
         }
       ]
     },
@@ -1442,7 +1401,7 @@ const EMBEDDED_DATA = {
       "id": "P_HUNTER",
       "name": "猎人",
       "desc": "稳定获取食物和兽皮",
-      "defaultUnlock": true,
+      "defaultUnlock": false,
       "editable": true,
       "effects": [
         {
@@ -1465,28 +1424,12 @@ const EMBEDDED_DATA = {
           "id": "R_TOOLS",
           "count": 0.01,
           "per": "turn"
-        }
-      ]
-    },
-    {
-      "id": "P_COOK",
-      "name": "厨师",
-      "desc": "将食物加工成口粮，提高人口增长效率",
-      "defaultUnlock": false,
-      "editable": true,
-      "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_RATION",
-          "count": 0.8,
-          "per": "turn"
         },
         {
           "type": "clamp",
           "target": "resource",
           "id": "R_FOOD",
-          "count": 1,
+          "count": 0.14,
           "per": "turn"
         }
       ]
@@ -1518,6 +1461,13 @@ const EMBEDDED_DATA = {
           "id": "R_TOOLS",
           "count": 0.01,
           "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
+          "count": 0.1,
+          "per": "turn"
         }
       ]
     },
@@ -1541,6 +1491,13 @@ const EMBEDDED_DATA = {
           "id": "R_TOOLS",
           "count": 0.02,
           "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
+          "count": 0.18,
+          "per": "turn"
         }
       ]
     },
@@ -1563,6 +1520,13 @@ const EMBEDDED_DATA = {
           "target": "resource",
           "id": "R_TOOLS",
           "count": 0.02,
+          "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
+          "count": 0.18,
           "per": "turn"
         }
       ]
@@ -1601,6 +1565,13 @@ const EMBEDDED_DATA = {
           "id": "R_RATION",
           "count": 0.1,
           "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
+          "count": 0.12,
+          "per": "turn"
         }
       ]
     },
@@ -1623,6 +1594,13 @@ const EMBEDDED_DATA = {
           "target": "resource",
           "id": "R_ANIMAL_HIDE",
           "count": 0.6,
+          "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
+          "count": 0.08,
           "per": "turn"
         }
       ]
@@ -1654,6 +1632,13 @@ const EMBEDDED_DATA = {
           "id": "R_TOOLS",
           "count": 0.03,
           "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
+          "count": 0.2,
+          "per": "turn"
         }
       ]
     },
@@ -1683,6 +1668,13 @@ const EMBEDDED_DATA = {
           "target": "resource",
           "id": "R_WOOD",
           "count": 0.2,
+          "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
+          "count": 0.12,
           "per": "turn"
         }
       ]
@@ -1714,6 +1706,13 @@ const EMBEDDED_DATA = {
           "id": "R_COAL",
           "count": 0.4,
           "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
+          "count": 0.14,
+          "per": "turn"
         }
       ]
     },
@@ -1743,6 +1742,13 @@ const EMBEDDED_DATA = {
           "target": "resource",
           "id": "R_COAL",
           "count": 0.4,
+          "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
+          "count": 0.18,
           "per": "turn"
         }
       ]
@@ -1781,6 +1787,13 @@ const EMBEDDED_DATA = {
           "id": "R_TOOLS",
           "count": 0.1,
           "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
+          "count": 0.16,
+          "per": "turn"
         }
       ]
     },
@@ -1817,6 +1830,13 @@ const EMBEDDED_DATA = {
           "target": "resource",
           "id": "R_ELECTRICITY",
           "count": 2,
+          "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
+          "count": 0.1,
           "per": "turn"
         }
       ]
@@ -1855,6 +1875,13 @@ const EMBEDDED_DATA = {
           "id": "R_ELECTRICITY",
           "count": 1,
           "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
+          "count": 0.1,
+          "per": "turn"
         }
       ]
     },
@@ -1891,6 +1918,13 @@ const EMBEDDED_DATA = {
           "target": "resource",
           "id": "R_ELECTRICITY",
           "count": 3,
+          "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
+          "count": 0.1,
           "per": "turn"
         }
       ]
@@ -1929,6 +1963,13 @@ const EMBEDDED_DATA = {
           "id": "R_MACHINERY",
           "count": 0.05,
           "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
+          "count": 0.1,
+          "per": "turn"
         }
       ]
     },
@@ -1966,6 +2007,13 @@ const EMBEDDED_DATA = {
           "id": "R_ELECTRICITY",
           "count": 2,
           "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
+          "count": 0.16,
+          "per": "turn"
         }
       ]
     },
@@ -1988,6 +2036,13 @@ const EMBEDDED_DATA = {
           "target": "resource",
           "id": "R_RATION",
           "count": 0.15,
+          "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
+          "count": 0.12,
           "per": "turn"
         }
       ]
@@ -2019,6 +2074,13 @@ const EMBEDDED_DATA = {
           "id": "R_NUCLEAR_ENERGY",
           "count": 1,
           "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
+          "count": 0.14,
+          "per": "turn"
         }
       ]
     },
@@ -2047,6 +2109,13 @@ const EMBEDDED_DATA = {
           "type": "clamp",
           "target": "resource",
           "id": "R_LIFE_SUPPORT",
+          "count": 0.1,
+          "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
           "count": 0.1,
           "per": "turn"
         }
@@ -2084,6 +2153,13 @@ const EMBEDDED_DATA = {
           "type": "clamp",
           "target": "resource",
           "id": "R_CHIP",
+          "count": 0.1,
+          "per": "turn"
+        },
+        {
+          "type": "clamp",
+          "target": "resource",
+          "id": "R_FOOD",
           "count": 0.1,
           "per": "turn"
         }
@@ -2147,11 +2223,11 @@ const EMBEDDED_DATA = {
           "id": "P_HUNTER"
         },
         {
-          "type": "add",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 8,
-          "per": "click"
+          "type": "professionRateBuff",
+          "target": "profession",
+          "id": "P_HUNTER",
+          "count": 0.3,
+          "per": "turn"
         }
       ]
     },
@@ -3758,6 +3834,7 @@ let currentState = null;
 let previousResources = null;
 let previousBuildings = null;
 let previousResearches = null;
+let showResourceDeltaFx = false;
 
 function updateUiScale() {
   const widthScale = window.innerWidth / 1280;
@@ -3907,6 +3984,7 @@ class LocalGameEngine {
 
     this.lastTickAt = Date.now();
     this.startGame();
+    this.recomputeResourceRates();
     if (save) this.save();
   }
 
@@ -3930,6 +4008,7 @@ class LocalGameEngine {
     if (!Number.isFinite(this.lastTickAt)) {
       this.lastTickAt = Date.now();
     }
+    this.recomputeResourceRates();
     this.save();
   }
 
@@ -4040,6 +4119,9 @@ class LocalGameEngine {
     if (effect.type === "addLimit") {
       return `增加${this.getEntityName(effect.toId)}${TARGET_NAME_CONVERT[effect.target] || effect.target}上限: ${effect.count}`;
     }
+    if (effect.type === "professionRateBuff") {
+      return `提升职业 ${this.getEntityName(effect.toId)} 的资源增长速率: +${(effect.count * 100).toFixed(0)}%`;
+    }
     if (effect.type === "convert") {
       return "转换作用";
     }
@@ -4056,6 +4138,62 @@ class LocalGameEngine {
     const state = this.resources.get(resourceId);
     if (!state) return;
     state.amount = Math.max(0, state.amount - delta * timeDelta);
+  }
+
+  getProfessionRateMultiplier(professionId) {
+    let mult = 1;
+    this.researches.forEach((state) => {
+      if (!state.unlocked || !state.finished) return;
+      (state.def.effects || []).forEach((raw) => {
+        const effect = this.normalizeEffect(raw);
+        if (effect.type === "professionRateBuff" && effect.toId === professionId) {
+          mult += effect.count;
+        }
+      });
+    });
+    return Math.max(0, mult);
+  }
+
+  recomputeResourceRates() {
+    // 全量重算每回合资源速率，避免 +/- 人力分配导致的累计误差
+    this.resources.forEach((state) => {
+      state.rate = 0;
+    });
+
+    const applyTurnEffects = (effects = [], times = 1, addMultiplier = 1) => {
+      (effects || []).forEach((raw) => {
+        const effect = this.normalizeEffect(raw);
+        if (effect.target !== "resource" || effect.per !== "turn") return;
+        const resState = this.resources.get(effect.toId);
+        if (!resState) return;
+
+        if (effect.type === "add") {
+          resState.rate += effect.count * times * addMultiplier;
+        } else if (effect.type === "clamp") {
+          resState.rate -= effect.count * times;
+        }
+      });
+    };
+
+    // 建筑：按拥有数量累加持续效果
+    this.buildings.forEach((state) => {
+      if (!state.unlocked || state.ownedCount <= 0) return;
+      applyTurnEffects(state.def.effects || [], state.ownedCount);
+    });
+
+    // 研究：完成后持续效果生效
+    this.researches.forEach((state) => {
+      if (!state.unlocked || !state.finished) return;
+      applyTurnEffects(state.def.effects || [], 1);
+    });
+
+    // 职业：按人数累加持续效果（可被科技加成）
+    this.professions.forEach((state) => {
+      if (!state.unlocked || state.amount <= 0) return;
+      const profId = state.def.id;
+      const mult = this.getProfessionRateMultiplier(profId);
+      applyTurnEffects(state.def.effects || [], state.amount, mult);
+    });
   }
 
   isEnough(cost = []) {
@@ -4202,6 +4340,7 @@ class LocalGameEngine {
       state.ownedCount += 1;
     }
     this.applyEffects(state.def.effects || []);
+    this.recomputeResourceRates();
     this.save();
     return true;
   }
@@ -4219,6 +4358,7 @@ class LocalGameEngine {
 
     state.finished = true;
     this.applyEffects(state.def.effects || []);
+    this.recomputeResourceRates();
     this.save();
     return true;
   }
@@ -4228,7 +4368,8 @@ class LocalGameEngine {
     const toState = this.professions.get(toProfessionId);
     if (!fromState || !toState || !toState.unlocked) return false;
     if (fromState.amount <= 0) return false;
-    if (toState.amount >= toState.limit) return false;
+    // 回收到闲置人口时不受上限限制，避免减员按钮失效
+    if (toProfessionId !== "P_IDLE" && toState.amount >= toState.limit) return false;
     return true;
   }
 
@@ -4247,16 +4388,59 @@ class LocalGameEngine {
     });
     effects.push(...(toState.def.effects || []));
     this.applyEffects(effects);
+    this.recomputeResourceRates();
     this.save();
     return true;
   }
 
+  getRateBreakdown() {
+    const byResource = {};
+
+    const ensure = (resourceId) => {
+      if (!byResource[resourceId]) {
+        byResource[resourceId] = {
+          byProfession: {},
+          professionTotal: 0,
+        };
+      }
+      return byResource[resourceId];
+    };
+
+    this.professions.forEach((profState) => {
+      if (!profState.unlocked || profState.amount <= 0) return;
+      const profId = profState.def.id;
+      const mult = this.getProfessionRateMultiplier(profId);
+      (profState.def.effects || []).forEach((raw) => {
+        const effect = this.normalizeEffect(raw);
+        if (effect.target !== "resource" || effect.per !== "turn") return;
+
+        let delta = 0;
+        if (effect.type === "add") {
+          delta = effect.count * mult;
+        } else if (effect.type === "clamp") {
+          delta = -effect.count;
+        }
+        if (!delta) return;
+
+        const bucket = ensure(effect.toId);
+        const contrib = delta * profState.amount;
+        bucket.byProfession[profId] = (bucket.byProfession[profId] || 0) + contrib;
+        bucket.professionTotal += contrib;
+      });
+
+    });
+
+    return byResource;
+  }
+
   getFrontState() {
     this.tick();
+    const rateBreakdown = this.getRateBreakdown();
 
     const resources = {};
     this.resources.forEach((state, id) => {
       if (!state.unlocked) return;
+      const bucket = rateBreakdown[id] || { byProfession: {}, professionTotal: 0 };
       resources[id] = {
         id,
         name: state.def.name,
@@ -4264,6 +4448,11 @@ class LocalGameEngine {
         count: state.amount,
         limit: state.capacity,
         rate: state.rate,
+        rateBreakdown: {
+          byProfession: bucket.byProfession,
+          professionTotal: bucket.professionTotal,
+          other: state.rate - bucket.professionTotal,
+        },
       };
     });
 
@@ -4362,6 +4551,27 @@ function refreshState() {
   setStatus("本地模式 | 进度保存在浏览器");
 }
 
+function formatRateBreakdown(resource) {
+  const rb = resource.rateBreakdown;
+  if (!rb) return "";
+
+  const profMap = (currentState && currentState.professions) ? currentState.professions : {};
+  const lines = [];
+
+  Object.entries(rb.byProfession || {}).forEach(([profId, value]) => {
+    if (Math.abs(value) < 0.001) return;
+    const profName = profMap[profId]?.name || profId;
+    lines.push(`${value >= 0 ? "+" : ""}${value.toFixed(2)} ${profName}`);
+  });
+
+  if (Math.abs(rb.other || 0) >= 0.001) {
+    lines.push(`${rb.other >= 0 ? "+" : ""}${rb.other.toFixed(2)} 其他来源(建筑/研究/事件)`);
+  }
+
+  if (lines.length === 0) return "";
+  return `\n\n【速率来源】\n${lines.join("\n")}`;
+}
+
 function renderResources(resources) {
   els.resources.innerHTML = "";
   resources.forEach((r) => {
@@ -4372,7 +4582,8 @@ function renderResources(resources) {
     const rateClass = rate > 0 ? "pos" : rate < 0 ? "neg" : "zero";
     row.innerHTML = `<span>${r.name} ${fnum(r.count)}/${fnum(r.limit)}</span>
       <span class="resource-rate ${rateClass}">${rate >= 0 ? "+" : ""}${rate.toFixed(2)}</span>`;
-    setTip(row, `【资源】${r.name}\n${r.desc || ""}`);
+    const breakdownText = formatRateBreakdown(r);
+    setTip(row, `【资源】${r.name}\n${r.desc || ""}${breakdownText}`);
     els.resources.appendChild(row);
   });
 }
@@ -4411,6 +4622,7 @@ function renderBuildings(buildings, nameOf, dontChangeButtonStatus = false) {
           refreshState();
           return;
         }
+        showResourceDeltaFx = true;
         refreshState();
       });
     }
@@ -4562,7 +4774,10 @@ function renderResearches(researches, nameOf, dontChangeButtonStatus = false) {
         const ok = engine.research(btn.dataset.researchId);
         if (!ok) {
           showToast("无法研究", "资源不足、未解锁或已完成", "warn");
+          refreshState();
+          return;
         }
+        showResourceDeltaFx = true;
         refreshState();
       });
     }
@@ -4599,16 +4814,19 @@ function render(state) {
   renderResearches(researches, nameOf, false);
 
   requestAnimationFrame(() => {
-    const resourceChanges = detectResourceChanges(resources, previousResources);
-    (resourceChanges || []).forEach((change) => {
-      const resourceEl = document.querySelector(`[data-resource-id="${change.id}"]`);
-      if (!resourceEl) return;
-      const rect = resourceEl.getBoundingClientRect();
-      const x = rect.left + rect.width / 2;
-      const y = rect.top;
-      const sign = change.isPositive ? "+" : "";
-      showFloatingNumber(x, y, `${sign}${change.diff.toFixed(1)} ${change.name}`, change.isPositive);
-    });
+    if (showResourceDeltaFx) {
+      const resourceChanges = detectResourceChanges(resources, previousResources);
+      (resourceChanges || []).forEach((change) => {
+        const resourceEl = document.querySelector(`[data-resource-id="${change.id}"]`);
+        if (!resourceEl) return;
+        const rect = resourceEl.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top;
+        const sign = change.isPositive ? "+" : "";
+        showFloatingNumber(x, y, `${sign}${change.diff.toFixed(1)} ${change.name}`, change.isPositive);
+      });
+      showResourceDeltaFx = false;
+    }
 
     const newBuildings = detectNewBuildings(buildings, previousBuildings);
     (newBuildings || []).forEach((b) => {
