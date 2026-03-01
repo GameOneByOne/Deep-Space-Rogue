@@ -12,7 +12,7 @@
     <header class="topbar">
       <h1>远航</h1>
       <div class="top-meta">
-        <span id="version-badge" class="version-badge">v0.1</span>
+        <span id="version-badge" class="version-badge">版本号 v0.1</span>
         <span id="calendar-text" class="calendar-pill">🗓️ 第 0 年 · 第 0 天</span>
       </div>
       <div id="status-text" class="status-hidden"></div>
@@ -29,7 +29,13 @@
       </section>
 
       <section class="panel panel-buildings">
-        <div class="panel-title">操作面板</div>
+        <div class="panel-head">
+          <div class="panel-title">建筑面板</div>
+          <label class="panel-filter">
+            <input id="buildable-only-toggle" type="checkbox" />
+            <span>可建造</span>
+          </label>
+        </div>
         <div id="building-list" class="list button-grid"></div>
       </section>
 
@@ -39,7 +45,13 @@
       </section>
 
       <section class="panel panel-researches">
-        <div class="panel-title">研究面板</div>
+        <div class="panel-head">
+          <div class="panel-title">研究面板</div>
+          <label class="panel-filter">
+            <input id="hide-finished-research-toggle" type="checkbox" />
+            <span>隐藏已完成</span>
+          </label>
+        </div>
         <div id="research-list" class="list button-grid"></div>
       </section>
 

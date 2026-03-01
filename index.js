@@ -1,3141 +1,1127 @@
 const SAVE_KEY = "dsr_local_save_v2";
 
+/*
+ * Building config template
+ *
+ * Required fields:
+ * {
+ *   "id": "B_NEW_BUILDING",              // unique building id
+ *   "name": "新建筑",                     // display name
+ *   "desc": "这个建筑的说明",             // display description
+ *   "defaultUnlock": false,              // visible at game start
+ *   "cost": [                            // base build cost
+ *     { "id": "R_WOOD", "need": 10 },
+ *     { "id": "R_STONE", "need": 5 }
+ *   ],
+ *   "prereqs": [                         // build requirements; use [] if none
+ *     { "type": "hasBuilding", "id": "B_CAMPFIRE" }
+ *   ],
+ *   "effects": [                         // applied after build
+ *     { "type": "unlock", "target": "profession", "id": "P_SOME_JOB" },
+ *     { "type": "addLimit", "target": "profession", "id": "P_SOME_JOB", "count": 2 },
+ *     { "type": "unlock", "target": "building", "id": "B_NEXT_BUILDING" }
+ *   ]
+ * }
+ *
+ * Optional fields:
+ * - "onlyClick": true                    // click executes effects but does not increase ownedCount
+ *
+ * Common prereq shape:
+ * - { "type": "hasBuilding", "id": "B_SOME_BUILDING" }
+ *
+ * Common effect types:
+ * - unlock: unlocks resource/building/profession/research/event
+ * - addLimit: increases resource/profession cap
+ * - add: adds value on click/turn
+ * - clamp: subtracts value on click/turn
+ *
+ * Resource config template:
+ * {
+ *   "id": "R_NEW_RESOURCE",              // unique resource id
+ *   "name": "新资源",                     // display name
+ *   "desc": "这个资源的说明",             // display description
+ *   "defaultUnlock": false,              // visible at game start
+ *   "defaultCapacity": 100               // initial capacity
+ * }
+ *
+ * Profession config template:
+ * {
+ *   "id": "P_NEW_JOB",                   // unique profession id
+ *   "name": "新职业",                     // display name
+ *   "desc": "这个职业的说明",             // display description
+ *   "defaultUnlock": false,              // visible at game start
+ *   "editable": true,                    // can be assigned in UI
+ *   "effects": [
+ *     { "type": "add", "target": "resource", "id": "R_FOOD", "count": 1, "per": "turn" }
+ *   ]
+ * }
+ *
+ * Research config template:
+ * {
+ *   "id": "T_NEW_TECH",                  // unique research id
+ *   "name": "新研究",                     // display name
+ *   "desc": "这个研究的说明",             // display description
+ *   "defaultUnlock": false,              // visible at game start
+ *   "cost": [
+ *     { "id": "R_KNOWLEDGE", "need": 10 }
+ *   ],
+ *   "prereqs": [],                       // reserved; use [] if none
+ *   "effects": [
+ *     { "type": "unlock", "target": "building", "id": "B_NEW_BUILDING" }
+ *   ]
+ * }
+ *
+ * Event config template:
+ * {
+ *   "id": "E_NEW_EVENT",                 // unique event id
+ *   "name": "新事件",                     // display name
+ *   "desc": "这个事件的说明",             // display description
+ *   "defaultUnlock": false,              // visible / can roll at game start
+ *   "weight": 10,                        // trigger chance percentage per day
+ *   "cooldown": 20,                      // cooldown in game days
+ *   "prereqs": [
+ *     { "type": "hasBuilding", "id": "B_CAMPFIRE" }
+ *   ],
+ *   "effects": [
+ *     { "type": "add", "target": "resource", "id": "R_FOOD", "count": 10, "per": "occur" }
+ *   ]
+ * }
+ */
+
 const EMBEDDED_DATA = {
   "resources": [
     {
-      "id": "R_KNOWLEDGE",
-      "name": "知识",
-      "desc": "用于研究和升级",
-      "defaultUnlock": false,
-      "defaultCapacity": 100
+      "id": "R_KNOWLEDGE", "name": "知识", "desc": "用于研究和升级", "defaultUnlock": false, "defaultCapacity": 100
     },
     {
-      "id": "R_FOOD",
-      "name": "食物",
-      "desc": "用于生存与烹饪",
-      "defaultUnlock": true,
-      "defaultCapacity": 80
+      "id": "R_FOOD", "name": "食物", "desc": "用于生存与烹饪", "defaultUnlock": true, "defaultCapacity": 80
     },
     {
-      "id": "R_RATION",
-      "name": "口粮",
-      "desc": "加工后的高效食物，促进人口增长",
-      "defaultUnlock": false,
-      "defaultCapacity": 50
+      "id": "R_RATION", "name": "口粮", "desc": "加工后的高效食物，促进人口增长", "defaultUnlock": false, "defaultCapacity": 50
     },
     {
-      "id": "R_WOOD",
-      "name": "木材",
-      "desc": "用于建造与加工",
-      "defaultUnlock": true,
-      "defaultCapacity": 50
+      "id": "R_WOOD", "name": "木材", "desc": "用于建造与加工", "defaultUnlock": true, "defaultCapacity": 50
     },
     {
-      "id": "R_STONE",
-      "name": "石头",
-      "desc": "用于建造与升级",
-      "defaultUnlock": true,
-      "defaultCapacity": 50
+      "id": "R_STONE", "name": "石头", "desc": "用于建造与升级", "defaultUnlock": true, "defaultCapacity": 50
     },
     {
-      "id": "R_ANIMAL_HIDE",
-      "name": "兽皮",
-      "desc": "用于保暖",
-      "defaultUnlock": true,
-      "defaultCapacity": 20
+      "id": "R_ANIMAL_HIDE", "name": "兽皮", "desc": "用于保暖", "defaultUnlock": true, "defaultCapacity": 20
     },
     {
-      "id": "R_CROP",
-      "name": "农作物",
-      "desc": "农业产出的粮食作物",
-      "defaultUnlock": false,
-      "defaultCapacity": 80
+      "id": "R_CROP", "name": "农作物", "desc": "农业产出的粮食作物", "defaultUnlock": false, "defaultCapacity": 80
     },
     {
-      "id": "R_FABRIC",
-      "name": "布匹",
-      "desc": "用于制作衣物",
-      "defaultUnlock": false,
-      "defaultCapacity": 40
+      "id": "R_FABRIC", "name": "布匹", "desc": "用于制作衣物", "defaultUnlock": false, "defaultCapacity": 40
     },
     {
-      "id": "R_METAL_ORE",
-      "name": "金属矿石",
-      "desc": "含有金属的原始矿石",
-      "defaultUnlock": false,
-      "defaultCapacity": 40
+      "id": "R_METAL_ORE", "name": "金属矿石", "desc": "含有金属的原始矿石", "defaultUnlock": false, "defaultCapacity": 40
     },
     {
-      "id": "R_METAL",
-      "name": "金属锭",
-      "desc": "冶炼后的可用金属",
-      "defaultUnlock": false,
-      "defaultCapacity": 40
+      "id": "R_METAL", "name": "金属锭", "desc": "冶炼后的可用金属", "defaultUnlock": false, "defaultCapacity": 40
     },
     {
-      "id": "R_TOOLS",
-      "name": "工具",
-      "desc": "提高工作效率的器具",
-      "defaultUnlock": false,
-      "defaultCapacity": 25
+      "id": "R_TOOLS", "name": "工具", "desc": "提高工作效率的器具", "defaultUnlock": false, "defaultCapacity": 25
     },
     {
-      "id": "R_COAL",
-      "name": "煤炭",
-      "desc": "工业时代的燃料",
-      "defaultUnlock": false,
-      "defaultCapacity": 80
+      "id": "R_COAL", "name": "煤炭", "desc": "工业时代的燃料", "defaultUnlock": false, "defaultCapacity": 80
     },
     {
-      "id": "R_STEEL",
-      "name": "钢铁",
-      "desc": "高强度建筑材料",
-      "defaultUnlock": false,
-      "defaultCapacity": 40
+      "id": "R_STEEL", "name": "钢铁", "desc": "高强度建筑材料", "defaultUnlock": false, "defaultCapacity": 40
     },
     {
-      "id": "R_PARTS",
-      "name": "机械零件",
-      "desc": "机械装置的组件",
-      "defaultUnlock": false,
-      "defaultCapacity": 30
+      "id": "R_PARTS", "name": "机械零件", "desc": "机械装置的组件", "defaultUnlock": false, "defaultCapacity": 30
     },
     {
-      "id": "R_MACHINERY",
-      "name": "机械设备",
-      "desc": "复杂的机械装置",
-      "defaultUnlock": false,
-      "defaultCapacity": 20
+      "id": "R_MACHINERY", "name": "机械设备", "desc": "复杂的机械装置", "defaultUnlock": false, "defaultCapacity": 20
     },
     {
-      "id": "R_ELECTRICITY",
-      "name": "电力",
-      "desc": "电气时代的能量来源",
-      "defaultUnlock": false,
-      "defaultCapacity": 300
+      "id": "R_ELECTRICITY", "name": "电力", "desc": "电气时代的能量来源", "defaultUnlock": false, "defaultCapacity": 300
     },
     {
-      "id": "R_OIL",
-      "name": "石油",
-      "desc": "液态化石燃料",
-      "defaultUnlock": false,
-      "defaultCapacity": 80
+      "id": "R_OIL", "name": "石油", "desc": "液态化石燃料", "defaultUnlock": false, "defaultCapacity": 80
     },
     {
-      "id": "R_PLASTIC",
-      "name": "塑料",
-      "desc": "合成材料",
-      "defaultUnlock": false,
-      "defaultCapacity": 40
+      "id": "R_PLASTIC", "name": "塑料", "desc": "合成材料", "defaultUnlock": false, "defaultCapacity": 40
     },
     {
-      "id": "R_CIRCUIT",
-      "name": "电路板",
-      "desc": "电子设备的基板",
-      "defaultUnlock": false,
-      "defaultCapacity": 25
+      "id": "R_CIRCUIT", "name": "电路板", "desc": "电子设备的基板", "defaultUnlock": false, "defaultCapacity": 25
     },
     {
-      "id": "R_URANIUM",
-      "name": "铀矿石",
-      "desc": "放射性矿物",
-      "defaultUnlock": false,
-      "defaultCapacity": 25
+      "id": "R_URANIUM", "name": "铀矿石", "desc": "放射性矿物", "defaultUnlock": false, "defaultCapacity": 25
     },
     {
-      "id": "R_ENRICHED_URANIUM",
-      "name": "浓缩铀",
-      "desc": "核能燃料",
-      "defaultUnlock": false,
-      "defaultCapacity": 15
+      "id": "R_ENRICHED_URANIUM", "name": "浓缩铀", "desc": "核能燃料", "defaultUnlock": false, "defaultCapacity": 15
     },
     {
-      "id": "R_NUCLEAR_ENERGY",
-      "name": "核能",
-      "desc": "强大的能源",
-      "defaultUnlock": false,
-      "defaultCapacity": 600
+      "id": "R_NUCLEAR_ENERGY", "name": "核能", "desc": "强大的能源", "defaultUnlock": false, "defaultCapacity": 600
     },
     {
-      "id": "R_ROCKET_FUEL",
-      "name": "火箭燃料",
-      "desc": "高能推进剂",
-      "defaultUnlock": false,
-      "defaultCapacity": 40
+      "id": "R_ROCKET_FUEL", "name": "火箭燃料", "desc": "高能推进剂", "defaultUnlock": false, "defaultCapacity": 40
     },
     {
-      "id": "R_ALLOY",
-      "name": "航天合金",
-      "desc": "轻量化高强度材料",
-      "defaultUnlock": false,
-      "defaultCapacity": 30
+      "id": "R_ALLOY", "name": "航天合金", "desc": "轻量化高强度材料", "defaultUnlock": false, "defaultCapacity": 30
     },
     {
-      "id": "R_CHIP",
-      "name": "芯片",
-      "desc": "高级计算元件",
-      "defaultUnlock": false,
-      "defaultCapacity": 15
+      "id": "R_CHIP", "name": "芯片", "desc": "高级计算元件", "defaultUnlock": false, "defaultCapacity": 15
     },
     {
-      "id": "R_LIFE_SUPPORT",
-      "name": "生命维持",
-      "desc": "太空生存必需品",
-      "defaultUnlock": false,
-      "defaultCapacity": 25
+      "id": "R_LIFE_SUPPORT", "name": "生命维持", "desc": "太空生存必需品", "defaultUnlock": false, "defaultCapacity": 25
     },
     {
-      "id": "R_ANTIMATTER",
-      "name": "反物质",
-      "desc": "终极能源",
-      "defaultUnlock": false,
-      "defaultCapacity": 8
+      "id": "R_ANTIMATTER", "name": "反物质", "desc": "终极能源", "defaultUnlock": false, "defaultCapacity": 8
     },
     {
-      "id": "R_DARK_ENERGY",
-      "name": "暗能量",
-      "desc": "宇宙的神秘力量",
-      "defaultUnlock": false,
-      "defaultCapacity": 4
+      "id": "R_DARK_ENERGY", "name": "暗能量", "desc": "宇宙的神秘力量", "defaultUnlock": false, "defaultCapacity": 4
     },
     {
-      "id": "R_ALIEN_TECH",
-      "name": "外星科技",
-      "desc": "来自其他文明的技术",
-      "defaultUnlock": false,
-      "defaultCapacity": 8
+      "id": "R_ALIEN_TECH", "name": "外星科技", "desc": "来自其他文明的技术", "defaultUnlock": false, "defaultCapacity": 8
     }
   ],
   "buildings": [
     {
-      "id": "B_CAMPFIRE",
-      "name": "篝火",
-      "desc": "提供热量与光明；推动人口增长与知识萌芽",
-      "defaultUnlock": true,
+      "id": "B_CAMPFIRE", "name": "篝火", "desc": "提供热量与光明；推动人口增长与知识萌芽", "defaultUnlock": true,
       "cost": [
-        {
-          "id": "R_WOOD",
-          "need": 5
-        }
+        { "id": "R_WOOD", "need": 5 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_IDLE",
-          "count": 3
-        },
-        {
-          "type": "add",
-          "target": "profession",
-          "id": "P_IDLE",
-          "count": 3,
-          "per": "click"
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_KNOWLEDGE"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": 1,
-          "per": "turn"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_FARMLAND"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_HUNTING_CAMP"
-        }
+        { "type": "add", "target": "profession", "id": "P_IDLE", "count": 3, "per": "click" },
+        { "type": "unlock", "target": "resource", "id": "R_KNOWLEDGE" },
+        { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 1, "per": "turn" },
+        { "type": "unlock", "target": "building", "id": "B_FARMLAND" },
+        { "type": "unlock", "target": "building", "id": "B_HUNTING_CAMP" }
       ]
     },
     {
-      "id": "B_FARMLAND",
-      "name": "开垦地",
-      "desc": "需要农夫工作才产出食物（分工起点）",
-      "defaultUnlock": false,
+      "id": "B_FARMLAND", "name": "开垦地", "desc": "需要农夫工作才产出食物（分工起点）", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_WOOD",
-          "need": 5
-        },
-        {
-          "id": "R_FOOD",
-          "need": 3
-        }
+        { "id": "R_WOOD", "need": 5 },
+        { "id": "R_FOOD", "need": 3 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_FARMER"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_FARMER",
-          "count": 2
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_LUMBER_CAMP"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_QUARRY"
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_CROP"
-        }
+        { "type": "unlock", "target": "profession", "id": "P_FARMER" },
+        { "type": "addLimit", "target": "profession", "id": "P_FARMER", "count": 2 },
+        { "type": "unlock", "target": "building", "id": "B_LUMBER_CAMP" },
+        { "type": "unlock", "target": "building", "id": "B_QUARRY" },
+        { "type": "unlock", "target": "resource", "id": "R_CROP" }
       ]
     },
     {
-      "id": "B_LUMBER_CAMP",
-      "name": "伐木营地",
-      "desc": "稳定产出木材",
-      "defaultUnlock": false,
+      "id": "B_LUMBER_CAMP", "name": "伐木营地", "desc": "稳定产出木材", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_WOOD",
-          "need": 8
-        },
-        {
-          "id": "R_FOOD",
-          "need": 5
-        }
-      ],
-      "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_LUMBERJACK"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_LUMBERJACK",
-          "count": 2
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_HUNTING_CAMP"
-        }
-      ]
-    },
-    {
-      "id": "B_HUNTING_CAMP",
-      "name": "猎人小屋",
-      "desc": "提供猎人的岗位，稳定获取食物和兽皮",
-      "defaultUnlock": false,
-      "cost": [
-        {
-          "id": "R_WOOD",
-          "need": 10
-        },
-        {
-          "id": "R_STONE",
-          "need": 3
-        }
-      ],
-      "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_HUNTER"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_HUNTER",
-          "count": 2
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_KITCHEN"
-        }
-      ]
-    },
-    {
-      "id": "B_QUARRY",
-      "name": "磨石营地",
-      "desc": "产出石头（工程线门票）",
-      "defaultUnlock": false,
-      "cost": [
-        {
-          "id": "R_WOOD",
-          "need": 8
-        },
-        {
-          "id": "R_FOOD",
-          "need": 5
-        }
-      ],
-      "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_QUARRYMAN"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_QUARRYMAN",
-          "count": 2
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_CELLAR"
-        }
-      ]
-    },
-    {
-      "id": "B_CELLAR",
-      "name": "储藏坑",
-      "desc": "能增加物资储备",
-      "defaultUnlock": false,
-      "cost": [
-        {
-          "id": "R_WOOD",
-          "need": 6
-        },
-        {
-          "id": "R_STONE",
-          "need": 6
-        }
+        { "id": "R_WOOD", "need": 8 },
+        { "id": "R_FOOD", "need": 5 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "addLimit",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 50
-        },
-        {
-          "type": "addLimit",
-          "target": "resource",
-          "id": "R_WOOD",
-          "count": 30
-        },
-        {
-          "type": "addLimit",
-          "target": "resource",
-          "id": "R_STONE",
-          "count": 30
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_HUT"
-        }
+        { "type": "unlock", "target": "profession", "id": "P_LUMBERJACK" },
+        { "type": "addLimit", "target": "profession", "id": "P_LUMBERJACK", "count": 2 },
+        { "type": "unlock", "target": "building", "id": "B_HUNTING_CAMP" }
       ]
     },
     {
-      "id": "B_HUT",
-      "name": "茅草屋",
-      "desc": "提供基本的居住空间",
-      "defaultUnlock": false,
+      "id": "B_HUNTING_CAMP", "name": "猎人小屋", "desc": "提供猎人的岗位，稳定获取食物和兽皮", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_WOOD",
-          "need": 12
-        },
-        {
-          "id": "R_STONE",
-          "need": 4
-        },
-        {
-          "id": "R_FOOD",
-          "need": 8
-        }
+        { "id": "R_WOOD", "need": 10 },
+        { "id": "R_STONE", "need": 3 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_IDLE",
-          "count": 5
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_PASTURE"
-        }
+        { "type": "unlock", "target": "profession", "id": "P_HUNTER" },
+        { "type": "addLimit", "target": "profession", "id": "P_HUNTER", "count": 2 },
+        { "type": "unlock", "target": "building", "id": "B_KITCHEN" },
+        { "type": "unlock", "target": "event", "id": "E_WOLF_ATTACK" }
       ]
     },
     {
-      "id": "B_PASTURE",
-      "name": "牧场",
-      "desc": "驯养动物获取资源",
-      "defaultUnlock": false,
+      "id": "B_QUARRY", "name": "磨石营地", "desc": "产出石头（工程线门票）", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_WOOD",
-          "need": 15
-        },
-        {
-          "id": "R_FOOD",
-          "need": 25
-        },
-        {
-          "id": "R_RATION",
-          "need": 5
-        }
+        { "id": "R_WOOD", "need": 8 },
+        { "id": "R_FOOD", "need": 5 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_HERDER"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_HERDER",
-          "count": 2
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_FABRIC"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_LOOM"
-        }
+        { "type": "unlock", "target": "profession", "id": "P_QUARRYMAN" },
+        { "type": "addLimit", "target": "profession", "id": "P_QUARRYMAN", "count": 2 },
+        { "type": "unlock", "target": "building", "id": "B_CELLAR" }
       ]
     },
     {
-      "id": "B_LOOM",
-      "name": "织布机",
-      "desc": "将原材料加工成布匹",
-      "defaultUnlock": false,
+      "id": "B_CELLAR", "name": "储藏坑", "desc": "能增加物资储备", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_WOOD",
-          "need": 15
-        },
-        {
-          "id": "R_STONE",
-          "need": 6
-        },
-        {
-          "id": "R_FABRIC",
-          "need": 5
-        }
+        { "id": "R_WOOD", "need": 6 },
+        { "id": "R_STONE", "need": 6 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_WEAVER"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_WEAVER",
-          "count": 2
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_MINE"
-        }
+        { "type": "addLimit", "target": "resource", "id": "R_FOOD", "count": 50 },
+        { "type": "addLimit", "target": "resource", "id": "R_WOOD", "count": 30 },
+        { "type": "addLimit", "target": "resource", "id": "R_STONE", "count": 30 },
+        { "type": "unlock", "target": "building", "id": "B_HUT" }
       ]
     },
     {
-      "id": "B_MINE",
-      "name": "矿洞",
-      "desc": "深入地下开采矿石",
-      "defaultUnlock": false,
+      "id": "B_HUT", "name": "茅草屋", "desc": "提供基本的居住空间", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_WOOD",
-          "need": 20
-        },
-        {
-          "id": "R_STONE",
-          "need": 15
-        },
-        {
-          "id": "R_TOOLS",
-          "need": 3
-        }
+        { "id": "R_WOOD", "need": 12 },
+        { "id": "R_STONE", "need": 4 },
+        { "id": "R_FOOD", "need": 8 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_MINER"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_MINER",
-          "count": 3
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_METAL_ORE"
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_COAL"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_WORKSHOP"
-        }
+        { "type": "unlock", "target": "building", "id": "B_PASTURE" }
       ]
     },
     {
-      "id": "B_WORKSHOP",
-      "name": "工坊",
-      "desc": "制作工具和简单器具",
-      "defaultUnlock": false,
+      "id": "B_PASTURE", "name": "牧场", "desc": "驯养动物获取资源", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_WOOD",
-          "need": 25
-        },
-        {
-          "id": "R_STONE",
-          "need": 12
-        },
-        {
-          "id": "R_METAL",
-          "need": 5
-        }
+        { "id": "R_WOOD", "need": 15 },
+        { "id": "R_FOOD", "need": 25 },
+        { "id": "R_RATION", "need": 5 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_CRAFTSMAN"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_CRAFTSMAN",
-          "count": 2
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_TOOLS"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_SMELTER"
-        }
+        { "type": "unlock", "target": "profession", "id": "P_HERDER" },
+        { "type": "addLimit", "target": "profession", "id": "P_HERDER", "count": 2 },
+        { "type": "unlock", "target": "resource", "id": "R_FABRIC" },
+        { "type": "unlock", "target": "building", "id": "B_LOOM" }
       ]
     },
     {
-      "id": "B_SMELTER",
-      "name": "冶炼炉",
-      "desc": "将矿石冶炼成可用金属",
-      "defaultUnlock": false,
+      "id": "B_LOOM", "name": "织布机", "desc": "将原材料加工成布匹", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_STONE",
-          "need": 25
-        },
-        {
-          "id": "R_COAL",
-          "need": 15
-        },
-        {
-          "id": "R_METAL_ORE",
-          "need": 10
-        }
+        { "id": "R_WOOD", "need": 15 },
+        { "id": "R_STONE", "need": 6 },
+        { "id": "R_FABRIC", "need": 5 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_SMELTER"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_SMELTER",
-          "count": 2
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_METAL"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_STEEL_MILL"
-        }
+        { "type": "unlock", "target": "profession", "id": "P_WEAVER" },
+        { "type": "addLimit", "target": "profession", "id": "P_WEAVER", "count": 2 },
+        { "type": "unlock", "target": "building", "id": "B_MINE" }
       ]
     },
     {
-      "id": "B_STEEL_MILL",
-      "name": "炼钢厂",
-      "desc": "生产高强度钢材",
-      "defaultUnlock": false,
+      "id": "B_MINE", "name": "矿洞", "desc": "深入地下开采矿石", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_METAL",
-          "need": 25
-        },
-        {
-          "id": "R_COAL",
-          "need": 35
-        },
-        {
-          "id": "R_STONE",
-          "need": 30
-        }
+        { "id": "R_WOOD", "need": 20 },
+        { "id": "R_STONE", "need": 15 },
+        { "id": "R_TOOLS", "need": 3 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_STEELWORKER"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_STEELWORKER",
-          "count": 2
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_STEEL"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_FACTORY"
-        }
+        { "type": "unlock", "target": "profession", "id": "P_MINER" },
+        { "type": "addLimit", "target": "profession", "id": "P_MINER", "count": 3 },
+        { "type": "unlock", "target": "resource", "id": "R_METAL_ORE" },
+        { "type": "unlock", "target": "resource", "id": "R_COAL" },
+        { "type": "unlock", "target": "building", "id": "B_WORKSHOP" }
       ]
     },
     {
-      "id": "B_FACTORY",
-      "name": "工厂",
-      "desc": "大规模生产机械零件",
-      "defaultUnlock": false,
+      "id": "B_WORKSHOP", "name": "工坊", "desc": "制作工具和简单器具", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_STEEL",
-          "need": 20
-        },
-        {
-          "id": "R_METAL",
-          "need": 30
-        },
-        {
-          "id": "R_COAL",
-          "need": 50
-        },
-        {
-          "id": "R_TOOLS",
-          "need": 10
-        }
+        { "id": "R_WOOD", "need": 25 },
+        { "id": "R_STONE", "need": 12 },
+        { "id": "R_METAL", "need": 5 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_MACHINIST"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_MACHINIST",
-          "count": 3
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_PARTS"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_POWER_PLANT"
-        }
+        { "type": "unlock", "target": "profession", "id": "P_CRAFTSMAN" },
+        { "type": "addLimit", "target": "profession", "id": "P_CRAFTSMAN", "count": 2 },
+        { "type": "unlock", "target": "resource", "id": "R_TOOLS" },
+        { "type": "unlock", "target": "building", "id": "B_SMELTER" }
       ]
     },
     {
-      "id": "B_POWER_PLANT",
-      "name": "发电厂",
-      "desc": "将化学能转化为电能",
-      "defaultUnlock": false,
+      "id": "B_SMELTER", "name": "冶炼炉", "desc": "将矿石冶炼成可用金属", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_STEEL",
-          "need": 30
-        },
-        {
-          "id": "R_PARTS",
-          "need": 20
-        },
-        {
-          "id": "R_COAL",
-          "need": 60
-        },
-        {
-          "id": "R_TOOLS",
-          "need": 15
-        }
+        { "id": "R_STONE", "need": 25 },
+        { "id": "R_COAL", "need": 15 },
+        { "id": "R_METAL_ORE", "need": 10 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_ELECTRICITY"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_ELECTRICITY",
-          "count": 15,
-          "per": "turn"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_REFINERY"
-        }
+        { "type": "unlock", "target": "profession", "id": "P_SMELTER" },
+        { "type": "addLimit", "target": "profession", "id": "P_SMELTER", "count": 2 },
+        { "type": "unlock", "target": "resource", "id": "R_METAL" },
+        { "type": "unlock", "target": "building", "id": "B_STEEL_MILL" }
       ]
     },
     {
-      "id": "B_REFINERY",
-      "name": "炼油厂",
-      "desc": "提炼石油并生产化工产品",
-      "defaultUnlock": false,
+      "id": "B_STEEL_MILL", "name": "炼钢厂", "desc": "生产高强度钢材", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_STEEL",
-          "need": 35
-        },
-        {
-          "id": "R_PARTS",
-          "need": 25
-        },
-        {
-          "id": "R_ELECTRICITY",
-          "need": 80
-        },
-        {
-          "id": "R_MACHINERY",
-          "need": 5
-        }
+        { "id": "R_METAL", "need": 25 },
+        { "id": "R_COAL", "need": 35 },
+        { "id": "R_STONE", "need": 30 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_CHEMIST"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_CHEMIST",
-          "count": 2
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_OIL"
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_PLASTIC"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_ELECTRONICS_PLANT"
-        }
+        { "type": "unlock", "target": "profession", "id": "P_STEELWORKER" },
+        { "type": "addLimit", "target": "profession", "id": "P_STEELWORKER", "count": 2 },
+        { "type": "unlock", "target": "resource", "id": "R_STEEL" },
+        { "type": "unlock", "target": "building", "id": "B_FACTORY" }
       ]
     },
     {
-      "id": "B_ELECTRONICS_PLANT",
-      "name": "电子工厂",
-      "desc": "生产电路板和电子设备",
-      "defaultUnlock": false,
+      "id": "B_FACTORY", "name": "工厂", "desc": "大规模生产机械零件", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_STEEL",
-          "need": 25
-        },
-        {
-          "id": "R_PLASTIC",
-          "need": 30
-        },
-        {
-          "id": "R_ELECTRICITY",
-          "need": 150
-        },
-        {
-          "id": "R_METAL",
-          "need": 20
-        },
-        {
-          "id": "R_PARTS",
-          "need": 15
-        }
+        { "id": "R_STEEL", "need": 20 },
+        { "id": "R_METAL", "need": 30 },
+        { "id": "R_COAL", "need": 50 },
+        { "id": "R_TOOLS", "need": 10 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_ENGINEER"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_ENGINEER",
-          "count": 2
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_CIRCUIT"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_TECH_CENTER"
-        }
+        { "type": "unlock", "target": "profession", "id": "P_MACHINIST" },
+        { "type": "addLimit", "target": "profession", "id": "P_MACHINIST", "count": 3 },
+        { "type": "unlock", "target": "resource", "id": "R_PARTS" },
+        { "type": "unlock", "target": "building", "id": "B_POWER_PLANT" }
       ]
     },
     {
-      "id": "B_TECH_CENTER",
-      "name": "科技中心",
-      "desc": "进行高级研究",
-      "defaultUnlock": false,
+      "id": "B_POWER_PLANT", "name": "发电厂", "desc": "将化学能转化为电能", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_STEEL",
-          "need": 50
-        },
-        {
-          "id": "R_CIRCUIT",
-          "need": 25
-        },
-        {
-          "id": "R_ELECTRICITY",
-          "need": 300
-        },
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 150
-        },
-        {
-          "id": "R_PARTS",
-          "need": 30
-        }
+        { "id": "R_STEEL", "need": 30 },
+        { "id": "R_PARTS", "need": 20 },
+        { "id": "R_COAL", "need": 60 },
+        { "id": "R_TOOLS", "need": 15 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_TECHNICIAN"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_TECHNICIAN",
-          "count": 3
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": 8,
-          "per": "turn"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_NUCLEAR_PLANT"
-        }
+        { "type": "unlock", "target": "resource", "id": "R_ELECTRICITY" },
+        { "type": "add", "target": "resource", "id": "R_ELECTRICITY", "count": 15, "per": "turn" },
+        { "type": "unlock", "target": "building", "id": "B_REFINERY" }
       ]
     },
     {
-      "id": "B_NUCLEAR_PLANT",
-      "name": "核电站",
-      "desc": "利用核能产生巨大能量",
-      "defaultUnlock": false,
+      "id": "B_REFINERY", "name": "炼油厂", "desc": "提炼石油并生产化工产品", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_STEEL",
-          "need": 80
-        },
-        {
-          "id": "R_CIRCUIT",
-          "need": 50
-        },
-        {
-          "id": "R_ELECTRICITY",
-          "need": 500
-        },
-        {
-          "id": "R_URANIUM",
-          "need": 10
-        },
-        {
-          "id": "R_CHIP",
-          "need": 10
-        }
+        { "id": "R_STEEL", "need": 35 },
+        { "id": "R_PARTS", "need": 25 },
+        { "id": "R_ELECTRICITY", "need": 80 },
+        { "id": "R_MACHINERY", "need": 5 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_PHYSICIST"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_PHYSICIST",
-          "count": 2
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_URANIUM"
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_ENRICHED_URANIUM"
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_NUCLEAR_ENERGY"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_NUCLEAR_ENERGY",
-          "count": 30,
-          "per": "turn"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_ROCKET_SILO"
-        }
+        { "type": "unlock", "target": "profession", "id": "P_CHEMIST" },
+        { "type": "addLimit", "target": "profession", "id": "P_CHEMIST", "count": 2 },
+        { "type": "unlock", "target": "resource", "id": "R_OIL" },
+        { "type": "unlock", "target": "resource", "id": "R_PLASTIC" },
+        { "type": "unlock", "target": "building", "id": "B_ELECTRONICS_PLANT" }
       ]
     },
     {
-      "id": "B_ROCKET_SILO",
-      "name": "火箭发射井",
-      "desc": "发射航天器进入太空",
-      "defaultUnlock": false,
+      "id": "B_ELECTRONICS_PLANT", "name": "电子工厂", "desc": "生产电路板和电子设备", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_STEEL",
-          "need": 100
-        },
-        {
-          "id": "R_ALLOY",
-          "need": 60
-        },
-        {
-          "id": "R_ROCKET_FUEL",
-          "need": 150
-        },
-        {
-          "id": "R_NUCLEAR_ENERGY",
-          "need": 300
-        },
-        {
-          "id": "R_CHIP",
-          "need": 20
-        },
-        {
-          "id": "R_MACHINERY",
-          "need": 15
-        }
+        { "id": "R_STEEL", "need": 25 },
+        { "id": "R_PLASTIC", "need": 30 },
+        { "id": "R_ELECTRICITY", "need": 150 },
+        { "id": "R_METAL", "need": 20 },
+        { "id": "R_PARTS", "need": 15 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_ASTRONAUT"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_ASTRONAUT",
-          "count": 2
-        },
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_PILOT"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_PILOT",
-          "count": 1
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_LIFE_SUPPORT"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_ALLOY_WORKS"
-        }
+        { "type": "unlock", "target": "profession", "id": "P_ENGINEER" },
+        { "type": "addLimit", "target": "profession", "id": "P_ENGINEER", "count": 2 },
+        { "type": "unlock", "target": "resource", "id": "R_CIRCUIT" },
+        { "type": "unlock", "target": "building", "id": "B_TECH_CENTER" }
       ]
     },
     {
-      "id": "B_ALLOY_WORKS",
-      "name": "合金工厂",
-      "desc": "生产航天级合金材料",
-      "defaultUnlock": false,
+      "id": "B_TECH_CENTER", "name": "科技中心", "desc": "进行高级研究", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_STEEL",
-          "need": 60
-        },
-        {
-          "id": "R_NUCLEAR_ENERGY",
-          "need": 200
-        },
-        {
-          "id": "R_CIRCUIT",
-          "need": 40
-        },
-        {
-          "id": "R_MACHINERY",
-          "need": 10
-        }
+        { "id": "R_STEEL", "need": 50 },
+        { "id": "R_CIRCUIT", "need": 25 },
+        { "id": "R_ELECTRICITY", "need": 300 },
+        { "id": "R_KNOWLEDGE", "need": 150 },
+        { "id": "R_PARTS", "need": 30 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_ALLOY_SMITH"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_ALLOY_SMITH",
-          "count": 2
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_ALLOY"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_CHIP_FAB"
-        }
+        { "type": "unlock", "target": "profession", "id": "P_TECHNICIAN" },
+        { "type": "addLimit", "target": "profession", "id": "P_TECHNICIAN", "count": 3 },
+        { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 8, "per": "turn" },
+        { "type": "unlock", "target": "building", "id": "B_NUCLEAR_PLANT" }
       ]
     },
     {
-      "id": "B_CHIP_FAB",
-      "name": "芯片工厂",
-      "desc": "制造高精度计算芯片",
-      "defaultUnlock": false,
+      "id": "B_NUCLEAR_PLANT", "name": "核电站", "desc": "利用核能产生巨大能量", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_ALLOY",
-          "need": 50
-        },
-        {
-          "id": "R_PLASTIC",
-          "need": 60
-        },
-        {
-          "id": "R_NUCLEAR_ENERGY",
-          "need": 400
-        },
-        {
-          "id": "R_CIRCUIT",
-          "need": 60
-        },
-        {
-          "id": "R_MACHINERY",
-          "need": 15
-        }
+        { "id": "R_STEEL", "need": 80 },
+        { "id": "R_CIRCUIT", "need": 50 },
+        { "id": "R_ELECTRICITY", "need": 500 },
+        { "id": "R_URANIUM", "need": 10 },
+        { "id": "R_CHIP", "need": 10 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_CHIP"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_CHIP",
-          "count": 0.8,
-          "per": "turn"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_SPACE_STATION"
-        }
+        { "type": "unlock", "target": "profession", "id": "P_PHYSICIST" },
+        { "type": "addLimit", "target": "profession", "id": "P_PHYSICIST", "count": 2 },
+        { "type": "unlock", "target": "resource", "id": "R_URANIUM" },
+        { "type": "unlock", "target": "resource", "id": "R_ENRICHED_URANIUM" },
+        { "type": "unlock", "target": "resource", "id": "R_NUCLEAR_ENERGY" },
+        { "type": "add", "target": "resource", "id": "R_NUCLEAR_ENERGY", "count": 30, "per": "turn" },
+        { "type": "unlock", "target": "building", "id": "B_ROCKET_SILO" }
       ]
     },
     {
-      "id": "B_SPACE_STATION",
-      "name": "空间站",
-      "desc": "近地轨道上的前哨基地",
-      "defaultUnlock": false,
+      "id": "B_ROCKET_SILO", "name": "火箭发射井", "desc": "发射航天器进入太空", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_ALLOY",
-          "need": 120
-        },
-        {
-          "id": "R_CHIP",
-          "need": 50
-        },
-        {
-          "id": "R_ROCKET_FUEL",
-          "need": 250
-        },
-        {
-          "id": "R_LIFE_SUPPORT",
-          "need": 60
-        },
-        {
-          "id": "R_MACHINERY",
-          "need": 25
-        }
+        { "id": "R_STEEL", "need": 100 },
+        { "id": "R_ALLOY", "need": 60 },
+        { "id": "R_ROCKET_FUEL", "need": 150 },
+        { "id": "R_NUCLEAR_ENERGY", "need": 300 },
+        { "id": "R_CHIP", "need": 20 },
+        { "id": "R_MACHINERY", "need": 15 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_ASTRONAUT",
-          "count": 5
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": 15,
-          "per": "turn"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_ANTIMATTER_LAB"
-        }
+        { "type": "unlock", "target": "profession", "id": "P_ASTRONAUT" },
+        { "type": "addLimit", "target": "profession", "id": "P_ASTRONAUT", "count": 2 },
+        { "type": "unlock", "target": "profession", "id": "P_PILOT" },
+        { "type": "addLimit", "target": "profession", "id": "P_PILOT", "count": 1 },
+        { "type": "unlock", "target": "resource", "id": "R_LIFE_SUPPORT" },
+        { "type": "unlock", "target": "building", "id": "B_ALLOY_WORKS" }
       ]
     },
     {
-      "id": "B_ANTIMATTER_LAB",
-      "name": "反物质实验室",
-      "desc": "研究宇宙终极能源",
-      "defaultUnlock": false,
+      "id": "B_ALLOY_WORKS", "name": "合金工厂", "desc": "生产航天级合金材料", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_ALLOY",
-          "need": 180
-        },
-        {
-          "id": "R_CHIP",
-          "need": 100
-        },
-        {
-          "id": "R_NUCLEAR_ENERGY",
-          "need": 700
-        },
-        {
-          "id": "R_ANTIMATTER",
-          "need": 5
-        },
-        {
-          "id": "R_MACHINERY",
-          "need": 30
-        }
+        { "id": "R_STEEL", "need": 60 },
+        { "id": "R_NUCLEAR_ENERGY", "need": 200 },
+        { "id": "R_CIRCUIT", "need": 40 },
+        { "id": "R_MACHINERY", "need": 10 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_QUANTUM_PHYSICIST"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_QUANTUM_PHYSICIST",
-          "count": 2
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_ANTIMATTER"
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_DARK_ENERGY"
-        },
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_INTERSTELLAR_GATE"
-        }
+        { "type": "unlock", "target": "profession", "id": "P_ALLOY_SMITH" },
+        { "type": "addLimit", "target": "profession", "id": "P_ALLOY_SMITH", "count": 2 },
+        { "type": "unlock", "target": "resource", "id": "R_ALLOY" },
+        { "type": "unlock", "target": "building", "id": "B_CHIP_FAB" }
       ]
     },
     {
-      "id": "B_INTERSTELLAR_GATE",
-      "name": "星际之门",
-      "desc": "通往其他星系的传送装置",
-      "defaultUnlock": false,
+      "id": "B_CHIP_FAB", "name": "芯片工厂", "desc": "制造高精度计算芯片", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_ALLOY",
-          "need": 400
-        },
-        {
-          "id": "R_CHIP",
-          "need": 200
-        },
-        {
-          "id": "R_ANTIMATTER",
-          "need": 30
-        },
-        {
-          "id": "R_DARK_ENERGY",
-          "need": 15
-        },
-        {
-          "id": "R_NUCLEAR_ENERGY",
-          "need": 1000
-        },
-        {
-          "id": "R_MACHINERY",
-          "need": 50
-        }
+        { "id": "R_ALLOY", "need": 50 },
+        { "id": "R_PLASTIC", "need": 60 },
+        { "id": "R_NUCLEAR_ENERGY", "need": 400 },
+        { "id": "R_CIRCUIT", "need": 60 },
+        { "id": "R_MACHINERY", "need": 15 }
       ],
+      "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_XENOBIOLOGIST"
-        },
-        {
-          "type": "addLimit",
-          "target": "profession",
-          "id": "P_XENOBIOLOGIST",
-          "count": 3
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_ALIEN_TECH"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": 30,
-          "per": "turn"
-        }
+        { "type": "unlock", "target": "resource", "id": "R_CHIP" },
+        { "type": "add", "target": "resource", "id": "R_CHIP", "count": 0.8, "per": "turn" },
+        { "type": "unlock", "target": "building", "id": "B_SPACE_STATION" }
+      ]
+    },
+    {
+      "id": "B_SPACE_STATION", "name": "空间站", "desc": "近地轨道上的前哨基地", "defaultUnlock": false,
+      "cost": [
+        { "id": "R_ALLOY", "need": 120 },
+        { "id": "R_CHIP", "need": 50 },
+        { "id": "R_ROCKET_FUEL", "need": 250 },
+        { "id": "R_LIFE_SUPPORT", "need": 60 },
+        { "id": "R_MACHINERY", "need": 25 }
+      ],
+      "prereqs": [],
+      "effects": [
+        { "type": "addLimit", "target": "profession", "id": "P_ASTRONAUT", "count": 5 },
+        { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 15, "per": "turn" },
+        { "type": "unlock", "target": "building", "id": "B_ANTIMATTER_LAB" }
+      ]
+    },
+    {
+      "id": "B_ANTIMATTER_LAB", "name": "反物质实验室", "desc": "研究宇宙终极能源", "defaultUnlock": false,
+      "cost": [
+        { "id": "R_ALLOY", "need": 180 },
+        { "id": "R_CHIP", "need": 100 },
+        { "id": "R_NUCLEAR_ENERGY", "need": 700 },
+        { "id": "R_ANTIMATTER", "need": 5 },
+        { "id": "R_MACHINERY", "need": 30 }
+      ],
+      "prereqs": [],
+      "effects": [
+        { "type": "unlock", "target": "profession", "id": "P_QUANTUM_PHYSICIST" },
+        { "type": "addLimit", "target": "profession", "id": "P_QUANTUM_PHYSICIST", "count": 2 },
+        { "type": "unlock", "target": "resource", "id": "R_ANTIMATTER" },
+        { "type": "unlock", "target": "resource", "id": "R_DARK_ENERGY" },
+        { "type": "unlock", "target": "building", "id": "B_INTERSTELLAR_GATE" }
+      ]
+    },
+    {
+      "id": "B_INTERSTELLAR_GATE", "name": "星际之门", "desc": "通往其他星系的传送装置", "defaultUnlock": false,
+      "cost": [
+        { "id": "R_ALLOY", "need": 400 },
+        { "id": "R_CHIP", "need": 200 },
+        { "id": "R_ANTIMATTER", "need": 30 },
+        { "id": "R_DARK_ENERGY", "need": 15 },
+        { "id": "R_NUCLEAR_ENERGY", "need": 1000 },
+        { "id": "R_MACHINERY", "need": 50 }
+      ],
+      "prereqs": [],
+      "effects": [
+        { "type": "unlock", "target": "profession", "id": "P_XENOBIOLOGIST" },
+        { "type": "addLimit", "target": "profession", "id": "P_XENOBIOLOGIST", "count": 3 },
+        { "type": "unlock", "target": "resource", "id": "R_ALIEN_TECH" },
+        { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 30, "per": "turn" }
       ]
     }
   ],
   "professions":   [
     {
-      "id": "P_IDLE",
-      "name": "闲置",
-      "desc": "未分配工作的居民，人口增长的基础",
-      "defaultUnlock": true,
-      "editable": false,
+      "id": "P_IDLE", "name": "闲置", "desc": "未分配工作的居民，人口增长的基础", "defaultUnlock": true, "editable": false,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_WOOD",
-          "count": 0.2,
-          "per": "turn"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_STONE",
-          "count": 0.1,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_WOOD", "count": 0.2, "per": "turn" },
+        { "type": "add", "target": "resource", "id": "R_STONE", "count": 0.1, "per": "turn" }
       ]
     },
     {
-      "id": "P_HUNTER",
-      "name": "猎人",
-      "desc": "稳定获取食物和兽皮",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_HUNTER", "name": "猎人", "desc": "稳定获取食物和兽皮", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 1.2,
-          "per": "turn"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_ANIMAL_HIDE",
-          "count": 0.3,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_TOOLS",
-          "count": 0.01,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.14,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_FOOD", "count": 1.2, "per": "turn" },
+        { "type": "add", "target": "resource", "id": "R_ANIMAL_HIDE", "count": 0.3, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_TOOLS", "count": 0.01, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.14, "per": "turn" }
       ]
     },
     {
-      "id": "P_FARMER",
-      "name": "农夫",
-      "desc": "种植农作物",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_FARMER", "name": "农夫", "desc": "种植农作物", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_CROP",
-          "count": 1.8,
-          "per": "turn"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.4,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_TOOLS",
-          "count": 0.01,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.1,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_CROP", "count": 1.8, "per": "turn" },
+        { "type": "add", "target": "resource", "id": "R_FOOD", "count": 0.4, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_TOOLS", "count": 0.01, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.1, "per": "turn" }
       ]
     },
     {
-      "id": "P_LUMBERJACK",
-      "name": "伐木工",
-      "desc": "稳定产出木材",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_LUMBERJACK", "name": "伐木工", "desc": "稳定产出木材", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_WOOD",
-          "count": 2,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_TOOLS",
-          "count": 0.02,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.18,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_WOOD", "count": 2, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_TOOLS", "count": 0.02, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.18, "per": "turn" }
       ]
     },
     {
-      "id": "P_QUARRYMAN",
-      "name": "采石工",
-      "desc": "开采石头",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_QUARRYMAN", "name": "采石工", "desc": "开采石头", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_STONE",
-          "count": 1.8,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_TOOLS",
-          "count": 0.02,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.18,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_STONE", "count": 1.8, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_TOOLS", "count": 0.02, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.18, "per": "turn" }
       ]
     },
     {
-      "id": "P_HERDER",
-      "name": "牧民",
-      "desc": "驯养动物获取资源",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_HERDER", "name": "牧民", "desc": "驯养动物获取资源", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 1,
-          "per": "turn"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_ANIMAL_HIDE",
-          "count": 0.6,
-          "per": "turn"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_FABRIC",
-          "count": 0.2,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_RATION",
-          "count": 0.1,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.12,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_FOOD", "count": 1, "per": "turn" },
+        { "type": "add", "target": "resource", "id": "R_ANIMAL_HIDE", "count": 0.6, "per": "turn" },
+        { "type": "add", "target": "resource", "id": "R_FABRIC", "count": 0.2, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_RATION", "count": 0.1, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.12, "per": "turn" }
       ]
     },
     {
-      "id": "P_WEAVER",
-      "name": "织工",
-      "desc": "将兽皮制成布匹",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_WEAVER", "name": "织工", "desc": "将兽皮制成布匹", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_FABRIC",
-          "count": 1.2,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_ANIMAL_HIDE",
-          "count": 0.6,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.08,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_FABRIC", "count": 1.2, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_ANIMAL_HIDE", "count": 0.6, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.08, "per": "turn" }
       ]
     },
     {
-      "id": "P_MINER",
-      "name": "矿工",
-      "desc": "开采地下矿石",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_MINER", "name": "矿工", "desc": "开采地下矿石", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_METAL_ORE",
-          "count": 1.2,
-          "per": "turn"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_COAL",
-          "count": 0.6,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_TOOLS",
-          "count": 0.03,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.2,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_METAL_ORE", "count": 1.2, "per": "turn" },
+        { "type": "add", "target": "resource", "id": "R_COAL", "count": 0.6, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_TOOLS", "count": 0.03, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.2, "per": "turn" }
       ]
     },
     {
-      "id": "P_CRAFTSMAN",
-      "name": "工匠",
-      "desc": "制作工具和器具",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_CRAFTSMAN", "name": "工匠", "desc": "制作工具和器具", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_TOOLS",
-          "count": 1,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_METAL",
-          "count": 0.4,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_WOOD",
-          "count": 0.2,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.12,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_TOOLS", "count": 1, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_METAL", "count": 0.4, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_WOOD", "count": 0.2, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.12, "per": "turn" }
       ]
     },
     {
-      "id": "P_SMELTER",
-      "name": "冶炼工",
-      "desc": "将矿石冶炼成金属",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_SMELTER", "name": "冶炼工", "desc": "将矿石冶炼成金属", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_METAL",
-          "count": 1,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_METAL_ORE",
-          "count": 1.2,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_COAL",
-          "count": 0.4,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.14,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_METAL", "count": 1, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_METAL_ORE", "count": 1.2, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_COAL", "count": 0.4, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.14, "per": "turn" }
       ]
     },
     {
-      "id": "P_STEELWORKER",
-      "name": "炼钢工",
-      "desc": "生产高强度钢材",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_STEELWORKER", "name": "炼钢工", "desc": "生产高强度钢材", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_STEEL",
-          "count": 0.8,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_METAL",
-          "count": 0.6,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_COAL",
-          "count": 0.4,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.18,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_STEEL", "count": 0.8, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_METAL", "count": 0.6, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_COAL", "count": 0.4, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.18, "per": "turn" }
       ]
     },
     {
-      "id": "P_MACHINIST",
-      "name": "机械师",
-      "desc": "制造机械零件",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_MACHINIST", "name": "机械师", "desc": "制造机械零件", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_PARTS",
-          "count": 0.6,
-          "per": "turn"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_MACHINERY",
-          "count": 0.2,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_STEEL",
-          "count": 0.4,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_TOOLS",
-          "count": 0.1,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.16,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_PARTS", "count": 0.6, "per": "turn" },
+        { "type": "add", "target": "resource", "id": "R_MACHINERY", "count": 0.2, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_STEEL", "count": 0.4, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_TOOLS", "count": 0.1, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.16, "per": "turn" }
       ]
     },
     {
-      "id": "P_ENGINEER",
-      "name": "工程师",
-      "desc": "设计和维护复杂设备",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_ENGINEER", "name": "工程师", "desc": "设计和维护复杂设备", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": 3,
-          "per": "turn"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_CIRCUIT",
-          "count": 0.4,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_PLASTIC",
-          "count": 0.3,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_ELECTRICITY",
-          "count": 2,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.1,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 3, "per": "turn" },
+        { "type": "add", "target": "resource", "id": "R_CIRCUIT", "count": 0.4, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_PLASTIC", "count": 0.3, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_ELECTRICITY", "count": 2, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.1, "per": "turn" }
       ]
     },
     {
-      "id": "P_CHEMIST",
-      "name": "化学家",
-      "desc": "研究化学工艺",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_CHEMIST", "name": "化学家", "desc": "研究化学工艺", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_PLASTIC",
-          "count": 0.8,
-          "per": "turn"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_ROCKET_FUEL",
-          "count": 0.5,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_OIL",
-          "count": 0.6,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_ELECTRICITY",
-          "count": 1,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.1,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_PLASTIC", "count": 0.8, "per": "turn" },
+        { "type": "add", "target": "resource", "id": "R_ROCKET_FUEL", "count": 0.5, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_OIL", "count": 0.6, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_ELECTRICITY", "count": 1, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.1, "per": "turn" }
       ]
     },
     {
-      "id": "P_PHYSICIST",
-      "name": "物理学家",
-      "desc": "研究核能与高能物理",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_PHYSICIST", "name": "物理学家", "desc": "研究核能与高能物理", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": 5,
-          "per": "turn"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_ENRICHED_URANIUM",
-          "count": 0.15,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_URANIUM",
-          "count": 0.2,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_ELECTRICITY",
-          "count": 3,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.1,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 5, "per": "turn" },
+        { "type": "add", "target": "resource", "id": "R_ENRICHED_URANIUM", "count": 0.15, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_URANIUM", "count": 0.2, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_ELECTRICITY", "count": 3, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.1, "per": "turn" }
       ]
     },
     {
-      "id": "P_TECHNICIAN",
-      "name": "技术员",
-      "desc": "维护电力和自动化设备",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_TECHNICIAN", "name": "技术员", "desc": "维护电力和自动化设备", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_ELECTRICITY",
-          "count": 8,
-          "per": "turn"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_CHIP",
-          "count": 0.3,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_CIRCUIT",
-          "count": 0.2,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_MACHINERY",
-          "count": 0.05,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.1,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_ELECTRICITY", "count": 8, "per": "turn" },
+        { "type": "add", "target": "resource", "id": "R_CHIP", "count": 0.3, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_CIRCUIT", "count": 0.2, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_MACHINERY", "count": 0.05, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.1, "per": "turn" }
       ]
     },
     {
-      "id": "P_ASTRONAUT",
-      "name": "宇航员",
-      "desc": "接受专业训练的太空人员",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_ASTRONAUT", "name": "宇航员", "desc": "接受专业训练的太空人员", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": 2,
-          "per": "turn"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_LIFE_SUPPORT",
-          "count": 0.4,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_RATION",
-          "count": 0.2,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_ELECTRICITY",
-          "count": 2,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.16,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 2, "per": "turn" },
+        { "type": "add", "target": "resource", "id": "R_LIFE_SUPPORT", "count": 0.4, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_RATION", "count": 0.2, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_ELECTRICITY", "count": 2, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.16, "per": "turn" }
       ]
     },
     {
-      "id": "P_PILOT",
-      "name": "飞行员",
-      "desc": "驾驶飞船的专业人员",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_PILOT", "name": "飞行员", "desc": "驾驶飞船的专业人员", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": 2,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_RATION",
-          "count": 0.15,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.12,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 2, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_RATION", "count": 0.15, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.12, "per": "turn" }
       ]
     },
     {
-      "id": "P_ALLOY_SMITH",
-      "name": "合金工匠",
-      "desc": "制造航天级合金材料",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_ALLOY_SMITH", "name": "合金工匠", "desc": "制造航天级合金材料", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_ALLOY",
-          "count": 0.5,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_STEEL",
-          "count": 0.4,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_NUCLEAR_ENERGY",
-          "count": 1,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.14,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_ALLOY", "count": 0.5, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_STEEL", "count": 0.4, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_NUCLEAR_ENERGY", "count": 1, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.14, "per": "turn" }
       ]
     },
     {
-      "id": "P_XENOBIOLOGIST",
-      "name": "外星生物学家",
-      "desc": "研究外星生命和生态系统",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_XENOBIOLOGIST", "name": "外星生物学家", "desc": "研究外星生命和生态系统", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": 6,
-          "per": "turn"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_ALIEN_TECH",
-          "count": 0.15,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_LIFE_SUPPORT",
-          "count": 0.1,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.1,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 6, "per": "turn" },
+        { "type": "add", "target": "resource", "id": "R_ALIEN_TECH", "count": 0.15, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_LIFE_SUPPORT", "count": 0.1, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.1, "per": "turn" }
       ]
     },
     {
-      "id": "P_QUANTUM_PHYSICIST",
-      "name": "量子物理学家",
-      "desc": "研究反物质和暗能量",
-      "defaultUnlock": false,
-      "editable": true,
+      "id": "P_QUANTUM_PHYSICIST", "name": "量子物理学家", "desc": "研究反物质和暗能量", "defaultUnlock": false, "editable": true,
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": 8,
-          "per": "turn"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_ANTIMATTER",
-          "count": 0.08,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_NUCLEAR_ENERGY",
-          "count": 3,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_CHIP",
-          "count": 0.1,
-          "per": "turn"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 0.1,
-          "per": "turn"
-        }
+        { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 8, "per": "turn" },
+        { "type": "add", "target": "resource", "id": "R_ANTIMATTER", "count": 0.08, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_NUCLEAR_ENERGY", "count": 3, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_CHIP", "count": 0.1, "per": "turn" },
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 0.1, "per": "turn" }
       ]
     }
   ],
   "researches": [
     {
-      "id": "T_BASIC_ENGINEERING",
-      "name": "基础工程",
-      "desc": "建立最初的工程认知，解锁采石场与后续工业研究。",
-      "defaultUnlock": true,
+      "id": "T_BASIC_ENGINEERING", "name": "基础工程", "desc": "建立最初的工程认知，解锁采石场与后续工业研究。", "defaultUnlock": true,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 10
-        }
-      ],
-      "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_QUARRY"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_HUNTING"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_AGRICULTURE"
-        }
-      ]
-    },
-    {
-      "id": "T_HUNTING",
-      "name": "狩猎技巧",
-      "desc": "掌握协作狩猎，获得稳定食物来源。",
-      "defaultUnlock": false,
-      "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 8
-        },
-        {
-          "id": "R_FOOD",
-          "need": 8
-        },
-        {
-          "id": "R_ANIMAL_HIDE",
-          "need": 3
-        }
+        { "id": "R_KNOWLEDGE", "need": 10 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "profession",
-          "id": "P_HUNTER"
-        },
-        {
-          "type": "professionRateBuff",
-          "target": "profession",
-          "id": "P_HUNTER",
-          "count": 0.3,
-          "per": "turn"
-        }
+        { "type": "unlock", "target": "building", "id": "B_QUARRY" },
+        { "type": "unlock", "target": "research", "id": "T_HUNTING" },
+        { "type": "unlock", "target": "research", "id": "T_AGRICULTURE" }
       ]
     },
     {
-      "id": "T_AGRICULTURE",
-      "name": "农业技术",
-      "desc": "学会种植作物，食物来源更加稳定。",
-      "defaultUnlock": false,
+      "id": "T_HUNTING", "name": "狩猎技巧", "desc": "掌握协作狩猎，获得稳定食物来源。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 15
-        },
-        {
-          "id": "R_WOOD",
-          "need": 15
-        },
-        {
-          "id": "R_FOOD",
-          "need": 10
-        }
+        { "id": "R_KNOWLEDGE", "need": 8 },
+        { "id": "R_FOOD", "need": 8 },
+        { "id": "R_ANIMAL_HIDE", "need": 3 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_FARMLAND"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_ANIMAL_HUSBANDRY"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_FOOD_PROCESSING"
-        }
+        { "type": "unlock", "target": "profession", "id": "P_HUNTER" },
+        { "type": "professionRateBuff", "target": "profession", "id": "P_HUNTER", "count": 0.3, "per": "turn" }
       ]
     },
     {
-      "id": "T_FOOD_PROCESSING",
-      "name": "食物加工",
-      "desc": "学会制作口粮，提高食物效率。",
-      "defaultUnlock": false,
+      "id": "T_AGRICULTURE", "name": "农业技术", "desc": "学会种植作物，食物来源更加稳定。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 12
-        },
-        {
-          "id": "R_FOOD",
-          "need": 15
-        },
-        {
-          "id": "R_STONE",
-          "need": 10
-        }
+        { "id": "R_KNOWLEDGE", "need": 15 },
+        { "id": "R_WOOD", "need": 15 },
+        { "id": "R_FOOD", "need": 10 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_KITCHEN"
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_RATION"
-        }
+        { "type": "unlock", "target": "building", "id": "B_FARMLAND" },
+        { "type": "unlock", "target": "research", "id": "T_ANIMAL_HUSBANDRY" },
+        { "type": "unlock", "target": "research", "id": "T_FOOD_PROCESSING" }
       ]
     },
     {
-      "id": "T_ANIMAL_HUSBANDRY",
-      "name": "畜牧技术",
-      "desc": "驯养动物获取持续资源。",
-      "defaultUnlock": false,
+      "id": "T_FOOD_PROCESSING", "name": "食物加工", "desc": "学会制作口粮，提高食物效率。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 18
-        },
-        {
-          "id": "R_FOOD",
-          "need": 25
-        },
-        {
-          "id": "R_ANIMAL_HIDE",
-          "need": 8
-        },
-        {
-          "id": "R_RATION",
-          "need": 5
-        }
+        { "id": "R_KNOWLEDGE", "need": 12 },
+        { "id": "R_FOOD", "need": 15 },
+        { "id": "R_STONE", "need": 10 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_PASTURE"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_TEXTILE"
-        }
+        { "type": "unlock", "target": "building", "id": "B_KITCHEN" },
+        { "type": "unlock", "target": "resource", "id": "R_RATION" }
       ]
     },
     {
-      "id": "T_TEXTILE",
-      "name": "纺织技术",
-      "desc": "将兽皮加工成布匹。",
-      "defaultUnlock": false,
+      "id": "T_ANIMAL_HUSBANDRY", "name": "畜牧技术", "desc": "驯养动物获取持续资源。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 22
-        },
-        {
-          "id": "R_FABRIC",
-          "need": 15
-        },
-        {
-          "id": "R_ANIMAL_HIDE",
-          "need": 10
-        }
+        { "id": "R_KNOWLEDGE", "need": 18 },
+        { "id": "R_FOOD", "need": 25 },
+        { "id": "R_ANIMAL_HIDE", "need": 8 },
+        { "id": "R_RATION", "need": 5 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_LOOM"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_MINING"
-        }
+        { "type": "unlock", "target": "building", "id": "B_PASTURE" },
+        { "type": "unlock", "target": "research", "id": "T_TEXTILE" }
       ]
     },
     {
-      "id": "T_MINING",
-      "name": "采矿技术",
-      "desc": "深入地下开采有价值的矿石。",
-      "defaultUnlock": false,
+      "id": "T_TEXTILE", "name": "纺织技术", "desc": "将兽皮加工成布匹。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 30
-        },
-        {
-          "id": "R_STONE",
-          "need": 40
-        },
-        {
-          "id": "R_TOOLS",
-          "need": 8
-        },
-        {
-          "id": "R_WOOD",
-          "need": 20
-        }
+        { "id": "R_KNOWLEDGE", "need": 22 },
+        { "id": "R_FABRIC", "need": 15 },
+        { "id": "R_ANIMAL_HIDE", "need": 10 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_MINE"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_METALLURGY"
-        }
+        { "type": "unlock", "target": "building", "id": "B_LOOM" },
+        { "type": "unlock", "target": "research", "id": "T_MINING" }
       ]
     },
     {
-      "id": "T_METALLURGY",
-      "name": "冶金技术",
-      "desc": "将矿石冶炼成可用金属。",
-      "defaultUnlock": false,
+      "id": "T_MINING", "name": "采矿技术", "desc": "深入地下开采有价值的矿石。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 35
-        },
-        {
-          "id": "R_METAL_ORE",
-          "need": 20
-        },
-        {
-          "id": "R_COAL",
-          "need": 15
-        },
-        {
-          "id": "R_TOOLS",
-          "need": 5
-        }
+        { "id": "R_KNOWLEDGE", "need": 30 },
+        { "id": "R_STONE", "need": 40 },
+        { "id": "R_TOOLS", "need": 8 },
+        { "id": "R_WOOD", "need": 20 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_SMELTER"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_STEEL_MAKING"
-        }
+        { "type": "unlock", "target": "building", "id": "B_MINE" },
+        { "type": "unlock", "target": "research", "id": "T_METALLURGY" }
       ]
     },
     {
-      "id": "T_STEEL_MAKING",
-      "name": "炼钢技术",
-      "desc": "生产高强度的钢材。",
-      "defaultUnlock": false,
+      "id": "T_METALLURGY", "name": "冶金技术", "desc": "将矿石冶炼成可用金属。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 45
-        },
-        {
-          "id": "R_METAL",
-          "need": 25
-        },
-        {
-          "id": "R_COAL",
-          "need": 30
-        },
-        {
-          "id": "R_TOOLS",
-          "need": 10
-        }
+        { "id": "R_KNOWLEDGE", "need": 35 },
+        { "id": "R_METAL_ORE", "need": 20 },
+        { "id": "R_COAL", "need": 15 },
+        { "id": "R_TOOLS", "need": 5 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_STEEL_MILL"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_MECHANIZATION"
-        }
+        { "type": "unlock", "target": "building", "id": "B_SMELTER" },
+        { "type": "unlock", "target": "research", "id": "T_STEEL_MAKING" }
       ]
     },
     {
-      "id": "T_MECHANIZATION",
-      "name": "机械化",
-      "desc": "用机器替代人力进行生产。",
-      "defaultUnlock": false,
+      "id": "T_STEEL_MAKING", "name": "炼钢技术", "desc": "生产高强度的钢材。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 60
-        },
-        {
-          "id": "R_STEEL",
-          "need": 20
-        },
-        {
-          "id": "R_PARTS",
-          "need": 15
-        },
-        {
-          "id": "R_TOOLS",
-          "need": 12
-        }
+        { "id": "R_KNOWLEDGE", "need": 45 },
+        { "id": "R_METAL", "need": 25 },
+        { "id": "R_COAL", "need": 30 },
+        { "id": "R_TOOLS", "need": 10 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_FACTORY"
-        },
-        {
-          "type": "unlock",
-          "target": "resource",
-          "id": "R_MACHINERY"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_ELECTRIFICATION"
-        }
+        { "type": "unlock", "target": "building", "id": "B_STEEL_MILL" },
+        { "type": "unlock", "target": "research", "id": "T_MECHANIZATION" }
       ]
     },
     {
-      "id": "T_ELECTRIFICATION",
-      "name": "电力技术",
-      "desc": "掌握电能的生产和应用。",
-      "defaultUnlock": false,
+      "id": "T_MECHANIZATION", "name": "机械化", "desc": "用机器替代人力进行生产。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 75
-        },
-        {
-          "id": "R_STEEL",
-          "need": 35
-        },
-        {
-          "id": "R_PARTS",
-          "need": 25
-        },
-        {
-          "id": "R_MACHINERY",
-          "need": 8
-        }
+        { "id": "R_KNOWLEDGE", "need": 60 },
+        { "id": "R_STEEL", "need": 20 },
+        { "id": "R_PARTS", "need": 15 },
+        { "id": "R_TOOLS", "need": 12 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_POWER_PLANT"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_CHEMISTRY"
-        }
+        { "type": "unlock", "target": "building", "id": "B_FACTORY" },
+        { "type": "unlock", "target": "resource", "id": "R_MACHINERY" },
+        { "type": "unlock", "target": "research", "id": "T_ELECTRIFICATION" }
       ]
     },
     {
-      "id": "T_CHEMISTRY",
-      "name": "化学工艺",
-      "desc": "研究物质的化学性质和转化。",
-      "defaultUnlock": false,
+      "id": "T_ELECTRIFICATION", "name": "电力技术", "desc": "掌握电能的生产和应用。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 85
-        },
-        {
-          "id": "R_ELECTRICITY",
-          "need": 80
-        },
-        {
-          "id": "R_COAL",
-          "need": 40
-        },
-        {
-          "id": "R_PARTS",
-          "need": 15
-        }
+        { "id": "R_KNOWLEDGE", "need": 75 },
+        { "id": "R_STEEL", "need": 35 },
+        { "id": "R_PARTS", "need": 25 },
+        { "id": "R_MACHINERY", "need": 8 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_REFINERY"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_ELECTRONICS"
-        }
+        { "type": "unlock", "target": "building", "id": "B_POWER_PLANT" },
+        { "type": "unlock", "target": "research", "id": "T_CHEMISTRY" }
       ]
     },
     {
-      "id": "T_ELECTRONICS",
-      "name": "电子技术",
-      "desc": "制造电路和电子设备。",
-      "defaultUnlock": false,
+      "id": "T_CHEMISTRY", "name": "化学工艺", "desc": "研究物质的化学性质和转化。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 100
-        },
-        {
-          "id": "R_PLASTIC",
-          "need": 25
-        },
-        {
-          "id": "R_ELECTRICITY",
-          "need": 150
-        },
-        {
-          "id": "R_PARTS",
-          "need": 20
-        },
-        {
-          "id": "R_MACHINERY",
-          "need": 10
-        }
+        { "id": "R_KNOWLEDGE", "need": 85 },
+        { "id": "R_ELECTRICITY", "need": 80 },
+        { "id": "R_COAL", "need": 40 },
+        { "id": "R_PARTS", "need": 15 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_ELECTRONICS_PLANT"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_ADVANCED_COMPUTING"
-        }
+        { "type": "unlock", "target": "building", "id": "B_REFINERY" },
+        { "type": "unlock", "target": "research", "id": "T_ELECTRONICS" }
       ]
     },
     {
-      "id": "T_ADVANCED_COMPUTING",
-      "name": "高级计算",
-      "desc": "开发强大的计算机系统。",
-      "defaultUnlock": false,
+      "id": "T_ELECTRONICS", "name": "电子技术", "desc": "制造电路和电子设备。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 120
-        },
-        {
-          "id": "R_CIRCUIT",
-          "need": 40
-        },
-        {
-          "id": "R_ELECTRICITY",
-          "need": 250
-        },
-        {
-          "id": "R_MACHINERY",
-          "need": 15
-        }
+        { "id": "R_KNOWLEDGE", "need": 100 },
+        { "id": "R_PLASTIC", "need": 25 },
+        { "id": "R_ELECTRICITY", "need": 150 },
+        { "id": "R_PARTS", "need": 20 },
+        { "id": "R_MACHINERY", "need": 10 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_TECH_CENTER"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_NUCLEAR_PHYSICS"
-        }
+        { "type": "unlock", "target": "building", "id": "B_ELECTRONICS_PLANT" },
+        { "type": "unlock", "target": "research", "id": "T_ADVANCED_COMPUTING" }
       ]
     },
     {
-      "id": "T_NUCLEAR_PHYSICS",
-      "name": "核物理",
-      "desc": "研究原子核的结构和能量。",
-      "defaultUnlock": false,
+      "id": "T_ADVANCED_COMPUTING", "name": "高级计算", "desc": "开发强大的计算机系统。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 180
-        },
-        {
-          "id": "R_ELECTRICITY",
-          "need": 350
-        },
-        {
-          "id": "R_CHIP",
-          "need": 25
-        },
-        {
-          "id": "R_MACHINERY",
-          "need": 20
-        }
+        { "id": "R_KNOWLEDGE", "need": 120 },
+        { "id": "R_CIRCUIT", "need": 40 },
+        { "id": "R_ELECTRICITY", "need": 250 },
+        { "id": "R_MACHINERY", "need": 15 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_NUCLEAR_PLANT"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_ROCKETRY"
-        }
+        { "type": "unlock", "target": "building", "id": "B_TECH_CENTER" },
+        { "type": "unlock", "target": "research", "id": "T_NUCLEAR_PHYSICS" }
       ]
     },
     {
-      "id": "T_ROCKETRY",
-      "name": "火箭技术",
-      "desc": "开发进入太空的运载工具。",
-      "defaultUnlock": false,
+      "id": "T_NUCLEAR_PHYSICS", "name": "核物理", "desc": "研究原子核的结构和能量。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 250
-        },
-        {
-          "id": "R_STEEL",
-          "need": 60
-        },
-        {
-          "id": "R_ROCKET_FUEL",
-          "need": 60
-        },
-        {
-          "id": "R_NUCLEAR_ENERGY",
-          "need": 150
-        },
-        {
-          "id": "R_MACHINERY",
-          "need": 25
-        }
+        { "id": "R_KNOWLEDGE", "need": 180 },
+        { "id": "R_ELECTRICITY", "need": 350 },
+        { "id": "R_CHIP", "need": 25 },
+        { "id": "R_MACHINERY", "need": 20 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_ROCKET_SILO"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_AEROSPACE_MATERIALS"
-        }
+        { "type": "unlock", "target": "building", "id": "B_NUCLEAR_PLANT" },
+        { "type": "unlock", "target": "research", "id": "T_ROCKETRY" }
       ]
     },
     {
-      "id": "T_AEROSPACE_MATERIALS",
-      "name": "航天材料",
-      "desc": "开发轻量化高强度的航天材料。",
-      "defaultUnlock": false,
+      "id": "T_ROCKETRY", "name": "火箭技术", "desc": "开发进入太空的运载工具。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 300
-        },
-        {
-          "id": "R_STEEL",
-          "need": 50
-        },
-        {
-          "id": "R_NUCLEAR_ENERGY",
-          "need": 200
-        },
-        {
-          "id": "R_CHIP",
-          "need": 15
-        },
-        {
-          "id": "R_MACHINERY",
-          "need": 20
-        }
+        { "id": "R_KNOWLEDGE", "need": 250 },
+        { "id": "R_STEEL", "need": 60 },
+        { "id": "R_ROCKET_FUEL", "need": 60 },
+        { "id": "R_NUCLEAR_ENERGY", "need": 150 },
+        { "id": "R_MACHINERY", "need": 25 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_ALLOY_WORKS"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_MICROELECTRONICS"
-        }
+        { "type": "unlock", "target": "building", "id": "B_ROCKET_SILO" },
+        { "type": "unlock", "target": "research", "id": "T_AEROSPACE_MATERIALS" }
       ]
     },
     {
-      "id": "T_MICROELECTRONICS",
-      "name": "微电子技术",
-      "desc": "制造高精度微型芯片。",
-      "defaultUnlock": false,
+      "id": "T_AEROSPACE_MATERIALS", "name": "航天材料", "desc": "开发轻量化高强度的航天材料。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 350
-        },
-        {
-          "id": "R_ALLOY",
-          "need": 40
-        },
-        {
-          "id": "R_CIRCUIT",
-          "need": 60
-        },
-        {
-          "id": "R_NUCLEAR_ENERGY",
-          "need": 300
-        },
-        {
-          "id": "R_MACHINERY",
-          "need": 25
-        }
+        { "id": "R_KNOWLEDGE", "need": 300 },
+        { "id": "R_STEEL", "need": 50 },
+        { "id": "R_NUCLEAR_ENERGY", "need": 200 },
+        { "id": "R_CHIP", "need": 15 },
+        { "id": "R_MACHINERY", "need": 20 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_CHIP_FAB"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_SPACE_STATIONS"
-        }
+        { "type": "unlock", "target": "building", "id": "B_ALLOY_WORKS" },
+        { "type": "unlock", "target": "research", "id": "T_MICROELECTRONICS" }
       ]
     },
     {
-      "id": "T_SPACE_STATIONS",
-      "name": "空间站技术",
-      "desc": "在轨道上建立永久居住点。",
-      "defaultUnlock": false,
+      "id": "T_MICROELECTRONICS", "name": "微电子技术", "desc": "制造高精度微型芯片。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 450
-        },
-        {
-          "id": "R_ALLOY",
-          "need": 70
-        },
-        {
-          "id": "R_CHIP",
-          "need": 50
-        },
-        {
-          "id": "R_ROCKET_FUEL",
-          "need": 120
-        },
-        {
-          "id": "R_LIFE_SUPPORT",
-          "need": 30
-        },
-        {
-          "id": "R_MACHINERY",
-          "need": 30
-        }
+        { "id": "R_KNOWLEDGE", "need": 350 },
+        { "id": "R_ALLOY", "need": 40 },
+        { "id": "R_CIRCUIT", "need": 60 },
+        { "id": "R_NUCLEAR_ENERGY", "need": 300 },
+        { "id": "R_MACHINERY", "need": 25 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_SPACE_STATION"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_QUANTUM_MECHANICS"
-        }
+        { "type": "unlock", "target": "building", "id": "B_CHIP_FAB" },
+        { "type": "unlock", "target": "research", "id": "T_SPACE_STATIONS" }
       ]
     },
     {
-      "id": "T_QUANTUM_MECHANICS",
-      "name": "量子力学",
-      "desc": "探索微观世界的物理规律。",
-      "defaultUnlock": false,
+      "id": "T_SPACE_STATIONS", "name": "空间站技术", "desc": "在轨道上建立永久居住点。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 700
-        },
-        {
-          "id": "R_CHIP",
-          "need": 70
-        },
-        {
-          "id": "R_NUCLEAR_ENERGY",
-          "need": 500
-        },
-        {
-          "id": "R_ANTIMATTER",
-          "need": 3
-        },
-        {
-          "id": "R_MACHINERY",
-          "need": 40
-        }
+        { "id": "R_KNOWLEDGE", "need": 450 },
+        { "id": "R_ALLOY", "need": 70 },
+        { "id": "R_CHIP", "need": 50 },
+        { "id": "R_ROCKET_FUEL", "need": 120 },
+        { "id": "R_LIFE_SUPPORT", "need": 30 },
+        { "id": "R_MACHINERY", "need": 30 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_ANTIMATTER_LAB"
-        },
-        {
-          "type": "unlock",
-          "target": "research",
-          "id": "T_INTERSTELLAR_TRAVEL"
-        }
+        { "type": "unlock", "target": "building", "id": "B_SPACE_STATION" },
+        { "type": "unlock", "target": "research", "id": "T_QUANTUM_MECHANICS" }
       ]
     },
     {
-      "id": "T_INTERSTELLAR_TRAVEL",
-      "name": "星际航行",
-      "desc": "突破光速限制，进行星际旅行。",
-      "defaultUnlock": false,
+      "id": "T_QUANTUM_MECHANICS", "name": "量子力学", "desc": "探索微观世界的物理规律。", "defaultUnlock": false,
       "cost": [
-        {
-          "id": "R_KNOWLEDGE",
-          "need": 1200
-        },
-        {
-          "id": "R_ALLOY",
-          "need": 120
-        },
-        {
-          "id": "R_CHIP",
-          "need": 100
-        },
-        {
-          "id": "R_ANTIMATTER",
-          "need": 15
-        },
-        {
-          "id": "R_DARK_ENERGY",
-          "need": 5
-        },
-        {
-          "id": "R_MACHINERY",
-          "need": 50
-        }
+        { "id": "R_KNOWLEDGE", "need": 700 },
+        { "id": "R_CHIP", "need": 70 },
+        { "id": "R_NUCLEAR_ENERGY", "need": 500 },
+        { "id": "R_ANTIMATTER", "need": 3 },
+        { "id": "R_MACHINERY", "need": 40 }
       ],
       "prereqs": [],
       "effects": [
-        {
-          "type": "unlock",
-          "target": "building",
-          "id": "B_INTERSTELLAR_GATE"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_KNOWLEDGE",
-          "count": 60,
-          "per": "turn"
-        }
+        { "type": "unlock", "target": "building", "id": "B_ANTIMATTER_LAB" },
+        { "type": "unlock", "target": "research", "id": "T_INTERSTELLAR_TRAVEL" }
+      ]
+    },
+    {
+      "id": "T_INTERSTELLAR_TRAVEL", "name": "星际航行", "desc": "突破光速限制，进行星际旅行。", "defaultUnlock": false,
+      "cost": [
+        { "id": "R_KNOWLEDGE", "need": 1200 },
+        { "id": "R_ALLOY", "need": 120 },
+        { "id": "R_CHIP", "need": 100 },
+        { "id": "R_ANTIMATTER", "need": 15 },
+        { "id": "R_DARK_ENERGY", "need": 5 },
+        { "id": "R_MACHINERY", "need": 50 }
+      ],
+      "prereqs": [],
+      "effects": [
+        { "type": "unlock", "target": "building", "id": "B_INTERSTELLAR_GATE" },
+        { "type": "add", "target": "resource", "id": "R_KNOWLEDGE", "count": 60, "per": "turn" }
       ]
     }
   ],
   "events":   [
     {
-      "id": "E_COLD",
-      "name": "寒冷",
-      "desc": "气温骤降，需要更多燃料维持生存",
-      "defaultUnlock": true,
-      "weight": 10,
-      "cooldown": 20,
+      "id": "E_COLD", "name": "寒冷", "desc": "气温骤降，需要更多燃料维持生存", "defaultUnlock": true, "weight": 10, "cooldown": 20,
       "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_CAMPFIRE"
-        }
+        { "type": "hasBuilding", "id": "B_CAMPFIRE" }
       ],
       "effects": [
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 30,
-          "per": "occur"
-        }
+        { "type": "clamp", "target": "resource", "id": "R_FOOD", "count": 30, "per": "occur" }
       ]
     },
     {
-      "id": "E_BOUNTIFUL_HARVEST",
-      "name": "丰收",
-      "desc": "这一年风调雨顺，农作物产量大增",
-      "defaultUnlock": false,
-      "weight": 15,
-      "cooldown": 30,
+      "id": "E_BOUNTIFUL_HARVEST", "name": "丰收", "desc": "这一年风调雨顺，农作物产量大增", "defaultUnlock": false, "weight": 15, "cooldown": 30,
       "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_FARMLAND"
-        }
+        { "type": "hasBuilding", "id": "B_FARMLAND" }
       ],
       "effects": [
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": 50,
-          "per": "occur"
-        }
+        { "type": "add", "target": "resource", "id": "R_FOOD", "count": 50, "per": "occur" }
       ]
     },
     {
-      "id": "E_FOREST_FIRE",
-      "name": "森林火灾",
-      "desc": "一场大火烧毁了附近的森林",
-      "defaultUnlock": false,
-      "weight": 8,
-      "cooldown": 40,
+      "id": "E_FOREST_FIRE", "name": "森林火灾", "desc": "一场大火烧毁了附近的森林", "defaultUnlock": false, "weight": 8, "cooldown": 40,
       "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_LUMBER_CAMP"
-        }
+        { "type": "hasBuilding", "id": "B_LUMBER_CAMP" }
       ],
       "effects": [
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_WOOD",
-          "count": 20,
-          "per": "occur"
-        }
+        { "type": "clamp", "target": "resource", "id": "R_WOOD", "count": 20, "per": "occur" }
       ]
     },
     {
-      "id": "E_WOLF_ATTACK",
-      "name": "狼群袭击",
-      "desc": "饥饿的狼群袭击了营地",
-      "defaultUnlock": true,
-      "weight": 12,
-      "cooldown": 25,
+      "id": "E_WOLF_ATTACK", "name": "狼群袭击", "desc": "饥饿的狼群袭击了营地", "defaultUnlock": false, "weight": 12, "cooldown": 25,
       "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_CAMPFIRE"
-        }
+        { "type": "hasBuilding", "id": "B_CAMPFIRE" }
       ],
       "effects": [
-        {
-          "type": "randomProfessionLoss",
-          "target": "profession",
-          "id": "",
-          "count": 1,
-          "per": "occur"
-        }
+        { "type": "randomProfessionLoss", "target": "profession", "id": "", "count": 1, "per": "occur" }
       ]
     },
     {
-      "id": "E_MIGRANTS",
-      "name": "移民抵达",
-      "desc": "一群流浪者加入了你的聚落",
-      "defaultUnlock": false,
-      "weight": 10,
-      "cooldown": 35,
+      "id": "E_MIGRANTS", "name": "移民抵达", "desc": "一群流浪者加入了你的聚落", "defaultUnlock": false, "weight": 10, "cooldown": 35,
       "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_HUT"
-        }
+        { "type": "hasBuilding", "id": "B_HUT" }
       ],
       "effects": [
-        {
-          "type": "add",
-          "target": "profession",
-          "id": "P_IDLE",
-          "count": 2,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": -20,
-          "per": "occur"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_RATION",
-          "count": 5,
-          "per": "occur"
-        }
+        { "type": "add", "target": "profession", "id": "P_IDLE", "count": 2, "per": "occur" },
+        { "type": "add", "target": "resource", "id": "R_FOOD", "count": -20, "per": "occur" },
+        { "type": "clamp", "target": "resource", "id": "R_RATION", "count": 5, "per": "occur" }
       ]
     },
     {
-      "id": "E_DISEASE",
-      "name": "疾病爆发",
-      "desc": "瘟疫在聚落中蔓延",
-      "defaultUnlock": false,
-      "weight": 8,
-      "cooldown": 50,
+      "id": "E_DISEASE", "name": "疾病爆发", "desc": "瘟疫在聚落中蔓延", "defaultUnlock": false, "weight": 8, "cooldown": 50,
       "prereqs": [
-        {
-          "type": "hasBuilding",
-          "id": "B_HUT"
-        }
+        { "type": "hasBuilding", "id": "B_HUT" }
       ],
       "effects": [
-        {
-          "type": "clamp",
-          "target": "profession",
-          "id": "P_IDLE",
-          "count": 1,
-          "per": "occur"
-        },
-        {
-          "type": "add",
-          "target": "resource",
-          "id": "R_FOOD",
-          "count": -25,
-          "per": "occur"
-        },
-        {
-          "type": "clamp",
-          "target": "resource",
-          "id": "R_RATION",
-          "count": 8,
-          "per": "occur"
-        }
+        { "type": "clamp", "target": "profession", "id": "P_IDLE", "count": 1, "per": "occur" },
+        { "type": "add", "target": "resource", "id": "R_FOOD", "count": -25, "per": "occur" },
+        { "type": "clamp", "target": "resource", "id": "R_RATION", "count": 8, "per": "occur" }
       ]
     }
   ],
@@ -3161,6 +1147,8 @@ const els = {
   events: document.getElementById("event-list"),
   professions: document.getElementById("profession-list"),
   researches: document.getElementById("research-list"),
+  buildableOnlyToggle: document.getElementById("buildable-only-toggle"),
+  hideFinishedResearchToggle: document.getElementById("hide-finished-research-toggle"),
   logs: document.getElementById("log-list"),
   versionBadge: document.getElementById("version-badge"),
   themeToggleButton: document.getElementById("theme-toggle-btn"),
@@ -3181,12 +1169,31 @@ let showResourceDeltaFx = false;
 const actionLogs = [];
 const MAX_LOGS = 120;
 const THEME_KEY = "dsr_theme";
+const SECONDS_PER_DAY = 30;
 
 function updateUiScale() {
   const widthScale = window.innerWidth / 1280;
   const heightScale = window.innerHeight / 760;
   const scale = Math.max(0.92, Math.min(1.35, Math.min(widthScale, heightScale)));
-  document.documentElement.style.setProperty("--ui-scale", scale.toFixed(3));
+  const root = document.documentElement;
+  const withTenPercent = (base) => {
+    const scaled = base * scale;
+    return Math.round(scaled + scaled / 10);
+  };
+
+  root.style.setProperty("--ui-scale", scale.toFixed(3));
+  root.style.setProperty("--app-max-width", `${withTenPercent(1400)}px`);
+  root.style.setProperty("--grid-col-1", `${Math.round(withTenPercent(280) * 1.0)}px`);
+  root.style.setProperty("--grid-col-2", `${Math.round(withTenPercent(300) * 1.3)}px`);
+  root.style.setProperty("--grid-col-3", `${Math.round(withTenPercent(300) * 1.3)}px`);
+  root.style.setProperty("--grid-col-4", `${Math.round(withTenPercent(280) * 0.8)}px`);
+  root.style.setProperty("--grid-row-min", `${withTenPercent(260)}px`);
+  root.style.setProperty("--panel-min-height", `${withTenPercent(260)}px`);
+  root.style.setProperty("--panel-max-height", `${withTenPercent(560)}px`);
+  root.style.setProperty("--panel-tall-min-height", `${withTenPercent(540)}px`);
+  root.style.setProperty("--button-grid-max-height", `${withTenPercent(480)}px`);
+  root.style.setProperty("--event-grid-max-height", `${withTenPercent(540)}px`);
+  root.style.setProperty("--mobile-panel-min-height", `${withTenPercent(220)}px`);
 }
 
 function setStatus(text) {
@@ -3226,7 +1233,7 @@ async function syncVersionFromPackage() {
     if (!res.ok) return;
     const pkg = await res.json();
     if (pkg && pkg.version) {
-      els.versionBadge.textContent = `v${pkg.version}`;
+      els.versionBadge.textContent = `版本号 v${pkg.version}`;
     }
   } catch {
     // 静默失败，保留默认版本文案
@@ -3369,7 +1376,7 @@ class LocalGameEngine {
           def,
           unlocked: !!def.defaultUnlock,
           amount: 0,
-          limit: 0,
+          limit: def.id === "P_IDLE" ? -1 : 0,
         },
       ]),
     );
@@ -3420,6 +1427,10 @@ class LocalGameEngine {
     restoreGroup(this.professions, snapshot.professions);
     restoreGroup(this.researches, snapshot.researches);
     restoreGroup(this.events, snapshot.events);
+    const idleState = this.professions.get("P_IDLE");
+    if (idleState) {
+      idleState.limit = -1;
+    }
 
     this.lastTickAt = Number(snapshot.lastTickAt || Date.now());
     if (!Number.isFinite(this.lastTickAt)) {
@@ -3429,9 +1440,9 @@ class LocalGameEngine {
     if (!Number.isFinite(this.totalSimSeconds) || this.totalSimSeconds < 0) {
       this.totalSimSeconds = 0;
     }
-    this.lastProcessedDay = Number(snapshot.lastProcessedDay || Math.floor(this.totalSimSeconds / 60));
+    this.lastProcessedDay = Number(snapshot.lastProcessedDay || Math.floor(this.totalSimSeconds / SECONDS_PER_DAY));
     if (!Number.isFinite(this.lastProcessedDay) || this.lastProcessedDay < 0) {
-      this.lastProcessedDay = Math.floor(this.totalSimSeconds / 60);
+      this.lastProcessedDay = Math.floor(this.totalSimSeconds / SECONDS_PER_DAY);
     }
     this.recomputeResourceRates();
     this.save();
@@ -3464,7 +1475,6 @@ class LocalGameEngine {
 
   startGame() {
     this.applyEffects([
-      { type: "addLimit", target: "profession", id: "P_IDLE", count: 2 },
       { type: "add", target: "profession", id: "P_IDLE", count: 2, per: "click" },
     ]);
   }
@@ -3503,7 +1513,7 @@ class LocalGameEngine {
   }
 
   processEventDays() {
-    const currentDay = Math.floor(this.totalSimSeconds / 60);
+    const currentDay = Math.floor(this.totalSimSeconds / SECONDS_PER_DAY);
     for (let day = this.lastProcessedDay + 1; day <= currentDay; day += 1) {
       this.processEventDay(day);
     }
@@ -3756,7 +1766,6 @@ class LocalGameEngine {
       const candidates = [];
       this.professions.forEach((profState, profId) => {
         if (!profState.unlocked || profState.amount <= 0) return;
-        if (profId === "P_IDLE") return;
         candidates.push({ profId, profState });
       });
       if (candidates.length <= 0) return null;
@@ -3872,8 +1881,7 @@ class LocalGameEngine {
     const toState = this.professions.get(toProfessionId);
     if (!fromState || !toState || !toState.unlocked) return false;
     if (fromState.amount <= 0) return false;
-    // 回收到闲置人口时不受上限限制，避免减员按钮失效
-    if (toProfessionId !== "P_IDLE" && toState.amount >= toState.limit) return false;
+    if (toState.limit >= 0 && toState.amount >= toState.limit) return false;
     return true;
   }
 
@@ -4008,7 +2016,7 @@ class LocalGameEngine {
     });
 
     const events = {};
-    const currentDay = Math.floor(this.totalSimSeconds / 60);
+    const currentDay = Math.floor(this.totalSimSeconds / SECONDS_PER_DAY);
     this.events.forEach((state, id) => {
       if (!state.unlocked) return;
       const probability = Number(state.def.weight || 0);
@@ -4028,7 +2036,7 @@ class LocalGameEngine {
       };
     });
 
-    const totalDays = Math.floor(this.totalSimSeconds / 60);
+    const totalDays = Math.floor(this.totalSimSeconds / SECONDS_PER_DAY);
     const year = Math.floor(totalDays / 365);
     const day = totalDays % 365;
 
@@ -4137,7 +2145,7 @@ function renderBuildings(buildings, nameOf, dontChangeButtonStatus = false) {
       btn.textContent = nextText;
     }
     // 建筑按钮动态字体，避免文字长度挤压 UI
-    fitButtonText(btn, { max: 13, min: 9 });
+    fitButtonText(btn, { max: 23.4, min: 16.2 });
 
     if (isNew) {
       btn.addEventListener("click", () => {
@@ -4189,6 +2197,7 @@ function renderEvents(events) {
     if (label.textContent !== ev.name) {
       label.textContent = ev.name;
     }
+    fitButtonText(label, { max: 21.6, min: 14.4 });
     label.classList.toggle("active-event", !!ev.isActive);
     const effects = (ev.effects || []).join("\n");
     let tip = `【事件】${ev.name}\n${ev.desc || ""}\n`;
@@ -4302,8 +2311,8 @@ function renderResearches(researches, nameOf, dontChangeButtonStatus = false) {
     }
 
     btn.classList.toggle("completed", !!r.finished);
-    // 研究按钮预留完成态空间，完成后略微缩小字体
-    fitButtonText(btn, r.finished ? { max: 10, min: 8 } : { max: 11, min: 9 });
+    // 研究按钮与建筑按钮保持同尺寸，完成态可进一步缩小避免溢出
+    fitButtonText(btn, r.finished ? { max: 19.8, min: 12.6 } : { max: 19.8, min: 14.4 });
 
     if (!dontChangeButtonStatus) {
       btn.disabled = !!r.finished || r.canResearch === false;
@@ -4341,10 +2350,16 @@ function renderResearches(researches, nameOf, dontChangeButtonStatus = false) {
 
 function render(state) {
   const resources = Object.values(state.resources || {});
-  const buildings = Object.values(state.buildings || {});
+  const allBuildings = Object.values(state.buildings || {});
   const professions = Object.values(state.professions || {});
-  const researches = Object.values(state.research || {});
+  const allResearches = Object.values(state.research || {});
   const events = Object.values(state.events || {});
+  const buildings = els.buildableOnlyToggle && els.buildableOnlyToggle.checked
+    ? allBuildings.filter((b) => b.canBuild)
+    : allBuildings;
+  const researches = els.hideFinishedResearchToggle && els.hideFinishedResearchToggle.checked
+    ? allResearches.filter((r) => !r.finished)
+    : allResearches;
   const nameOf = buildNameMap(resources, buildings, professions, researches);
 
   renderResources(resources);
@@ -4440,15 +2455,12 @@ function showFullscreenNotify(title, desc, icon = "[]") {
 
 function triggerPulseAnimation(element) {
   if (!element) return;
-  element.classList.remove("pulse-animation");
-  element.classList.remove("flash-animation");
+  element.classList.remove("click-dim");
   void element.offsetWidth;
-  element.classList.add("pulse-animation");
-  element.classList.add("flash-animation");
+  element.classList.add("click-dim");
   setTimeout(() => {
-    element.classList.remove("pulse-animation");
-    element.classList.remove("flash-animation");
-  }, 1000);
+    element.classList.remove("click-dim");
+  }, 220);
 }
 
 function detectResourceChanges(current, previous) {
@@ -4503,6 +2515,16 @@ async function boot() {
   if (els.themeToggleButton) {
     els.themeToggleButton.addEventListener("click", () => {
       toggleTheme();
+    });
+  }
+  if (els.buildableOnlyToggle) {
+    els.buildableOnlyToggle.addEventListener("change", () => {
+      refreshState();
+    });
+  }
+  if (els.hideFinishedResearchToggle) {
+    els.hideFinishedResearchToggle.addEventListener("change", () => {
+      refreshState();
     });
   }
   if (els.resetButton) {
